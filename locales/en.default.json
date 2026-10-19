@@ -48,5 +48,33 @@
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "sections": {
+    "header": {
+      "navigation": "Main navigation",
+      "menu_open": "Open menu",
+      "menu_close": "Close menu",
+      "search": "Search",
+      "account": "Account",
+      "cart": "Cart ({{ count }})"
+    },
+    "footer": {
+      "navigation": "Footer navigation",
+      "quick_links": "Explore",
+      "payment_methods": "Secure payment methods",
+      "rights_reserved": "All rights reserved"
+    },
+    "hero_slider": {
+      "carousel": "carousel",
+      "slide": "slide",
+      "slide_position": "Slide {{ current }} of {{ total }}",
+      "image_one_alt": "A festive selection of Indian mithai on a gold platter",
+      "image_two_alt": "An assortment of Indian sweets presented for a celebration",
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "choose_slide": "Choose a slide",
+      "play": "Start automatic slide rotation",
+      "pause": "Pause automatic slide rotation"
+    }
   }
 }

@@ -1,46 +1,82 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+<footer class="vs-footer full-width">
+  <div class="vs-footer-main">
+    <div class="vs-footer-brand">
+      <a class="vs-footer-wordmark" href="{{ routes.root_url }}">
+        {{ section.settings.brand_name | default: shop.name | escape }}
+      </a>
+      {% if section.settings.tagline != blank %}
+        <p class="vs-footer-tagline">{{ section.settings.tagline | escape }}</p>
+      {% endif %}
+      {% if section.settings.description != blank %}
+        <div class="vs-footer-description rte">{{ section.settings.description }}</div>
+      {% endif %}
+      {% if section.settings.contact_email != blank %}
+        <a class="vs-footer-email" href="mailto:{{ section.settings.contact_email | escape }}">
+          {{ section.settings.contact_email | escape }}
+        </a>
+      {% endif %}
+    </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
+    {% if section.settings.menu != blank and section.settings.menu.links != blank %}
+      <nav class="vs-footer-navigation" aria-label="{{ 'sections.footer.navigation' | t }}">
+        <h2 class="vs-footer-heading">{{ 'sections.footer.quick_links' | t }}</h2>
+        <ul>
+          {% for link in section.settings.menu.links %}
+            <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
     {% endif %}
+
+    {% if section.settings.show_payment_icons and shop.enabled_payment_types != empty %}
+      <div class="vs-footer-payment">
+        <h2 class="vs-footer-heading">{{ 'sections.footer.payment_methods' | t }}</h2>
+        <ul class="vs-payment-list" aria-label="{{ 'sections.footer.payment_methods' | t }}">
+          {% for type in shop.enabled_payment_types %}
+            <li>{{ type | payment_type_svg_tag: class: 'vs-payment-icon' }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="vs-footer-bottom">
+    <p>
+      &copy; {{ 'now' | date: '%Y' }}
+      <a href="{{ routes.root_url }}">{{ shop.name | escape }}</a>.
+      {{ 'sections.footer.rights_reserved' | t }}
+    </p>
+    <div class="vs-footer-powered">{{ powered_by_link }}</div>
   </div>
 </footer>
 
-{% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
-
 {% schema %}
 {
-  "name": "t:general.footer",
+  "name": "t:sections.footer.name",
   "settings": [
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "t:sections.footer.settings.brand_name",
+      "default": "Vedanta Sweets"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "t:sections.footer.settings.tagline",
+      "default": "A tradition worth sharing"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "t:sections.footer.settings.description",
+      "default": "<p>Celebrating India's confectionery heritage with thoughtful ingredients and time-honoured craft.</p>"
+    },
+    {
+      "type": "text",
+      "id": "contact_email",
+      "label": "t:sections.footer.settings.contact_email"
+    },
     {
       "type": "link_list",
       "id": "menu",

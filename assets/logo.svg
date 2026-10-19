@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 380" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Soft shadow filter for depth -->
+    <filter id="badgeShadow" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.18" />
+    </filter>
+
+    <!-- Subtle gradient for rich Ruby Red depth -->
+    <radialGradient id="rubyOvalGrad" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#A8243C" />
+      <stop offset="65%" stop-color="#971F35" />
+      <stop offset="100%" stop-color="#7A1528" />
+    </radialGradient>
+
+    <!-- Antique Gold metallic gradient for border -->
+    <linearGradient id="goldBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DFC484" />
+      <stop offset="40%" stop-color="#C5A15D" />
+      <stop offset="70%" stop-color="#B38E46" />
+      <stop offset="100%" stop-color="#E2C785" />
+    </linearGradient>
+  </defs>
+
+  <!-- ==========================================
+       1. OVAL BADGE CONTAINER & RINGS
+       ========================================== -->
+  <g filter="url(#badgeShadow)">
+    <!-- Outer White Buffer / Cutout Ring -->
+    <ellipse cx="350" cy="190" rx="335" ry="175" fill="#FFFFFF" />
+
+    <!-- Antique Gold Concentric Ring -->
+    <ellipse cx="350" cy="190" rx="325" ry="165" fill="url(#goldBorderGrad)" />
+
+    <!-- Inner White Hairline Separator -->
+    <ellipse cx="350" cy="190" rx="308" ry="148" fill="#FFFFFF" />
+
+    <!-- Core Ruby Red Oval Body -->
+    <ellipse cx="350" cy="190" rx="302" ry="142" fill="url(#rubyOvalGrad)" />
+  </g>
+
+  <!-- ==========================================
+       2. TOP CIRCULAR CREST (VS MONOGRAM)
+       ========================================== -->
+  <g id="crest-emblem">
+    <!-- Crest Outer Ring -->
+    <circle cx="350" cy="108" r="38" stroke="#FFFFFF" stroke-width="4.5" fill="none" />
+
+    <!-- Crest Inner Monogram VS -->
+    <text x="350" y="118" font-family="&#39;Playfair Display&#39;, Georgia, serif" font-size="34" font-weight="700" font-style="italic" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">VS</text>
+
+    <!-- Decorative Underline Calligraphic Swirl -->
+    <path d="M 326 128 Q 350 137 374 128 Q 358 132 342 131 Z" fill="#FFFFFF" />
+    <circle cx="350" cy="133.5" r="2.2" fill="#FFFFFF" />
+  </g>
+
+  <!-- ==========================================
+       3. BRAND TYPOGRAPHY: "VEDANTA SWEETS"
+       ========================================== -->
+  <g id="brand-lettering">
+    <!-- Main "Vedanta" Display Text with Elegant Serif Swash -->
+    <text x="350" y="218" font-family="&#39;Playfair Display&#39;, Georgia, serif" font-size="78" font-weight="700" font-style="italic" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">Vedanta</text>
+
+    <!-- Complementary "Sweets" Flow Script Below -->
+    <text x="350" y="280" font-family="&#39;Playfair Display&#39;, Georgia, serif" font-size="46" font-weight="600" font-style="italic" fill="#FFFFFF" text-anchor="middle" letter-spacing="4">SWEETS</text>
+
+    <!-- Micro Gold Diamond Accent under Sweets -->
+    <polygon points="350,298 355,303 350,308 345,303" fill="#C5A15D" />
+  </g>
+</svg>

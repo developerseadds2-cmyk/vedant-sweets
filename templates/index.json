@@ -1,20 +1,89 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
-      "type": "hello-world",
-      "settings": {}
+      "type": "hero-slider",
+      "settings": {
+        "button_link_one": "/collections/all",
+        "button_link_two": "/collections/all"
+      }
+    },
+    "shop_by_category": {
+      "type": "shop-by-category",
+      "blocks": {
+        "category_1": {
+          "type": "category",
+          "settings": {
+            "default_title": "Mithai",
+            "subtitle": "Classic Indian sweets for every occasion",
+            "preset_image": "collection-mithai.jpg",
+            "icon": "mithai"
+          }
+        },
+        "category_2": {
+          "type": "category",
+          "settings": {
+            "default_title": "Laddoo",
+            "subtitle": "Timeless favorites in every bite",
+            "preset_image": "collection-laddoo.jpg",
+            "icon": "laddoo"
+          }
+        },
+        "category_3": {
+          "type": "category",
+          "settings": {
+            "default_title": "Peda",
+            "subtitle": "Rich, creamy and traditional",
+            "preset_image": "collection-peda.jpg",
+            "icon": "peda"
+          }
+        },
+        "category_4": {
+          "type": "category",
+          "settings": {
+            "default_title": "Kaju Sweets",
+            "subtitle": "Premium cashew delights",
+            "preset_image": "collection-kaju.jpg",
+            "icon": "kaju"
+          }
+        },
+        "category_5": {
+          "type": "category",
+          "settings": {
+            "default_title": "Dry Fruits",
+            "subtitle": "Wholesome & nutritious treats",
+            "preset_image": "collection-dry-fruits.jpg",
+            "icon": "dry-fruits"
+          }
+        },
+        "category_6": {
+          "type": "category",
+          "settings": {
+            "default_title": "Gift Packs",
+            "subtitle": "Perfect for every special moment",
+            "preset_image": "collection-gift-packs.jpg",
+            "icon": "gift-packs"
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3",
+        "category_4",
+        "category_5",
+        "category_6"
+      ],
+      "settings": {
+        "eyebrow": "OUR COLLECTIONS",
+        "heading": "Shop by Category",
+        "subtitle": "Explore our wide range of traditional and premium sweets, crafted for every celebration and special moment.",
+        "button_label": "View All Collections",
+        "button_url": "/collections"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "shop_by_category"
   ]
 }

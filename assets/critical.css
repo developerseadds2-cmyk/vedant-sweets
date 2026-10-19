@@ -101,17 +101,20 @@ body {
 
   /* This is required to make <img> elements work as background images */
   position: relative;
-  grid-template-columns: var(--content-grid);
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   width: 100%;
 }
 
-/* Child elements, by default, are constrained to the central column of the grid. */
+/* Child elements are constrained to the theme's centered content width. */
 .shopify-section > * {
-  grid-column: 2;
+  width: min(var(--content-width), 100%);
+  margin-inline: auto;
 }
 
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
-  grid-column: 1 / -1;
+  width: 100%;
+  margin-inline: 0;
 }

@@ -1,0 +1,606 @@
+<section
+  class="vs-category-section full-width"
+  id="vs-category-section-{{ section.id }}"
+  style="--vs-cat-padding-y: {{ section.settings.padding_y }}px"
+>
+  <div class="vs-category-inner">
+    <header class="vs-category-header">
+      {% if section.settings.eyebrow != blank %}
+        <div class="vs-category-eyebrow">
+          <span class="vs-ornament-line" aria-hidden="true"></span>
+          <span class="vs-ornament-diamond" aria-hidden="true">❖</span>
+          <span class="vs-eyebrow-text">{{ section.settings.eyebrow | escape }}</span>
+          <span class="vs-ornament-diamond" aria-hidden="true">❖</span>
+          <span class="vs-ornament-line" aria-hidden="true"></span>
+        </div>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 class="vs-category-heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.subtitle != blank %}
+        <p class="vs-category-subtitle">{{ section.settings.subtitle | escape }}</p>
+      {% endif %}
+
+      <div class="vs-category-motif" aria-hidden="true">
+        <svg class="vs-motif-svg" viewBox="0 0 46 22" fill="none">
+          <path d="M23 2C21.2 6.8 17 10 13 11c4 1 8.2 4.2 10 9 1.8-4.8 6-8 10-9-4-1-8.2-4.2-10-9Z" fill="var(--vs-antique-gold)" fill-opacity="0.9"/>
+          <circle cx="23" cy="11" r="2.2" fill="var(--vs-ruby-red)"/>
+          <path d="M4 11h6M36 11h6" stroke="var(--vs-antique-gold)" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="2" cy="11" r="1.2" fill="var(--vs-antique-gold)"/>
+          <circle cx="44" cy="11" r="1.2" fill="var(--vs-antique-gold)"/>
+        </svg>
+      </div>
+    </header>
+
+    <div
+      class="vs-category-carousel-wrapper"
+      data-category-carousel
+      data-autoplay="{{ section.settings.autoplay }}"
+      data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
+      data-loop="{{ section.settings.infinite_loop }}"
+    >
+      <button
+        type="button"
+        class="vs-carousel-arrow vs-carousel-arrow--prev"
+        data-carousel-prev
+        aria-label="Previous categories"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="vs-category-track" data-carousel-track role="list">
+        {% assign source_mode = section.settings.collection_source | default: 'all' %}
+        {% assign rendered_cards_count = 0 %}
+
+        {% if source_mode == 'all' %}
+          {% for coll in collections limit: section.settings.collection_limit %}
+            {% if coll.handle == 'frontpage' and collections.size > 1 %}
+              {% continue %}
+            {% endif %}
+            {% assign rendered_cards_count = rendered_cards_count | plus: 1 %}
+            {% assign card_title = coll.title %}
+            {% assign card_subtitle = coll.description | strip_html | truncatewords: 8 %}
+            {% assign card_url = coll.url %}
+            {% assign card_image = coll.featured_image | default: coll.image %}
+
+            <article class="vs-category-card" role="listitem">
+              <a class="vs-category-card__link" href="{{ card_url }}">
+                <div class="vs-category-card__media">
+                  {% if card_image != blank %}
+                    <img
+                      class="vs-category-card__image"
+                      src="{{ card_image | image_url: width: 600 }}"
+                      alt="{{ card_title | escape }}"
+                      width="280"
+                      height="184"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    {{ 'collection-1' | placeholder_svg_tag: 'vs-category-card__placeholder' }}
+                  {% endif %}
+                </div>
+
+                <div class="vs-category-card__body">
+                  <div class="vs-category-card__arch" aria-hidden="true">
+                    <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                      <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                      <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                      <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                      <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                      <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                    </svg>
+                  </div>
+
+                  <div class="vs-category-card__icon" aria-hidden="true">
+                    {% render 'category-icon', icon: 'mithai' %}
+                  </div>
+
+                  <h3 class="vs-category-card__title">{{ card_title | escape }}</h3>
+
+                  {% if card_subtitle != blank %}
+                    <p class="vs-category-card__subtitle">{{ card_subtitle | escape }}</p>
+                  {% endif %}
+
+                  <span class="vs-category-card__arrow" aria-hidden="true">→</span>
+                </div>
+              </a>
+            </article>
+          {% endfor %}
+
+        {% elsif source_mode == 'selected' %}
+          {% assign collection_list = section.settings.collection_list %}
+          {% if collection_list != blank and collection_list != empty %}
+            {% for coll in collection_list limit: section.settings.collection_limit %}
+              {% assign rendered_cards_count = rendered_cards_count | plus: 1 %}
+              {% assign card_title = coll.title %}
+              {% assign card_subtitle = coll.description | strip_html | truncatewords: 8 %}
+              {% assign card_url = coll.url %}
+              {% assign card_image = coll.featured_image | default: coll.image %}
+
+              <article class="vs-category-card" role="listitem">
+                <a class="vs-category-card__link" href="{{ card_url }}">
+                  <div class="vs-category-card__media">
+                    {% if card_image != blank %}
+                      <img
+                        class="vs-category-card__image"
+                        src="{{ card_image | image_url: width: 600 }}"
+                        alt="{{ card_title | escape }}"
+                        width="280"
+                        height="184"
+                        loading="lazy"
+                      >
+                    {% else %}
+                      {{ 'collection-1' | placeholder_svg_tag: 'vs-category-card__placeholder' }}
+                    {% endif %}
+                  </div>
+
+                  <div class="vs-category-card__body">
+                    <div class="vs-category-card__arch" aria-hidden="true">
+                      <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                        <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                        <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                        <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                        <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                        <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                      </svg>
+                    </div>
+
+                    <div class="vs-category-card__icon" aria-hidden="true">
+                      {% render 'category-icon', icon: 'mithai' %}
+                    </div>
+
+                    <h3 class="vs-category-card__title">{{ card_title | escape }}</h3>
+
+                    {% if card_subtitle != blank %}
+                      <p class="vs-category-card__subtitle">{{ card_subtitle | escape }}</p>
+                    {% endif %}
+
+                    <span class="vs-category-card__arrow" aria-hidden="true">→</span>
+                  </div>
+                </a>
+              </article>
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+
+        {% if rendered_cards_count == 0 %}
+          {% for block in section.blocks %}
+            {% assign collection = block.settings.collection %}
+            {% assign card_title = block.settings.title | default: collection.title | default: block.settings.default_title %}
+            {% assign card_subtitle = block.settings.subtitle %}
+            {% if card_subtitle == blank and collection.description != blank %}
+              {% assign card_subtitle = collection.description | strip_html | truncatewords: 8 %}
+            {% endif %}
+            {% assign card_url = collection.url | default: block.settings.custom_url | default: '/collections/all' %}
+            {% assign card_image = block.settings.image | default: collection.featured_image | default: collection.image %}
+            {% assign preset_image_name = block.settings.preset_image %}
+
+            <article class="vs-category-card" role="listitem" {{ block.shopify_attributes }}>
+              <a class="vs-category-card__link" href="{{ card_url }}">
+                <div class="vs-category-card__media">
+                  {% if card_image != blank %}
+                    <img
+                      class="vs-category-card__image"
+                      src="{{ card_image | image_url: width: 600 }}"
+                      alt="{{ card_title | escape }}"
+                      width="280"
+                      height="184"
+                      loading="lazy"
+                    >
+                  {% elsif preset_image_name != blank %}
+                    <img
+                      class="vs-category-card__image"
+                      src="{{ preset_image_name | asset_url }}"
+                      alt="{{ card_title | escape }}"
+                      width="280"
+                      height="184"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    {{ 'collection-1' | placeholder_svg_tag: 'vs-category-card__placeholder' }}
+                  {% endif %}
+                </div>
+
+                <div class="vs-category-card__body">
+                  <div class="vs-category-card__arch" aria-hidden="true">
+                    <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                      <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                      <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                      <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                      <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                      <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                    </svg>
+                  </div>
+
+                  <div class="vs-category-card__icon" aria-hidden="true">
+                    {% render 'category-icon', icon: block.settings.icon %}
+                  </div>
+
+                  <h3 class="vs-category-card__title">{{ card_title | escape }}</h3>
+
+                  {% if card_subtitle != blank %}
+                    <p class="vs-category-card__subtitle">{{ card_subtitle | escape }}</p>
+                  {% endif %}
+
+                  <span class="vs-category-card__arrow" aria-hidden="true">→</span>
+                </div>
+              </a>
+            </article>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <button
+        type="button"
+        class="vs-carousel-arrow vs-carousel-arrow--next"
+        data-carousel-next
+        aria-label="Next categories"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    {% if section.settings.button_label != blank %}
+      <div class="vs-category-footer">
+        <a class="vs-category-view-all" href="{{ section.settings.button_url | default: routes.collections_url }}">
+          {{ section.settings.button_label | escape }}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if section.settings.show_trust_bar %}
+      <div class="vs-trust-bar" role="region" aria-label="Store highlights">
+        <div class="vs-trust-item">
+          <div class="vs-trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 17c1-5 5-9 10-10-1 5-5 9-10 10Z"/>
+              <path d="M9 15c2-2 4-3 7-4"/>
+            </svg>
+          </div>
+          <div class="vs-trust-text">
+            <h4 class="vs-trust-title">{{ section.settings.trust_1_title | escape }}</h4>
+            <p class="vs-trust-desc">{{ section.settings.trust_1_desc | escape }}</p>
+          </div>
+        </div>
+
+        <div class="vs-trust-item">
+          <div class="vs-trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="13" height="12" rx="1.5"/>
+              <path d="M15 8h4.5l2.5 3.5V17H15"/>
+              <circle cx="6" cy="18" r="2"/>
+              <circle cx="18" cy="18" r="2"/>
+            </svg>
+          </div>
+          <div class="vs-trust-text">
+            <h4 class="vs-trust-title">{{ section.settings.trust_2_title | escape }}</h4>
+            <p class="vs-trust-desc">{{ section.settings.trust_2_desc | escape }}</p>
+          </div>
+        </div>
+
+        <div class="vs-trust-item">
+          <div class="vs-trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="vs-trust-text">
+            <h4 class="vs-trust-title">{{ section.settings.trust_3_title | escape }}</h4>
+            <p class="vs-trust-desc">{{ section.settings.trust_3_desc | escape }}</p>
+          </div>
+        </div>
+
+        <div class="vs-trust-item">
+          <div class="vs-trust-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </div>
+          <div class="vs-trust-text">
+            <h4 class="vs-trust-title">{{ section.settings.trust_4_title | escape }}</h4>
+            <p class="vs-trust-desc">{{ section.settings.trust_4_desc | escape }}</p>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shop by Category",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "OUR COLLECTIONS"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Explore our wide range of traditional and premium sweets, crafted for every celebration and special moment."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "View All Button Label",
+      "default": "View All Collections"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "View All Button URL"
+    },
+    {
+      "type": "header",
+      "content": "Backend Collections Source"
+    },
+    {
+      "type": "select",
+      "id": "collection_source",
+      "label": "Category Source",
+      "options": [
+        {
+          "value": "all",
+          "label": "Automatic: Show all backend collections"
+        },
+        {
+          "value": "selected",
+          "label": "Selected: Choose specific collections below"
+        },
+        {
+          "value": "blocks",
+          "label": "Manual: Individual card blocks"
+        }
+      ],
+      "default": "all",
+      "info": "In Automatic mode, simply create collections in Shopify Admin and they will appear here automatically without adding cards!"
+    },
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Select Collections",
+      "info": "Used when 'Selected' mode is active above."
+    },
+    {
+      "type": "range",
+      "id": "collection_limit",
+      "label": "Maximum Categories to Display",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 24,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Carousel & Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-play Slider",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "label": "Auto-play Interval (seconds)",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "s",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_loop",
+      "label": "Enable Infinite Loop",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Trust Highlights"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_bar",
+      "label": "Show Trust Highlights Bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "trust_1_title",
+      "label": "Badge 1 Title",
+      "default": "Premium Ingredients"
+    },
+    {
+      "type": "text",
+      "id": "trust_1_desc",
+      "label": "Badge 1 Description",
+      "default": "Only the finest, handpicked ingredients"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_title",
+      "label": "Badge 2 Title",
+      "default": "Freshly Made"
+    },
+    {
+      "type": "text",
+      "id": "trust_2_desc",
+      "label": "Badge 2 Description",
+      "default": "Prepared with care, always fresh"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_title",
+      "label": "Badge 3 Title",
+      "default": "Secure Payments"
+    },
+    {
+      "type": "text",
+      "id": "trust_3_desc",
+      "label": "Badge 3 Description",
+      "default": "Safe & trusted transactions"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_title",
+      "label": "Badge 4 Title",
+      "default": "Happy Customers"
+    },
+    {
+      "type": "text",
+      "id": "trust_4_desc",
+      "label": "Badge 4 Description",
+      "default": "Spreading sweetness since 1985"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection (Backend Connection)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title Override (optional)"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle / Tagline"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Image (optional)"
+        },
+        {
+          "type": "text",
+          "id": "preset_image",
+          "label": "Default Asset Image (internal)",
+          "default": "collection-mithai.jpg"
+        },
+        {
+          "type": "text",
+          "id": "default_title",
+          "label": "Default Title",
+          "default": "Mithai"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Card Icon",
+          "options": [
+            { "value": "mithai", "label": "Mithai / Lotus" },
+            { "value": "laddoo", "label": "Laddoo" },
+            { "value": "peda", "label": "Peda" },
+            { "value": "kaju", "label": "Kaju Sweets" },
+            { "value": "dry-fruits", "label": "Dry Fruits" },
+            { "value": "gift-packs", "label": "Gift Packs" }
+          ],
+          "default": "mithai"
+        },
+        {
+          "type": "url",
+          "id": "custom_url",
+          "label": "Custom URL (if no collection selected)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop by Category",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "default_title": "Mithai",
+            "subtitle": "Classic Indian sweets for every occasion",
+            "preset_image": "collection-mithai.jpg",
+            "icon": "mithai"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "default_title": "Laddoo",
+            "subtitle": "Timeless favorites in every bite",
+            "preset_image": "collection-laddoo.jpg",
+            "icon": "laddoo"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "default_title": "Peda",
+            "subtitle": "Rich, creamy and traditional",
+            "preset_image": "collection-peda.jpg",
+            "icon": "peda"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "default_title": "Kaju Sweets",
+            "subtitle": "Premium cashew delights",
+            "preset_image": "collection-kaju.jpg",
+            "icon": "kaju"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "default_title": "Dry Fruits",
+            "subtitle": "Wholesome & nutritious treats",
+            "preset_image": "collection-dry-fruits.jpg",
+            "icon": "dry-fruits"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "default_title": "Gift Packs",
+            "subtitle": "Perfect for every special moment",
+            "preset_image": "collection-gift-packs.jpg",
+            "icon": "gift-packs"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

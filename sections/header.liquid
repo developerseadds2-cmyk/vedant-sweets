@@ -1,65 +1,204 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+<header
+  class="vs-header-root full-width"
+  data-sticky="{{ section.settings.enable_sticky }}"
+  style="--vs-header-padding-y: {{ section.settings.padding_y }}px"
+>
+  {% if section.settings.show_announcement and section.settings.announcement_text != blank %}
+    <div class="vs-announcement">
+      <p class="vs-announcement-text">{{ section.settings.announcement_text | escape }}</p>
+    </div>
+  {% endif %}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+  <div class="vs-header-main">
+    <div class="vs-header-inner">
+      <a class="vs-brand-link" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+        <img
+          class="vs-logo-img"
+          src="{{ 'logo.png' | asset_url }}"
+          alt="{{ shop.name | escape }}"
+          width="126"
+          height="68"
+          loading="eager"
+        >
+      </a>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
+      {% if section.settings.menu != blank and section.settings.menu.links != blank %}
+        <button
+          class="vs-menu-toggle"
+          type="button"
+          data-mobile-menu-toggle
+          aria-controls="vs-navigation-{{ section.id }}"
+          aria-expanded="false"
+          aria-label="{{ 'sections.header.menu_open' | t }}"
+          data-open-label="{{ 'sections.header.menu_open' | t | escape }}"
+          data-close-label="{{ 'sections.header.menu_close' | t | escape }}"
+        >
+          <svg class="vs-menu-toggle__open-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+            <path d="M3 6h18M3 12h18M3 18h18"></path>
+          </svg>
+          <svg class="vs-menu-toggle__close-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+            <path d="m6 6 12 12M18 6 6 18"></path>
+          </svg>
+        </button>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
+        <nav
+          class="vs-navigation"
+          id="vs-navigation-{{ section.id }}"
+          aria-label="{{ 'sections.header.navigation' | t }}"
+        >
+          <div class="vs-navigation__header">
+            <a class="vs-navigation__brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+              <img
+                class="vs-navigation__logo"
+                src="{{ 'logo.png' | asset_url }}"
+                alt="{{ shop.name | escape }}"
+                width="118"
+                height="64"
+                loading="lazy"
+              >
+            </a>
+            <button
+              class="vs-navigation__close"
+              type="button"
+              data-mobile-menu-close
+              aria-label="{{ 'sections.header.menu_close' | t }}"
+            >
+              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+                <path d="m6 6 12 12M18 6 6 18"></path>
+              </svg>
+            </button>
+          </div>
+          <ul class="vs-nav-menu">
+            {% for link in section.settings.menu.links %}
+              <li class="vs-nav-item">
+                <a
+                  class="vs-nav-anchor{% if link.current %} is-current{% endif %}"
+                  href="{{ link.url }}"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{ link.title | escape }}
+                  {% if link.links != blank %}
+                    <span class="vs-nav-chevron" aria-hidden="true">⌄</span>
+                  {% endif %}
+                </a>
+                {% if link.links != blank %}
+                  <ul class="vs-submenu">
+                    {% for childlink in link.links %}
+                      <li>
+                        <a
+                          class="vs-sublink"
+                          href="{{ childlink.url }}"
+                          {% if childlink.current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          {{ childlink.title | escape }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+        <button
+          class="vs-mobile-nav-backdrop"
+          type="button"
+          data-mobile-menu-close
+          aria-label="{{ 'sections.header.menu_close' | t }}"
+          tabindex="-1"
+        ></button>
       {% endif %}
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+      <div class="vs-actions">
+        <a class="vs-icon-btn" href="{{ routes.search_url }}" aria-label="{{ 'sections.header.search' | t }}">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+            <circle cx="10.8" cy="10.8" r="7.2"></circle>
+            <path d="m16.2 16.2 5 5"></path>
+          </svg>
+        </a>
+
+        {% if shop.customer_accounts_enabled %}
+          <a class="vs-icon-btn" href="{{ routes.account_url }}" aria-label="{{ 'sections.header.account' | t }}">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+              <circle cx="12" cy="8" r="4"></circle>
+              <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
+            </svg>
+          </a>
+        {% endif %}
+
+        <a
+          class="vs-icon-btn vs-cart-btn"
+          href="{{ routes.cart_url }}"
+          aria-label="{{ 'sections.header.cart' | t: count: cart.item_count }}"
+        >
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+            <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+            <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+          </svg>
+          {% if cart.item_count > 0 %}
+            <span class="vs-cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+          {% endif %}
+        </a>
+      </div>
+    </div>
   </div>
 </header>
 
-{% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-  }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
-    display: flex;
-    gap: 1rem;
-  }
-{% endstylesheet %}
-
 {% schema %}
 {
-  "name": "t:general.header",
+  "name": "t:sections.header.name",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "t:sections.header.settings.enable_sticky",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "t:sections.header.settings.vertical_padding",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.announcement"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "t:sections.header.settings.show_announcement",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "t:sections.header.settings.announcement_text",
+      "default": "Handcrafted mithai, made with care. Complimentary delivery on orders over ₹999."
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "t:sections.header.settings.tagline",
+      "default": "Artisanal mithai & savouries"
+    },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "t:labels.menu",
+      "default": "main-menu"
     }
   ]
 }

@@ -1,0 +1,11 @@
+{% doc %}
+  Outputs the Shopify-hosted font faces selected in the global theme settings.
+
+  @example
+  {% render 'font-face-styles' %}
+{% enddoc %}
+
+{% style %}
+  {{ settings.type_heading_font | font_face: font_display: 'swap' }}
+  {{ settings.type_primary_font | font_face: font_display: 'swap' }}
+{% endstyle %}

@@ -17,11 +17,12 @@
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
+    "heading_font": "Heading font",
     "layout": "Layout",
     "main": "Main",
     "page": "Page",
     "password": "Password",
-    "primary": "Primary",
+    "primary": "Body font",
     "product": "Product",
     "row": "Row",
     "search": "Search",
@@ -71,6 +72,59 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
+    }
+  },
+  "sections": {
+    "header": {
+      "name": "Header",
+      "settings": {
+        "enable_sticky": "Enable sticky header",
+        "vertical_padding": "Vertical padding",
+        "announcement": "Announcement bar",
+        "show_announcement": "Show announcement",
+        "announcement_text": "Announcement text",
+        "announcement_background": "Announcement background",
+        "announcement_text_color": "Announcement text color",
+        "announcement_border": "Announcement border",
+        "header": "Main header",
+        "header_background": "Header background",
+        "bottom_border": "Bottom border color",
+        "tagline": "Brand tagline"
+      }
     },
+    "footer": {
+      "name": "Footer",
+      "settings": {
+        "brand_name": "Brand name",
+        "tagline": "Tagline",
+        "description": "Brand description",
+        "contact_email": "Contact email",
+        "background_color": "Footer background",
+        "foreground_color": "Footer text color",
+        "accent_color": "Footer accent color"
+      }
+    },
+    "hero_slider": {
+      "name": "Vedanta hero slider",
+      "settings": {
+        "accessible_label": "Slider accessible label",
+        "slide_one": "First slide",
+        "slide_two": "Second slide",
+        "eyebrow": "Eyebrow",
+        "heading": "Heading",
+        "copy": "Description",
+        "button_label": "Button label",
+        "button_link": "Button link",
+        "slider": "Slider behavior",
+        "autoplay": "Automatically rotate slides",
+        "autoplay_interval": "Time between slides",
+        "desktop_height": "Desktop height",
+        "colors": "Colors",
+        "primary_color": "Ruby red",
+        "accent_color": "Antique gold",
+        "text_color": "Text color",
+        "button_text_color": "Button text color"
+      }
+    }
   }
 }

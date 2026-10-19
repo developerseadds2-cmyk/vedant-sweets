@@ -1,0 +1,250 @@
+<vedanta-hero-slider
+  class="vs-hero-slider full-width"
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
+  role="region"
+  aria-roledescription="{{ 'sections.hero_slider.carousel' | t }}"
+  aria-label="{{ section.settings.accessible_label | escape }}"
+  style="--vs-hero-height: {{ section.settings.desktop_height }}px"
+>
+  <div class="vs-hero-slider__slides" aria-live="polite">
+    <article
+      class="vs-hero-slide is-active"
+      data-hero-slide
+      role="group"
+      aria-roledescription="{{ 'sections.hero_slider.slide' | t }}"
+      aria-label="{{ 'sections.hero_slider.slide_position' | t: current: 1, total: 2 }}"
+    >
+      <div
+        class="vs-hero-slide__background"
+        style="--vs-hero-background: url('{{ 'Festive Indian Sweets in Gold and Maroon.png' | asset_url }}')"
+        role="img"
+        aria-label="{{ 'sections.hero_slider.image_one_alt' | t }}"
+      ></div>
+      <div class="vs-hero-slide__content">
+        {% if section.settings.eyebrow_one != blank %}
+          <p class="vs-hero-slide__eyebrow">{{ section.settings.eyebrow_one | escape }}</p>
+        {% endif %}
+        {% if section.settings.heading_one != blank %}
+          <h1 class="vs-hero-slide__heading">{{ section.settings.heading_one | escape | newline_to_br }}</h1>
+        {% endif %}
+        {% if section.settings.copy_one != blank %}
+          <p class="vs-hero-slide__copy">{{ section.settings.copy_one | escape }}</p>
+        {% endif %}
+        {% if section.settings.button_label_one != blank and section.settings.button_link_one != blank %}
+          <a class="vs-hero-slide__button" href="{{ section.settings.button_link_one | escape }}">
+            {{ section.settings.button_label_one | escape }}
+            <span aria-hidden="true">→</span>
+          </a>
+        {% endif %}
+      </div>
+    </article>
+
+    <article
+      class="vs-hero-slide"
+      data-hero-slide
+      role="group"
+      aria-roledescription="{{ 'sections.hero_slider.slide' | t }}"
+      aria-label="{{ 'sections.hero_slider.slide_position' | t: current: 2, total: 2 }}"
+      aria-hidden="true"
+      hidden
+    >
+      <div
+        class="vs-hero-slide__background"
+        style="--vs-hero-background: url('{{ 'Festive Indian Mithai Celebration.png' | asset_url }}')"
+        role="img"
+        aria-label="{{ 'sections.hero_slider.image_two_alt' | t }}"
+      ></div>
+      <div class="vs-hero-slide__content">
+        {% if section.settings.eyebrow_two != blank %}
+          <p class="vs-hero-slide__eyebrow">{{ section.settings.eyebrow_two | escape }}</p>
+        {% endif %}
+        {% if section.settings.heading_two != blank %}
+          <h2 class="vs-hero-slide__heading">{{ section.settings.heading_two | escape | newline_to_br }}</h2>
+        {% endif %}
+        {% if section.settings.copy_two != blank %}
+          <p class="vs-hero-slide__copy">{{ section.settings.copy_two | escape }}</p>
+        {% endif %}
+        {% if section.settings.button_label_two != blank and section.settings.button_link_two != blank %}
+          <a class="vs-hero-slide__button" href="{{ section.settings.button_link_two | escape }}">
+            {{ section.settings.button_label_two | escape }}
+            <span aria-hidden="true">→</span>
+          </a>
+        {% endif %}
+      </div>
+    </article>
+  </div>
+
+  <div class="vs-hero-slider__controls">
+    <button
+      class="vs-hero-slider__arrow"
+      type="button"
+      data-hero-action="previous"
+      aria-label="{{ 'sections.hero_slider.previous' | t }}"
+    >
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+        <path d="m15 18-6-6 6-6"></path>
+      </svg>
+    </button>
+
+    <div class="vs-hero-slider__pagination" role="group" aria-label="{{ 'sections.hero_slider.choose_slide' | t }}">
+      <button
+        class="vs-hero-slider__dot is-active"
+        type="button"
+        data-hero-index="0"
+        aria-label="{{ 'sections.hero_slider.slide_position' | t: current: 1, total: 2 }}"
+        aria-current="true"
+      ></button>
+      <button
+        class="vs-hero-slider__dot"
+        type="button"
+        data-hero-index="1"
+        aria-label="{{ 'sections.hero_slider.slide_position' | t: current: 2, total: 2 }}"
+      ></button>
+    </div>
+
+    {% if section.settings.autoplay %}
+      <button
+        class="vs-hero-slider__toggle"
+        type="button"
+        data-hero-action="toggle"
+        data-play-label="{{ 'sections.hero_slider.play' | t | escape }}"
+        data-pause-label="{{ 'sections.hero_slider.pause' | t | escape }}"
+        aria-label="{{ 'sections.hero_slider.pause' | t }}"
+      >
+        <svg class="vs-hero-slider__pause-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="M9 5v14M15 5v14"></path>
+        </svg>
+        <svg class="vs-hero-slider__play-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m8 5 12 7-12 7V5Z"></path>
+        </svg>
+      </button>
+    {% endif %}
+
+    <button
+      class="vs-hero-slider__arrow"
+      type="button"
+      data-hero-action="next"
+      aria-label="{{ 'sections.hero_slider.next' | t }}"
+    >
+      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+        <path d="m9 18 6-6-6-6"></path>
+      </svg>
+    </button>
+  </div>
+</vedanta-hero-slider>
+
+{% schema %}
+{
+  "name": "t:sections.hero_slider.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "accessible_label",
+      "label": "t:sections.hero_slider.settings.accessible_label",
+      "default": "Vedanta Sweets featured collection"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hero_slider.settings.slide_one"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_one",
+      "label": "t:sections.hero_slider.settings.eyebrow",
+      "default": "Vedanta Sweets"
+    },
+    {
+      "type": "text",
+      "id": "heading_one",
+      "label": "t:sections.hero_slider.settings.heading",
+      "default": "A Tradition\nof Pure Goodness"
+    },
+    {
+      "type": "textarea",
+      "id": "copy_one",
+      "label": "t:sections.hero_slider.settings.copy",
+      "default": "Bringing you the finest Indian sweets, crafted with traditional recipes, premium ingredients and a lot of love."
+    },
+    {
+      "type": "text",
+      "id": "button_label_one",
+      "label": "t:sections.hero_slider.settings.button_label",
+      "default": "Explore our sweets"
+    },
+    {
+      "type": "url",
+      "id": "button_link_one",
+      "label": "t:sections.hero_slider.settings.button_link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hero_slider.settings.slide_two"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_two",
+      "label": "t:sections.hero_slider.settings.eyebrow",
+      "default": "A gift of tradition"
+    },
+    {
+      "type": "text",
+      "id": "heading_two",
+      "label": "t:sections.hero_slider.settings.heading",
+      "default": "Make every\ncelebration sweeter"
+    },
+    {
+      "type": "textarea",
+      "id": "copy_two",
+      "label": "t:sections.hero_slider.settings.copy",
+      "default": "Share beautifully crafted mithai, made to bring people together for life's most treasured moments."
+    },
+    {
+      "type": "text",
+      "id": "button_label_two",
+      "label": "t:sections.hero_slider.settings.button_label",
+      "default": "Discover our collection"
+    },
+    {
+      "type": "url",
+      "id": "button_link_two",
+      "label": "t:sections.hero_slider.settings.button_link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.hero_slider.settings.slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.hero_slider.settings.autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "label": "t:sections.hero_slider.settings.autoplay_interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "t:sections.hero_slider.settings.desktop_height",
+      "min": 480,
+      "max": 680,
+      "step": 10,
+      "unit": "px",
+      "default": 680
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.hero_slider.name"
+    }
+  ]
+}
+{% endschema %}

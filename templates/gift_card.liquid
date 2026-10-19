@@ -3,29 +3,24 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
-    {% # Inlined CSS Variables %}
-    {% render 'css-variables' %}
-
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+    {{ 'main.css' | asset_url | stylesheet_tag }}
+    {% render 'font-face-styles' %}
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
-    {% style %}
-      main {
-        text-align: center;
-      }
-      main img {
-        display: unset;
-      }
-    {% endstyle %}
-
     {{ content_for_header }}
   </head>
 
-  <body>
-    <main>
+  <body
+    style="
+      --vs-font-heading: {{ settings.type_heading_font.family | json }}, {{ settings.type_heading_font.fallback_families }};
+      --vs-font-body: {{ settings.type_primary_font.family | json }}, {{ settings.type_primary_font.fallback_families }};
+    "
+  >
+    <main class="gift-card-main">
       <div class="shopify-section">
         <h1>{{ gift_card.balance | money }}</h1>
 

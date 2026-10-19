@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_name": "Vedanta Sweets",
+    "theme_version": "1.0.0",
+    "theme_author": "Vedanta Sweets",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -16,10 +16,16 @@
       },
       {
         "type": "font_picker",
-        "id": "type_primary_font",
-        "default": "work_sans_n4",
-        "label": "t:general.primary"
+        "id": "type_heading_font",
+        "default": "playfair_display_n6",
+        "label": "t:general.heading_font"
       },
+      {
+        "type": "font_picker",
+        "id": "type_primary_font",
+        "default": "poppins_n4",
+        "label": "t:general.primary"
+      }
     ]
   },
   {
@@ -59,13 +65,13 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#F8F1E5",
         "label": "t:labels.background"
       },
       {
         "type": "color",
         "id": "foreground_color",
-        "default": "#333333",
+        "default": "#352B27",
         "label": "t:labels.foreground"
       },
       {
