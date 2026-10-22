@@ -191,6 +191,31 @@ window.matchMedia('(min-width: 1051px)').addEventListener('change', (event) => {
   document.querySelectorAll('.vs-header-root[data-menu-open="true"]').forEach(closeMobileMenu);
 });
 
+// Preloader
+const preloader = document.getElementById('vs-preloader');
+if (preloader) {
+  const hidePreloader = () => {
+    preloader.classList.add('is-loaded');
+    setTimeout(() => preloader.remove(), 600);
+  };
+  if (document.readyState === 'complete') {
+    hidePreloader();
+  } else {
+    window.addEventListener('load', hidePreloader);
+    setTimeout(hidePreloader, 2500); // Fail-safe fallback
+  }
+}
+
+// Sticky header blur on scroll
+const headerRoot = document.querySelector('.vs-header-root[data-sticky="true"]');
+if (headerRoot) {
+  const onScroll = () => {
+    headerRoot.classList.toggle('is-scrolled', window.scrollY > 20);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
 function initCategoryCarousels(root = document) {
   root.querySelectorAll('[data-category-carousel]').forEach((carousel) => {
     if (carousel.dataset.carouselReady === 'true') return;
@@ -344,5 +369,38 @@ function initCategoryCarousels(root = document) {
 
 initCategoryCarousels();
 document.addEventListener('shopify:section:load', (event) => initCategoryCarousels(event.target));
+
+// Collection Filter Sidebar Toggle (Mobile / Tablet)
+function initCollectionFilters() {
+  document.addEventListener('click', (event) => {
+    const toggleBtn = event.target.closest('[data-toggle-filters]');
+    const backdrop = event.target.closest('[data-filter-backdrop]');
+    const sidebar = document.getElementById('vs-filter-sidebar');
+    const backdropEl = document.querySelector('[data-filter-backdrop]');
+
+    if (toggleBtn && sidebar) {
+      const isOpen = sidebar.classList.toggle('is-open');
+      if (backdropEl) backdropEl.classList.toggle('is-active', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+      return;
+    }
+
+    if (backdrop && sidebar) {
+      sidebar.classList.remove('is-open');
+      backdrop.classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Interactive filter tag pills
+  document.addEventListener('click', (event) => {
+    const tag = event.target.closest('.vs-filter-tag');
+    if (tag) {
+      tag.classList.toggle('is-active');
+    }
+  });
+}
+
+initCollectionFilters();
 
 

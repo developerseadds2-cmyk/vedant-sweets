@@ -1,8 +1,15 @@
 <footer class="vs-footer full-width">
   <div class="vs-footer-main">
     <div class="vs-footer-brand">
-      <a class="vs-footer-wordmark" href="{{ routes.root_url }}">
-        {{ section.settings.brand_name | default: shop.name | escape }}
+      <a class="vs-footer-logo-link" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+        <img
+          class="vs-footer-logo"
+          src="{{ 'logo.png' | asset_url }}"
+          alt="{{ shop.name | escape }}"
+          width="554"
+          height="450"
+          loading="lazy"
+        >
       </a>
       {% if section.settings.tagline != blank %}
         <p class="vs-footer-tagline">{{ section.settings.tagline | escape }}</p>
@@ -46,7 +53,10 @@
       <a href="{{ routes.root_url }}">{{ shop.name | escape }}</a>.
       {{ 'sections.footer.rights_reserved' | t }}
     </p>
-    <div class="vs-footer-powered">{{ powered_by_link }}</div>
+    <div class="vs-footer-powered">
+      Designed and developed by
+      <a href="https://punjabit.co/" target="_blank" rel="noopener noreferrer">punjabit</a>
+    </div>
   </div>
 </footer>
 

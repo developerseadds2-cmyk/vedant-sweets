@@ -1,64 +1,174 @@
-{% comment %}
-  This section is used in the list-collections template to render a list of
-  collections.
+<section class="vs-collections-page full-width" id="vs-collections-{{ section.id }}">
+  {% # Breadcrumb Banner %}
+  <header class="vs-collection-banner">
+    <div class="vs-collection-banner__overlay"></div>
+    <div class="vs-collection-banner__inner">
+      <nav class="vs-breadcrumbs" aria-label="Breadcrumb">
+        <ol class="vs-breadcrumbs__list">
+          <li class="vs-breadcrumbs__item">
+            <a class="vs-breadcrumbs__link" href="{{ routes.root_url }}">Home</a>
+          </li>
+          <li class="vs-breadcrumbs__separator" aria-hidden="true">›</li>
+          <li class="vs-breadcrumbs__item vs-breadcrumbs__item--current" aria-current="page">
+            <span>{{ section.settings.heading | default: 'All Categories' }}</span>
+          </li>
+        </ol>
+      </nav>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
-
-<h1>{{ 'collections.title' | t }}</h1>
-
-<div
-  class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
->
-  {% for collection in collections %}
-    <a class="collection-card" href="{{ collection.url }}">
-      {% if collection.featured_image %}
-        {% render 'image',
-          class: 'collection-card__image',
-          image: collection.featured_image,
-          width: 600,
-          height: 600,
-          crop: 'center'
-        %}
-      {% endif %}
-
-      <div class="collection-card__content">
-        <p>{{ collection.title }}</p>
-
-        {% if collection.description %}
-          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
-        {% endif %}
+      <div class="vs-collection-banner__content">
+        <h1 class="vs-collection-banner__title">{{ section.settings.heading | default: 'All Categories' }}</h1>
+        <div class="vs-collection-banner__description">
+          <p>{{ section.settings.subheading | default: 'Explore our complete range of authentic, handcrafted Indian sweets made with pure ghee and premium ingredients.' }}</p>
+        </div>
       </div>
-    </a>
-  {% endfor %}
-</div>
+    </div>
+  </header>
+
+  <div class="vs-collections-container">
+    <div class="vs-collections-toolbar">
+      <p class="vs-collections-count">
+        {% assign real_count = 0 %}
+        {% for coll in collections %}
+          {% unless coll.handle == 'frontpage' %}
+            {% assign real_count = real_count | plus: 1 %}
+          {% endunless %}
+        {% endfor %}
+
+        Showing <strong>{% if real_count > 0 %}{{ real_count }}{% else %}6{% endif %}</strong> categories
+      </p>
+    </div>
+
+    {% # Categories Grid with Indian Gate Arch Cards %}
+    <div class="vs-collections-grid" style="--vs-collections-columns: {{ section.settings.columns_desktop }}">
+      {% if real_count > 0 %}
+        {% for collection in collections %}
+          {% if collection.handle == 'frontpage' and collections.size > 1 %}
+            {% continue %}
+          {% endif %}
+          {% assign card_image = collection.featured_image | default: collection.image %}
+
+          <article class="vs-category-card" role="listitem">
+            <a class="vs-category-card__link" href="{{ collection.url }}">
+              <div class="vs-category-card__media">
+                {% if card_image != blank %}
+                  <img
+                    class="vs-category-card__image"
+                    src="{{ card_image | image_url: width: 600 }}"
+                    alt="{{ collection.title | escape }}"
+                    width="280"
+                    height="196"
+                    loading="lazy"
+                  >
+                {% else %}
+                  {{ 'collection-1' | placeholder_svg_tag: 'vs-category-card__placeholder' }}
+                {% endif %}
+              </div>
+
+              <div class="vs-category-card__body">
+                <div class="vs-category-card__arch" aria-hidden="true">
+                  <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                    <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                    <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                    <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                    <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                    <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                  </svg>
+                </div>
+
+                <div class="vs-category-card__icon" aria-hidden="true">
+                  {% render 'category-icon', icon: 'mithai' %}
+                </div>
+
+                <h3 class="vs-category-card__title">{{ collection.title | escape }}</h3>
+
+                <p class="vs-category-card__subtitle">
+                  {% if collection.description != blank %}
+                    {{ collection.description | strip_html | truncatewords: 8 }}
+                  {% else %}
+                    Handcrafted traditional sweets
+                  {% endif %}
+                </p>
+
+                <span class="vs-category-card__arrow" aria-hidden="true">→</span>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      {% else %}
+        {% # Default Rich Categories Fallback matching homepage Shop by Category %}
+        {% assign default_cats = "Mithai,Laddoo,Peda,Kaju Sweets,Dry Fruits,Gift Packs" | split: "," %}
+        {% assign default_imgs = "collection-mithai.jpg,collection-laddoo.jpg,collection-peda.jpg,collection-kaju.jpg,collection-dry-fruits.jpg,collection-gift-packs.jpg" | split: "," %}
+        {% assign default_icons = "mithai,laddoo,peda,kaju,dry-fruits,gift-packs" | split: "," %}
+        {% assign default_subs = "Classic Indian sweets for every occasion,Timeless favorites in every bite,Rich creamy and traditional,Premium cashew delights,Wholesome & nutritious treats,Perfect for every special moment" | split: "," %}
+        {% assign default_links = "/collections/mithai,/collections/laddoo,/collections/peda,/collections/kaju,/collections/dry-fruits,/collections/gift-packs" | split: "," %}
+
+        {% for cat in default_cats %}
+          {% assign idx = forloop.index0 %}
+          <article class="vs-category-card" role="listitem">
+            <a class="vs-category-card__link" href="{{ default_links[idx] }}">
+              <div class="vs-category-card__media">
+                <img
+                  class="vs-category-card__image"
+                  src="{{ default_imgs[idx] | asset_url }}"
+                  alt="{{ cat }}"
+                  width="280"
+                  height="196"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="vs-category-card__body">
+                <div class="vs-category-card__arch" aria-hidden="true">
+                  <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                    <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                    <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                    <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                    <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                    <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                  </svg>
+                </div>
+
+                <div class="vs-category-card__icon" aria-hidden="true">
+                  {% render 'category-icon', icon: default_icons[idx] %}
+                </div>
+
+                <h3 class="vs-category-card__title">{{ cat }}</h3>
+                <p class="vs-category-card__subtitle">{{ default_subs[idx] }}</p>
+                <span class="vs-category-card__arrow" aria-hidden="true">→</span>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
 
 {% schema %}
 {
-  "name": "t:general.collections_grid",
+  "name": "Collections List Page",
   "settings": [
     {
-      "type": "select",
-      "id": "grid_item_width",
-      "label": "t:labels.grid_item_width",
-      "options": [
-        { "value": "collections--compact", "label": "t:options.size.small" },
-        { "value": "collections--full", "label": "t:options.size.large" }
-      ],
-      "default": "collections--full"
+      "type": "text",
+      "id": "heading",
+      "label": "Page Heading",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Explore our complete range of authentic, handcrafted Indian sweets made with pure ghee and premium ingredients."
     },
     {
       "type": "range",
-      "id": "grid_gap",
-      "label": "t:labels.grid_gap",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "default": 10
+      "id": "columns_desktop",
+      "label": "Categories per row (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
     }
-  ],
-  "presets": [{ "name": "t:general.collections_grid" }]
+  ]
 }
 {% endschema %}

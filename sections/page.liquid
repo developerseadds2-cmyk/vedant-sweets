@@ -1,17 +1,190 @@
-{% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
+<section class="vs-page-section full-width" id="vs-page-{{ section.id }}">
+  {% # Breadcrumb Banner %}
+  <header class="vs-collection-banner">
+    <div class="vs-collection-banner__overlay"></div>
+    <div class="vs-collection-banner__inner">
+      <nav class="vs-breadcrumbs" aria-label="Breadcrumb">
+        <ol class="vs-breadcrumbs__list">
+          <li class="vs-breadcrumbs__item">
+            <a class="vs-breadcrumbs__link" href="{{ routes.root_url }}">Home</a>
+          </li>
+          <li class="vs-breadcrumbs__separator" aria-hidden="true">›</li>
+          <li class="vs-breadcrumbs__item vs-breadcrumbs__item--current" aria-current="page">
+            <span>{{ page.title | escape }}</span>
+          </li>
+        </ol>
+      </nav>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/page
-{% endcomment %}
+      <div class="vs-collection-banner__content">
+        <h1 class="vs-collection-banner__title">{{ page.title | escape }}</h1>
+        <div class="vs-collection-banner__description">
+          <p>
+            {% if page.handle == 'contact' %}
+              We’d love to hear from you! Reach out for custom mithai orders, festive gift boxes, or bulk inquiries.
+            {% else %}
+              Handcrafted with pure devotion, delivering authentic Indian sweetness to your special occasions.
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<h1>{{ page.title }}</h1>
+  <div class="vs-page-container">
+    {% if page.handle == 'contact' %}
+      <div class="vs-contact-layout">
+        {% # Contact Info Cards %}
+        <div class="vs-contact-info">
+          <div class="vs-contact-card">
+            <div class="vs-contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div class="vs-contact-card__text">
+              <h3>Phone & WhatsApp</h3>
+              <p>+91 98765 43210</p>
+              <span>Mon-Sun: 9:00 AM - 9:00 PM</span>
+            </div>
+          </div>
 
-{{ page.content }}
+          <div class="vs-contact-card">
+            <div class="vs-contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div class="vs-contact-card__text">
+              <h3>Email Us</h3>
+              <p>care@vedantsweets.com</p>
+              <span>We reply within 24 hours</span>
+            </div>
+          </div>
+
+          <div class="vs-contact-card">
+            <div class="vs-contact-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div class="vs-contact-card__text">
+              <h3>Artisanal Sweet Kitchen</h3>
+              <p>Vedant Pure Sweets & Confectionery</p>
+              <span>Pure Cow Ghee & Desi Mithai Emporium</span>
+            </div>
+          </div>
+        </div>
+
+        {% # Interactive Contact Form %}
+        <div class="vs-contact-form-wrapper">
+          <h2 class="vs-contact-form-title">Send Us a Message</h2>
+          <p class="vs-contact-form-subtitle">Have a question or request? Fill out the form below and our team will get in touch shortly.</p>
+
+          {% form 'contact', class: 'vs-contact-form' %}
+            {% if form.posted_successfully? %}
+              <div class="vs-form-status vs-form-status--success" role="alert">
+                <span aria-hidden="true">✓</span>
+                <span>Thank you! Your message has been sent successfully. We will get back to you soon.</span>
+              </div>
+            {% endif %}
+
+            {% if form.errors %}
+              <div class="vs-form-status vs-form-status--error" role="alert">
+                <span>{{ form.errors | default_errors }}</span>
+              </div>
+            {% endif %}
+
+            <div class="vs-form-row">
+              <div class="vs-form-group">
+                <label for="ContactFormName" class="vs-form-label">Full Name <span>*</span></label>
+                <input
+                  type="text"
+                  id="ContactFormName"
+                  name="contact[name]"
+                  class="vs-form-input"
+                  placeholder="e.g. Rajesh Sharma"
+                  required
+                >
+              </div>
+
+              <div class="vs-form-group">
+                <label for="ContactFormPhone" class="vs-form-label">Phone Number <span>*</span></label>
+                <input
+                  type="tel"
+                  id="ContactFormPhone"
+                  name="contact[phone]"
+                  class="vs-form-input"
+                  placeholder="e.g. +91 98765 43210"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="vs-form-group">
+              <label for="ContactFormEmail" class="vs-form-label">Email Address <span>*</span></label>
+              <input
+                type="email"
+                id="ContactFormEmail"
+                name="contact[email]"
+                class="vs-form-input"
+                placeholder="name@example.com"
+                required
+              >
+            </div>
+
+            <div class="vs-form-group">
+              <label for="ContactFormMessage" class="vs-form-label">Message / Order Inquiry <span>*</span></label>
+              <textarea
+                id="ContactFormMessage"
+                name="contact[body]"
+                class="vs-form-textarea"
+                rows="5"
+                placeholder="Tell us what sweets or celebration packs you're looking for..."
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="vs-form-submit-btn">
+              <span>Send Message</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          {% endform %}
+        </div>
+      </div>
+
+      {% # Google Maps Section %}
+      <div class="vs-contact-map-section">
+        <div class="vs-contact-map-header">
+          <h2 class="vs-contact-map-title">Visit Our Sweet Store</h2>
+          <p class="vs-contact-map-subtitle">Drop by our sweet kitchen to experience freshly prepared mithai and festive gift hampers.</p>
+        </div>
+        <div class="vs-contact-map-frame">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115408.08799778216!2d75.7681!3d26.9124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c57e281%3A0xce1c63a0cf22e09!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+            width="100%"
+            height="420"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Vedant Sweets Location Map"
+          ></iframe>
+        </div>
+      </div>
+    {% else %}
+      {% # Standard page content wrapper %}
+      <div class="vs-page-content rte">
+        {{ page.content }}
+      </div>
+    {% endif %}
+  </div>
+</section>
 
 {% schema %}
 {
-  "name": "t:general.page",
+  "name": "Page Content",
   "settings": []
 }
 {% endschema %}

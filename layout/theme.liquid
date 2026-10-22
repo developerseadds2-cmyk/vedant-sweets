@@ -19,6 +19,18 @@
       --vs-font-body: {{ settings.type_primary_font.family | json }}, {{ settings.type_primary_font.fallback_families }};
     "
   >
+    <div id="vs-preloader" class="vs-preloader" aria-hidden="true">
+      <div class="vs-preloader__inner">
+        <div class="vs-preloader__ring"></div>
+        <img
+          class="vs-preloader__logo"
+          src="{{ 'logo.png' | asset_url }}"
+          alt="{{ shop.name | escape }}"
+          width="554"
+          height="450"
+        >
+      </div>
+    </div>
     {% sections 'header-group' %}
 
     {{ content_for_layout }}

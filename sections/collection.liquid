@@ -1,40 +1,445 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+<section class="vs-collection-page full-width" id="vs-collection-{{ section.id }}">
+  {% # Breadcrumb Banner %}
+  <header
+    class="vs-collection-banner"
+    style="
+      {% if collection.image != blank %}
+        --vs-banner-bg: url('{{ collection.image | image_url: width: 2000 }}');
+      {% elsif collection.featured_image != blank %}
+        --vs-banner-bg: url('{{ collection.featured_image | image_url: width: 2000 }}');
+      {% else %}
+        --vs-banner-bg: none;
+      {% endif %}
+    "
+  >
+    <div class="vs-collection-banner__overlay"></div>
+    <div class="vs-collection-banner__inner">
+      <nav class="vs-breadcrumbs" aria-label="Breadcrumb">
+        <ol class="vs-breadcrumbs__list">
+          <li class="vs-breadcrumbs__item">
+            <a class="vs-breadcrumbs__link" href="{{ routes.root_url }}">Home</a>
+          </li>
+          <li class="vs-breadcrumbs__separator" aria-hidden="true">›</li>
+          <li class="vs-breadcrumbs__item">
+            <a class="vs-breadcrumbs__link" href="{{ routes.collections_url }}">Collections</a>
+          </li>
+          <li class="vs-breadcrumbs__separator" aria-hidden="true">›</li>
+          <li class="vs-breadcrumbs__item vs-breadcrumbs__item--current" aria-current="page">
+            <span>{{ collection.title | escape }}</span>
+          </li>
+        </ol>
+      </nav>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
-
-<h1>{{ collection.title }}</h1>
-
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
+      <div class="vs-collection-banner__content">
+        <h1 class="vs-collection-banner__title">{{ collection.title | escape }}</h1>
+        {% if collection.description != blank %}
+          <div class="vs-collection-banner__description">
+            <p>{{ collection.description | strip_html }}</p>
+          </div>
         {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
       </div>
-    {% endfor %}
+    </div>
+  </header>
 
-    {{ paginate | default_pagination }}
+  {% # Products Catalog Area with Sidebar Filters %}
+  <div class="vs-collection-container">
+    {% paginate collection.products by section.settings.products_per_page %}
+      <div class="vs-collection-main-layout">
+        {% # Filter Sidebar %}
+        <div class="vs-filter-backdrop" data-filter-backdrop></div>
+        <aside class="vs-filter-sidebar" id="vs-filter-sidebar">
+          <div class="vs-filter-sidebar__header">
+            <h3 class="vs-filter-sidebar__title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vs-filter-icon">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+              </svg>
+              <span>Filters</span>
+            </h3>
+            <div class="vs-filter-header-actions">
+              <a href="{{ collection.url }}" class="vs-filter-clear-all">Reset</a>
+              <button type="button" class="vs-filter-close-btn" data-toggle-filters aria-label="Close filters">×</button>
+            </div>
+          </div>
+
+          {% # Filter Group 1: Sweet Categories %}
+          <div class="vs-filter-group">
+            <h4 class="vs-filter-group__title">Categories</h4>
+            <ul class="vs-filter-list">
+              {% assign filter_cats = "All Sweets,Mithai,Laddoo,Peda,Kaju Sweets,Dry Fruits,Gift Packs" | split: "," %}
+              {% assign filter_slugs = "/collections/all,/collections/mithai,/collections/laddoo,/collections/peda,/collections/kaju,/collections/dry-fruits,/collections/gift-packs" | split: "," %}
+              {% for cat in filter_cats %}
+                {% assign idx = forloop.index0 %}
+                <li class="vs-filter-item">
+                  <a
+                    href="{{ filter_slugs[idx] }}"
+                    class="vs-filter-link{% if collection.handle == 'all' and cat == 'All Sweets' %} is-active{% elsif collection.title == cat %} is-active{% endif %}"
+                  >
+                    <span class="vs-filter-checkbox"></span>
+                    <span class="vs-filter-name">{{ cat }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          {% # Filter Group 2: Availability %}
+          <div class="vs-filter-group">
+            <h4 class="vs-filter-group__title">Availability</h4>
+            <ul class="vs-filter-list">
+              <li class="vs-filter-item">
+                <label class="vs-filter-label">
+                  <input type="checkbox" checked class="vs-filter-input">
+                  <span class="vs-filter-checkbox"></span>
+                  <span class="vs-filter-name">In Stock</span>
+                </label>
+              </li>
+              <li class="vs-filter-item">
+                <label class="vs-filter-label">
+                  <input type="checkbox" class="vs-filter-input">
+                  <span class="vs-filter-checkbox"></span>
+                  <span class="vs-filter-name">Fresh Daily Batch</span>
+                </label>
+              </li>
+            </ul>
+          </div>
+
+          {% # Filter Group 3: Price Range %}
+          <div class="vs-filter-group">
+            <h4 class="vs-filter-group__title">Price Range</h4>
+            <ul class="vs-filter-list">
+              <li class="vs-filter-item">
+                <label class="vs-filter-label">
+                  <input type="radio" name="price_range" checked class="vs-filter-input">
+                  <span class="vs-filter-radio"></span>
+                  <span class="vs-filter-name">All Prices</span>
+                </label>
+              </li>
+              <li class="vs-filter-item">
+                <label class="vs-filter-label">
+                  <input type="radio" name="price_range" class="vs-filter-input">
+                  <span class="vs-filter-radio"></span>
+                  <span class="vs-filter-name">Under ₹350</span>
+                </label>
+              </li>
+              <li class="vs-filter-item">
+                <label class="vs-filter-label">
+                  <input type="radio" name="price_range" class="vs-filter-input">
+                  <span class="vs-filter-radio"></span>
+                  <span class="vs-filter-name">₹350 - ₹500</span>
+                </label>
+              </li>
+              <li class="vs-filter-item">
+                <label class="vs-filter-label">
+                  <input type="radio" name="price_range" class="vs-filter-input">
+                  <span class="vs-filter-radio"></span>
+                  <span class="vs-filter-name">Above ₹500</span>
+                </label>
+              </li>
+            </ul>
+          </div>
+
+          {% # Filter Group 4: Sweet Speciality / Occasion %}
+          <div class="vs-filter-group">
+            <h4 class="vs-filter-group__title">Speciality</h4>
+            <div class="vs-filter-tags">
+              <span class="vs-filter-tag is-active">Pure Cow Ghee</span>
+              <span class="vs-filter-tag">Festive Box</span>
+              <span class="vs-filter-tag">No Added Color</span>
+              <span class="vs-filter-tag">Kesar Flavoured</span>
+              <span class="vs-filter-tag">Dry Fruit Rich</span>
+            </div>
+          </div>
+        </aside>
+
+        {% # Main Catalog Content %}
+        <div class="vs-catalog-content">
+          <div class="vs-collection-toolbar">
+            <div class="vs-toolbar-left">
+              <button type="button" class="vs-mobile-filter-btn" data-toggle-filters>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                <span>Filter Products</span>
+              </button>
+              <p class="vs-collection-count">
+                Showing
+                <strong>
+                  {%- if collection.products_count > 0 -%}
+                    {{ collection.products_count }}
+                  {%- else -%}
+                    6
+                  {%- endif -%}
+                </strong>
+                products
+              </p>
+            </div>
+
+            <div class="vs-collection-sort">
+              <label for="vs-sort-by" class="vs-sort-label">Sort by:</label>
+              <select id="vs-sort-by" class="vs-sort-select" data-collection-sort>
+                <option value="featured">Featured</option>
+                <option value="best-selling" selected>Best Selling</option>
+                <option value="price-ascending">Price: Low to High</option>
+                <option value="price-descending">Price: High to Low</option>
+                <option value="created-descending">Newest Arrivals</option>
+              </select>
+            </div>
+          </div>
+
+          {% if collection.products.size > 0 %}
+            <div
+              class="vs-product-grid"
+              style="--vs-grid-columns: {{ section.settings.columns_desktop }}"
+              role="list"
+            >
+          {% for product in collection.products %}
+            <article class="vs-product-card" role="listitem">
+              <a class="vs-product-card__link" href="{{ product.url }}">
+                <div class="vs-product-card__media">
+                  {% if product.featured_image != blank %}
+                    <img
+                      class="vs-product-card__image"
+                      src="{{ product.featured_image | image_url: width: 600, height: 420, crop: 'center' }}"
+                      alt="{{ product.title | escape }}"
+                      width="280"
+                      height="196"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'vs-product-card__placeholder' }}
+                  {% endif %}
+
+                  {% unless product.available %}
+                    <span class="vs-product-badge vs-product-badge--soldout">Sold out</span>
+                  {% else %}
+                    {% if product.compare_at_price > product.price %}
+                      <span class="vs-product-badge vs-product-badge--sale">Sale</span>
+                    {% endif %}
+                  {% endunless %}
+                </div>
+
+                <div class="vs-product-card__body">
+                  <div class="vs-product-card__arch" aria-hidden="true">
+                    <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                      <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                      <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                      <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                      <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                      <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                    </svg>
+                  </div>
+
+                  <div class="vs-product-card__icon" aria-hidden="true">
+                    {% render 'category-icon', icon: 'peda' %}
+                  </div>
+
+                  <h3 class="vs-product-card__title">{{ product.title | escape }}</h3>
+
+                  <div class="vs-product-card__price">
+                    <span class="vs-price-regular">{{ product.price | money }}</span>
+                    {% if product.compare_at_price > product.price %}
+                      <span class="vs-price-compare">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </a>
+
+              <div class="vs-product-card__action">
+                {% if product.available %}
+                  <form method="post" action="/cart/add" class="vs-product-card__form">
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    <button type="submit" class="vs-product-card__btn">
+                      <span>Add to Cart</span>
+                    </button>
+                  </form>
+                {% else %}
+                  <button type="button" class="vs-product-card__btn vs-product-card__btn--disabled" disabled>
+                    <span>Sold Out</span>
+                  </button>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <div class="vs-pagination">
+            {{ paginate | default_pagination }}
+          </div>
+        {% endif %}
+      {% else %}
+        {% # Helpful Empty State with Placeholder Products for Instant Previews %}
+        <div class="vs-collection-empty">
+          {% if section.settings.show_sample_preview %}
+            <div class="vs-sample-preview" style="margin-top: 0;">
+              <div class="vs-product-grid" style="--vs-grid-columns: {{ section.settings.columns_desktop }}">
+                {% if collection.handle == 'all' %}
+                  {% assign catalog_products = "Special Mathura Peda,Kesar Malai Peda,Royal Kaju Katli,Motichoor Laddoo,Royal Dry Fruit Mix,Festive Mithai Box" | split: "," %}
+                  {% assign catalog_imgs = "product-mathura-peda.jpg,product-kesar-peda.jpg,product-dharwad-peda.jpg,collection-laddoo.jpg,collection-dry-fruits.jpg,product-shahi-peda.jpg" | split: "," %}
+                  {% assign catalog_prices = "₹360.00,₹420.00,₹480.00,₹320.00,₹590.00,₹750.00" | split: "," %}
+                  {% assign catalog_compares = "₹420.00,₹480.00,₹540.00,₹380.00,₹680.00,₹850.00" | split: "," %}
+                  {% assign catalog_badges = "Pure Desi Ghee,Best Seller,Silver Varq,Traditional,Premium Dry Fruits,Festive Special" | split: "," %}
+                  {% assign catalog_icons = "peda,peda,kaju,laddoo,dry-fruits,mithai" | split: "," %}
+
+                  {% for prod_name in catalog_products %}
+                    {% assign idx = forloop.index0 %}
+                    <article class="vs-product-card" role="listitem">
+                      <div class="vs-product-card__media">
+                        <img
+                          class="vs-product-card__image"
+                          src="{{ catalog_imgs[idx] | asset_url }}"
+                          alt="{{ prod_name }}"
+                          width="280"
+                          height="196"
+                          loading="lazy"
+                        >
+                        <span class="vs-product-badge vs-product-badge--fresh">{{ catalog_badges[idx] }}</span>
+                      </div>
+
+                      <div class="vs-product-card__body">
+                        <div class="vs-product-card__arch" aria-hidden="true">
+                          <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                            <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                            <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                            <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                            <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                            <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                          </svg>
+                        </div>
+
+                        <div class="vs-product-card__icon" aria-hidden="true">
+                          {% render 'category-icon', icon: catalog_icons[idx] %}
+                        </div>
+
+                        <h3 class="vs-product-card__title">{{ prod_name }}</h3>
+
+                        <div class="vs-product-card__price">
+                          <span class="vs-price-regular">{{ catalog_prices[idx] }}</span>
+                          <span class="vs-price-compare">{{ catalog_compares[idx] }}</span>
+                        </div>
+                      </div>
+
+                      <div class="vs-product-card__action">
+                        <button type="button" class="vs-product-card__btn">
+                          <span>Add to Cart</span>
+                        </button>
+                      </div>
+                    </article>
+                  {% endfor %}
+                {% else %}
+                  {% assign peda_products = "Special Mathura Peda,Kesar Malai Peda,Dharwad Brown Peda,Shahi Mawa Peda" | split: "," %}
+                  {% assign peda_imgs = "product-mathura-peda.jpg,product-kesar-peda.jpg,product-dharwad-peda.jpg,product-shahi-peda.jpg" | split: "," %}
+                  {% assign peda_prices = "₹360.00,₹420.00,₹390.00,₹450.00" | split: "," %}
+                  {% assign peda_compares = "₹420.00,₹480.00,₹450.00,₹520.00" | split: "," %}
+                  {% assign peda_badges = "Pure Desi Ghee,Best Seller,Traditional,Rich Kesar" | split: "," %}
+                  
+                  {% for prod_name in peda_products %}
+                    {% assign idx = forloop.index0 %}
+                    <article class="vs-product-card" role="listitem">
+                      <div class="vs-product-card__media">
+                        <img
+                          class="vs-product-card__image"
+                          src="{{ peda_imgs[idx] | asset_url }}"
+                          alt="{{ prod_name }}"
+                          width="280"
+                          height="196"
+                          loading="lazy"
+                        >
+                        <span class="vs-product-badge vs-product-badge--fresh">{{ peda_badges[idx] }}</span>
+                      </div>
+
+                      <div class="vs-product-card__body">
+                        <div class="vs-product-card__arch" aria-hidden="true">
+                          <svg viewBox="0 0 240 32" preserveAspectRatio="none">
+                            <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
+                            <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
+                            <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
+                            <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
+                            <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                          </svg>
+                        </div>
+
+                        <div class="vs-product-card__icon" aria-hidden="true">
+                          {% render 'category-icon', icon: 'peda' %}
+                        </div>
+
+                        <h3 class="vs-product-card__title">{{ prod_name }}</h3>
+
+                        <div class="vs-product-card__price">
+                          <span class="vs-price-regular">{{ peda_prices[idx] }}</span>
+                          <span class="vs-price-compare">{{ peda_compares[idx] }}</span>
+                        </div>
+                      </div>
+
+                      <div class="vs-product-card__action">
+                        <button type="button" class="vs-product-card__btn">
+                          <span>Add to Cart</span>
+                        </button>
+                      </div>
+                    </article>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          {% else %}
+            <div class="vs-empty-message">
+              <div class="vs-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                  <path d="M3 6h18"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+              </div>
+              <h2 class="vs-empty-title">Products Coming Soon to {{ collection.title | escape }}</h2>
+              <p class="vs-empty-desc">
+                We are preparing fresh artisanal batches for this collection. Add products in your Shopify Admin and assign them to <strong>{{ collection.title | escape }}</strong>.
+              </p>
+              <a class="vs-empty-btn" href="{{ routes.collections_url }}">
+                <span>Explore All Collections</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
   {% endpaginate %}
-</div>
+</section>
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Collection Page",
+  "settings": [
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Products per row (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable sorting dropdown",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sample_preview",
+      "label": "Show sample preview when collection is empty",
+      "default": true
+    }
+  ]
 }
 {% endschema %}
