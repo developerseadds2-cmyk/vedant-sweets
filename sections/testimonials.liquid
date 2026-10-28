@@ -1,0 +1,233 @@
+{% comment %}
+  Vedant Pure - Google Reviews Testimonial Slider Section
+  - Infinite auto-scrolling card slider
+  - Google multi-color badge logo
+  - 5-Star golden rating
+  - Clean card design with user avatar, name, date, and review text
+{% endcomment %}
+
+<section
+  class="vs-testimonials-section full-width"
+  id="vs-testimonials-{{ section.id }}"
+  data-testimonials-slider
+  data-autoplay="{{ section.settings.autoplay | default: true }}"
+  data-interval="{{ section.settings.autoplay_interval | default: 4 | times: 1000 }}"
+>
+  <div class="vs-testimonials-container">
+    <header class="vs-testimonials-header">
+      <div class="vs-testimonials-title-wrap">
+        <span class="vs-testimonials-gold-line" aria-hidden="true"></span>
+        <h2 class="vs-testimonials-title">{{ section.settings.heading | default: 'Clients Testimonial' }}</h2>
+        <span class="vs-testimonials-gold-line" aria-hidden="true"></span>
+      </div>
+      {% if section.settings.subtitle != blank %}
+        <p class="vs-testimonials-subtitle">{{ section.settings.subtitle | escape }}</p>
+      {% endif %}
+    </header>
+
+    <div class="vs-testimonials-carousel-wrap">
+      <button
+        type="button"
+        class="vs-testimonial-arrow vs-testimonial-arrow--prev"
+        data-testi-prev
+        aria-label="Previous testimonials"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="vs-testimonials-track" data-testi-track role="list">
+        {% for block in section.blocks %}
+          <article class="vs-testimonial-card" role="listitem" {{ block.shopify_attributes }}>
+            <div class="vs-testimonial-card__header">
+              <div class="vs-testimonial-card__user">
+                {% if block.settings.avatar != blank %}
+                  <img
+                    src="{{ block.settings.avatar | image_url: width: 96, height: 96, crop: 'center' }}"
+                    alt="{{ block.settings.author_name | escape }}"
+                    class="vs-testimonial-card__avatar"
+                    width="48"
+                    height="48"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="vs-testimonial-card__avatar-placeholder" style="background-color: {{ block.settings.placeholder_color | default: '#9c27b0' }};">
+                    {{ block.settings.author_name | slice: 0, 1 | upcase }}
+                  </div>
+                {% endif %}
+
+                <div class="vs-testimonial-card__user-info">
+                  <h3 class="vs-testimonial-card__author">{{ block.settings.author_name | escape }}</h3>
+                  {% if block.settings.date != blank %}
+                    <span class="vs-testimonial-card__date">{{ block.settings.date | escape }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% # Google Logo Multi-color SVG %}
+              <div class="vs-testimonial-card__google-logo" title="Google Verified Review">
+                <svg viewBox="0 0 24 24" width="22" height="22">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+              </div>
+            </div>
+
+            {% # 5-star golden rating %}
+            <div class="vs-testimonial-card__stars" aria-label="5 out of 5 stars">
+              {% for i in (1..5) %}
+                <svg viewBox="0 0 24 24" class="vs-star-icon" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              {% endfor %}
+            </div>
+
+            {% # Review Text Content %}
+            <div class="vs-testimonial-card__body">
+              <p>{{ block.settings.content | escape }}</p>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <button
+        type="button"
+        class="vs-testimonial-arrow vs-testimonial-arrow--next"
+        data-testi-next
+        aria-label="Next testimonials"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Google Reviews Slider",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Clients Testimonial"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Read what our cherished customers say about our authentic taste and festive treats."
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable Auto-scroll",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "label": "Auto-scroll Speed (seconds)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author Name",
+          "default": "Customer Name"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Date (e.g. 11/07/2026)",
+          "default": "11/07/2026"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Author Avatar (Optional)"
+        },
+        {
+          "type": "color",
+          "id": "placeholder_color",
+          "label": "Avatar Placeholder Color",
+          "default": "#9c27b0"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Review Text",
+          "default": "Awesome Taste. Quality and Richness with less sweet makes it awesome taste. Natural sweet. Highly recommended for all age groups."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Google Reviews Slider",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "subash srinivasan",
+            "date": "11/07/2026",
+            "placeholder_color": "#e91e63",
+            "content": "Awesome Taste. Quality and Richness with less sweet makes it awesome taste. Natural sweet. Highly recommended for all age groups."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Sumit Kapadia",
+            "date": "07/07/2026",
+            "placeholder_color": "#9c27b0",
+            "content": "First order. Amazing taste. Very good packaging considering rainy season. Low delivery charges to Mumbai and delivered on time. Surely will order many more. I hope they maintain adequate quantity for coming festival season."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Ronald Shalo",
+            "date": "05/07/2026",
+            "placeholder_color": "#00796b",
+            "content": "Ordered and received Dry Fruits Punch and Rose Laddoo today. Tastes amazing. Fantastic quality. Usually not a feedback person. But your product made me. Keep it up. You earned one more regular customer from now."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Pooja Sharma",
+            "date": "24/06/2026",
+            "placeholder_color": "#d81b60",
+            "content": "Kaju Katli and Motichoor Laddoos were mouth-watering! Perfectly sweetened with 100% pure cow ghee aroma. Our family loved every bit."
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "author_name": "Vikram Verma",
+            "date": "18/06/2026",
+            "placeholder_color": "#1976d2",
+            "content": "Prompt delivery and luxurious gift box packaging. We ordered sweets for our corporate Diwali party and everyone asked where we got them from!"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

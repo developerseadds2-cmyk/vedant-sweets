@@ -78,12 +78,88 @@
         "heading": "Shop by Category",
         "subtitle": "Explore our wide range of traditional and premium sweets, crafted for every celebration and special moment.",
         "button_label": "View All Collections",
-        "button_url": "/collections"
+        "button_url": "/collections",
+        "collection_source": "all"
+      }
+    },
+    "bestsellers": {
+      "type": "bestsellers",
+      "settings": {
+        "eyebrow": "CUSTOMER FAVORITES",
+        "heading": "Vedant Sweets Top Pick",
+        "subtitle": "Handcrafted with pure cow ghee and rich dry fruits, loved across every home and celebration.",
+        "products_to_show": 8,
+        "show_view_all": true
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "author_name": "subash srinivasan",
+            "date": "11/07/2026",
+            "placeholder_color": "#e91e63",
+            "content": "Awesome Taste. Quality and Richness with less sweet makes it awesome taste. Natural sweet. Highly recommended for all age groups."
+          }
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "author_name": "Sumit Kapadia",
+            "date": "07/07/2026",
+            "placeholder_color": "#9c27b0",
+            "content": "First order. Amazing taste. Very good packaging considering rainy season. Low delivery charges to Mumbai and delivered on time. Surely will order many more. I hope they maintain adequate quantity for coming festival season."
+          }
+        },
+        "review_3": {
+          "type": "review",
+          "settings": {
+            "author_name": "Ronald Shalo",
+            "date": "05/07/2026",
+            "placeholder_color": "#00796b",
+            "content": "Ordered and received Dry Fruits Punch and Rose Laddoo today. Tastes amazing. Fantastic quality. Usually not a feedback person. But your product made me. Keep it up. You earned one more regular customer from now."
+          }
+        },
+        "review_4": {
+          "type": "review",
+          "settings": {
+            "author_name": "Pooja Sharma",
+            "date": "24/06/2026",
+            "placeholder_color": "#d81b60",
+            "content": "Kaju Katli and Motichoor Laddoos were mouth-watering! Perfectly sweetened with 100% pure cow ghee aroma. Our family loved every bit."
+          }
+        },
+        "review_5": {
+          "type": "review",
+          "settings": {
+            "author_name": "Vikram Verma",
+            "date": "18/06/2026",
+            "placeholder_color": "#1976d2",
+            "content": "Prompt delivery and luxurious gift box packaging. We ordered sweets for our corporate Diwali party and everyone asked where we got them from!"
+          }
+        }
+      },
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3",
+        "review_4",
+        "review_5"
+      ],
+      "settings": {
+        "heading": "Clients Testimonial",
+        "subtitle": "Real stories and feedback from customers across India who cherish our pure artisanal sweets.",
+        "autoplay": true,
+        "autoplay_interval": 4
       }
     }
   },
   "order": [
     "main",
-    "shop_by_category"
+    "shop_by_category",
+    "bestsellers",
+    "testimonials"
   ]
 }

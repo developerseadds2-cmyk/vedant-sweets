@@ -3,9 +3,78 @@
   data-sticky="{{ section.settings.enable_sticky }}"
   style="--vs-header-padding-y: {{ section.settings.padding_y }}px"
 >
-  {% if section.settings.show_announcement and section.settings.announcement_text != blank %}
-    <div class="vs-announcement">
-      <p class="vs-announcement-text">{{ section.settings.announcement_text | escape }}</p>
+  {% if section.settings.show_announcement %}
+    <div class="vs-announcement" aria-label="Announcements">
+      <div class="vs-announcement__marquee-wrapper">
+        <div class="vs-announcement__marquee" aria-hidden="false">
+          {% assign items_1 = "Free Delivery on orders above ₹999,Handcrafted with Love,Festive Specials – Shop Now,100% Pure Cow Ghee,Traditional Recipes" | split: "," %}
+          {% for item in items_1 %}
+            <div class="vs-announcement__item">
+              {% case forloop.index %}
+                {% when 1 %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13"></rect>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                  </svg>
+                {% when 2 %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                  </svg>
+                {% when 3 %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                    <rect x="2" y="7" width="20" height="5"></rect>
+                    <line x1="12" y1="22" x2="12" y2="7"></line>
+                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                  </svg>
+                {% else %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+              {% endcase %}
+              <span class="vs-announcement__text">{{ item }}</span>
+            </div>
+          {% endfor %}
+        </div>
+        {% # Duplicate track for infinite seamless loop %}
+        <div class="vs-announcement__marquee" aria-hidden="true">
+          {% for item in items_1 %}
+            <div class="vs-announcement__item">
+              {% case forloop.index %}
+                {% when 1 %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13"></rect>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                  </svg>
+                {% when 2 %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                  </svg>
+                {% when 3 %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                    <rect x="2" y="7" width="20" height="5"></rect>
+                    <line x1="12" y1="22" x2="12" y2="7"></line>
+                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                  </svg>
+                {% else %}
+                  <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+              {% endcase %}
+              <span class="vs-announcement__text">{{ item }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
   {% endif %}
 
@@ -22,7 +91,97 @@
         >
       </a>
 
-      {% if section.settings.menu != blank and section.settings.menu.links != blank %}
+      {% # Center Search Bar %}
+      <div class="vs-header-search">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar">
+          <svg class="vs-search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="Search for kaju katli, laddoo, gift boxes..."
+            class="vs-search-bar__input"
+            aria-label="Search sweets"
+            autocomplete="off"
+          >
+          <button type="button" class="vs-search-bar__voice-btn" data-voice-search aria-label="Voice Search" title="Search by Voice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
+          </button>
+          <button type="submit" class="vs-search-bar__submit-btn" aria-label="Submit search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16" y2="16"></line>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      {% # Right Actions: Delivery Location, Account, Wishlist, Cart %}
+      <div class="vs-actions vs-actions--rich">
+        {% # Deliver To Location Selector %}
+        <button
+          type="button"
+          class="vs-action-item vs-action-item--location"
+          data-open-location-modal
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-label="Select delivery location"
+        >
+          <div class="vs-action-item__icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8Z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <span class="vs-action-item__label vs-location-label-stack">
+            <span class="vs-location-value" data-current-delivery-address>Select Location</span>
+          </span>
+          <svg class="vs-action-item__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <a class="vs-action-item vs-action-item--wishlist" href="/pages/wishlist" aria-label="Wishlist">
+          <div class="vs-action-item__icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+            </svg>
+            <span class="vs-badge-count" data-wishlist-count>0</span>
+          </div>
+        </a>
+
+        <a class="vs-action-item vs-action-item--cart" href="{{ routes.cart_url }}" aria-label="{{ 'sections.header.cart' | t: count: cart.item_count }}">
+          <div class="vs-action-item__icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+              <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+            </svg>
+            <span class="vs-badge-count">{{ cart.item_count | default: 0 }}</span>
+          </div>
+        </a>
+
+        {% # User Account / Sign In Trigger %}
+        <button
+          type="button"
+          class="vs-action-item vs-action-item--account"
+          data-open-login-drawer
+          aria-label="{% if customer %}Account{% else %}Sign In{% endif %}"
+          aria-haspopup="dialog"
+        >
+          <div class="vs-action-item__icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+        </button>
+
+        {% # Mobile Menu Hamburger button %}
         <button
           class="vs-menu-toggle"
           type="button"
@@ -33,119 +192,582 @@
           data-open-label="{{ 'sections.header.menu_open' | t | escape }}"
           data-close-label="{{ 'sections.header.menu_close' | t | escape }}"
         >
-          <svg class="vs-menu-toggle__open-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
-            <path d="M3 6h18M3 12h18M3 18h18"></path>
-          </svg>
+          <span class="vs-menu-toggle__bars vs-menu-toggle__open-icon" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
           <svg class="vs-menu-toggle__close-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
             <path d="m6 6 12 12M18 6 6 18"></path>
           </svg>
         </button>
-
-        <nav
-          class="vs-navigation"
-          id="vs-navigation-{{ section.id }}"
-          aria-label="{{ 'sections.header.navigation' | t }}"
-        >
-          <div class="vs-navigation__header">
-            <a class="vs-navigation__brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
-              <img
-                class="vs-navigation__logo"
-                src="{{ 'logo.png' | asset_url }}"
-                alt="{{ shop.name | escape }}"
-                width="554"
-                height="450"
-                loading="lazy"
-              >
-            </a>
-            <button
-              class="vs-navigation__close"
-              type="button"
-              data-mobile-menu-close
-              aria-label="{{ 'sections.header.menu_close' | t }}"
-            >
-              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
-                <path d="m6 6 12 12M18 6 6 18"></path>
-              </svg>
-            </button>
-          </div>
-          <ul class="vs-nav-menu">
-            {% for link in section.settings.menu.links %}
-              <li class="vs-nav-item">
-                <a
-                  class="vs-nav-anchor{% if link.current %} is-current{% endif %}"
-                  href="{{ link.url }}"
-                  {% if link.current %}
-                    aria-current="page"
-                  {% endif %}
-                >
-                  {{ link.title | escape }}
-                  {% if link.links != blank %}
-                    <span class="vs-nav-chevron" aria-hidden="true">⌄</span>
-                  {% endif %}
-                </a>
-                {% if link.links != blank %}
-                  <ul class="vs-submenu">
-                    {% for childlink in link.links %}
-                      <li>
-                        <a
-                          class="vs-sublink"
-                          href="{{ childlink.url }}"
-                          {% if childlink.current %}
-                            aria-current="page"
-                          {% endif %}
-                        >
-                          {{ childlink.title | escape }}
-                        </a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </nav>
-        <button
-          class="vs-mobile-nav-backdrop"
-          type="button"
-          data-mobile-menu-close
-          aria-label="{{ 'sections.header.menu_close' | t }}"
-          tabindex="-1"
-        ></button>
-      {% endif %}
-
-      <div class="vs-actions">
-        <a class="vs-icon-btn" href="{{ routes.search_url }}" aria-label="{{ 'sections.header.search' | t }}">
-          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
-            <circle cx="10.8" cy="10.8" r="7.2"></circle>
-            <path d="m16.2 16.2 5 5"></path>
-          </svg>
-        </a>
-
-        {% if shop.customer_accounts_enabled %}
-          <a class="vs-icon-btn" href="{{ routes.account_url }}" aria-label="{{ 'sections.header.account' | t }}">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
-              <circle cx="12" cy="8" r="4"></circle>
-              <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
-            </svg>
-          </a>
-        {% endif %}
-
-        <a
-          class="vs-icon-btn vs-cart-btn"
-          href="{{ routes.cart_url }}"
-          aria-label="{{ 'sections.header.cart' | t: count: cart.item_count }}"
-        >
-          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
-            <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
-            <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
-          </svg>
-          {% if cart.item_count > 0 %}
-            <span class="vs-cart-count" aria-hidden="true">{{ cart.item_count }}</span>
-          {% endif %}
-        </a>
       </div>
     </div>
   </div>
+
+  {% # Secondary Nav Row with Category Links & Separators %}
+  <div class="vs-header-categories-bar">
+    <div class="vs-header-categories-inner">
+      <nav class="vs-navigation" id="vs-navigation-{{ section.id }}" aria-label="{{ 'sections.header.navigation' | t }}">
+        <div class="vs-navigation__header">
+          <a class="vs-navigation__brand" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+            <img
+              class="vs-navigation__logo"
+              src="{{ 'logo.png' | asset_url }}"
+              alt="{{ shop.name | escape }}"
+              width="554"
+              height="450"
+              loading="lazy"
+            >
+          </a>
+          <button
+            class="vs-navigation__close"
+            type="button"
+            data-mobile-menu-close
+            aria-label="{{ 'sections.header.menu_close' | t }}"
+          >
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+              <path d="m6 6 12 12M18 6 6 18"></path>
+            </svg>
+          </button>
+        </div>
+
+        <ul class="vs-nav-menu vs-nav-menu--categories">
+          {% # 1. Home %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor{% if request.path == routes.root_url %} is-current{% endif %}" href="{{ routes.root_url }}">
+              Home
+            </a>
+          </li>
+
+          {% # 2. All Categories / Shop All (Mega Menu) %}
+          <li class="vs-nav-item vs-nav-item--has-megamenu">
+            <a class="vs-nav-anchor" href="{{ routes.all_products_collection_url }}" data-mobile-mega-toggle>
+              All Categories
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            {% render 'mega-menu' %}
+          </li>
+
+          {% # 3. Sweets & Mithai %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/all">
+              Sweets & Mithai
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/all">Kaju Katli & Kaju Sweets</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Barfi & Peda</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Ladoo Collection</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Gulab Jamun & Rasgulla</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Milk Cake & Kalakand</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Bengali & Malai Sweets</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Traditional Punjabi Sweets</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Sugar-Free Sweets</a></li>
+            </ul>
+          </li>
+
+          {% # 4. Namkeen & Bhujia %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/all">
+              Namkeen & Bhujia
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/all">Aloo & Bikaneri Bhujia</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Plain & Masala Bhujia</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Ratlami & Nylon Sev</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Khatta Meetha Mixture</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Navratan & Punjabi Mixture</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Chana Dal & Moong Dal</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Roasted & Masala Chana</a></li>
+            </ul>
+          </li>
+
+          {% # 5. Snacks & Savouries %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/all">
+              Snacks & Savouries
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/all">Samosa & Kachori</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Mathri & Namak Para</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Shakkar Para & Papdi</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Fafda & Gathiya</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Chakli & Murukku</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Khakhra & Farsan</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Tea-Time Snacks</a></li>
+            </ul>
+          </li>
+
+          {% # 6. Dry Fruits & Nuts %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/dry-fruits">
+              Dry Fruits & Nuts
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Almonds & Cashews</a></li>
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Pistachios & Walnuts</a></li>
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Raisins & Dates</a></li>
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Figs (Anjeer) & Apricots</a></li>
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Fox Nuts (Makhana)</a></li>
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Roasted & Salted Nuts</a></li>
+              <li><a class="vs-sublink" href="/collections/dry-fruits">Premium Dry Fruit Mix</a></li>
+            </ul>
+          </li>
+
+          {% # 7. Gift Boxes & Hampers %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/gift-packs">
+              Gift Boxes & Hampers
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/gift-packs">Sweets Gift Boxes</a></li>
+              <li><a class="vs-sublink" href="/collections/gift-packs">Assorted Mithai Boxes</a></li>
+              <li><a class="vs-sublink" href="/collections/gift-packs">Dry Fruit Gift Boxes</a></li>
+              <li><a class="vs-sublink" href="/collections/gift-packs">Namkeen Gift Packs</a></li>
+              <li><a class="vs-sublink" href="/collections/gift-packs">Festive Gift Hampers</a></li>
+              <li><a class="vs-sublink" href="/collections/gift-packs">Wedding & Corporate Boxes</a></li>
+            </ul>
+          </li>
+
+          {% # 8. Bakery & Papad %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/all">
+              Bakery & Papad
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/all">Cookies & Biscuits</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Rusk, Toast & Khari</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Punjabi & Masala Papad</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Moong & Urad Papad</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Chips, Fryums & Wafers</a></li>
+            </ul>
+          </li>
+
+          {% # 9. Traditional Specials & Pantry %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor" href="/collections/all">
+              Traditional & Pantry
+              <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <ul class="vs-submenu">
+              <li><a class="vs-sublink" href="/collections/all">Gajak & Rewri</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Til, Gond & Pinni Ladoo</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Pure Desi Cow Ghee</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Honey & Jaggery (Gur)</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Pickles & Chutneys</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Mouth Fresheners & Saunf</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Beverages & Thandai Mix</a></li>
+              <li><a class="vs-sublink" href="/collections/all">Chocolates & Confectionery</a></li>
+            </ul>
+          </li>
+
+          {% # 10. Contact %}
+          <li class="vs-nav-item">
+            <a class="vs-nav-anchor{% if request.path contains '/contact' %} is-current{% endif %}" href="{{ routes.root_url }}pages/contact">
+              Contact
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <button
+        class="vs-mobile-nav-backdrop"
+        type="button"
+        data-mobile-menu-close
+        aria-label="{{ 'sections.header.menu_close' | t }}"
+        tabindex="-1"
+      ></button>
+    </div>
+  </div>
+
+  {% # Delivery Location Modal Popup %}
+  <div class="vs-modal vs-location-modal" id="vs-location-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="vs-loc-title">
+    <div class="vs-modal__backdrop" data-close-location-modal></div>
+    <div class="vs-modal__card">
+      <div class="vs-modal__header">
+        <div class="vs-modal__title-group">
+          <svg class="vs-modal__pin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8Z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <div>
+            <h3 class="vs-modal__title" id="vs-loc-title">Choose Delivery Location</h3>
+            <p class="vs-modal__subtitle">Select your address to check delivery availability & fees</p>
+          </div>
+        </div>
+        <button type="button" class="vs-modal__close-btn" data-close-location-modal aria-label="Close dialog">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="vs-modal__body">
+        {% # Quick Use Current Location Button %}
+        <button type="button" class="vs-location-gps-btn" data-detect-location>
+          <div class="vs-location-gps-btn__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="3"></circle>
+              <line x1="12" y1="2" x2="12" y2="5"></line>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+              <line x1="2" y1="12" x2="5" y2="12"></line>
+              <line x1="19" y1="12" x2="22" y2="12"></line>
+            </svg>
+          </div>
+          <div class="vs-location-gps-btn__text">
+            <strong>Use my current location</strong>
+            <span>Detect via GPS automatically</span>
+          </div>
+          <svg class="vs-location-gps-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+
+        <div class="vs-modal-divider">
+          <span>OR ENTER ADDRESS MANUALLY</span>
+        </div>
+
+        {% # Manual Address Entry Form %}
+        <form class="vs-location-form" data-location-form onsubmit="return false;">
+          <div class="vs-form-field">
+            <label for="vs-delivery-pincode">Pincode / Postal Code <span class="vs-required">*</span></label>
+            <div class="vs-input-wrapper">
+              <input
+                type="text"
+                id="vs-delivery-pincode"
+                name="pincode"
+                placeholder="e.g. 110001, 400001"
+                maxlength="10"
+                class="vs-form-input"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="vs-form-field">
+            <label for="vs-delivery-address">Flat, House no., Area, Street <span class="vs-required">*</span></label>
+            <textarea
+              id="vs-delivery-address"
+              name="address"
+              rows="2"
+              placeholder="Enter your street or apartment address..."
+              class="vs-form-input vs-form-textarea"
+              required
+            ></textarea>
+          </div>
+
+          <div class="vs-form-row">
+            <div class="vs-form-field">
+              <label for="vs-delivery-city">City <span class="vs-required">*</span></label>
+              <input
+                type="text"
+                id="vs-delivery-city"
+                name="city"
+                placeholder="e.g. Mumbai, Delhi"
+                class="vs-form-input"
+                required
+              >
+            </div>
+            <div class="vs-form-field">
+              <label for="vs-delivery-state">State / Province</label>
+              <input
+                type="text"
+                id="vs-delivery-state"
+                name="state"
+                placeholder="e.g. Maharashtra"
+                class="vs-form-input"
+              >
+            </div>
+          </div>
+
+          <div class="vs-location-feedback" data-location-feedback style="display: none;"></div>
+
+          <button type="submit" class="vs-location-submit-btn" data-save-location>
+            Save Delivery Address
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% # Login Slide-in Side Drawer %}
+  <div class="vs-drawer vs-login-drawer" id="vs-login-drawer" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="vs-login-drawer-title">
+    <div class="vs-drawer__backdrop" data-close-login-drawer></div>
+    <div class="vs-drawer__panel">
+      <div class="vs-drawer__header">
+        <h2 class="vs-drawer__title" id="vs-login-drawer-title">Login</h2>
+        <button type="button" class="vs-drawer__close-btn" data-close-login-drawer aria-label="Close login drawer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="vs-drawer__body">
+        <div id="vs-login-view" class="vs-drawer-auth-view is-active">
+          {% form 'customer_login', class: 'vs-drawer-form', id: 'vs-drawer-login-form' %}
+            {{ form.errors | default_errors }}
+
+            <div class="vs-drawer-field">
+              <label for="vs-drawer-email" class="vs-drawer-label">
+                Email Address <span class="vs-required-star">*</span>
+              </label>
+              <input
+                type="email"
+                name="customer[email]"
+                id="vs-drawer-email"
+                class="vs-drawer-input"
+                placeholder="Email Address"
+                autocomplete="email"
+                autocorrect="off"
+                autocapitalize="off"
+                required
+              >
+            </div>
+
+            <div class="vs-drawer-field">
+              <label for="vs-drawer-password" class="vs-drawer-label">
+                Password <span class="vs-required-star">*</span>
+              </label>
+              <input
+                type="password"
+                name="customer[password]"
+                id="vs-drawer-password"
+                class="vs-drawer-input"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+              >
+            </div>
+
+            <button type="submit" class="vs-drawer-submit-btn">
+              Log In
+            </button>
+
+            <div class="vs-drawer-links">
+              <a href="#recover" class="vs-drawer-link" data-switch-auth="recover">
+                Forgot your password?
+              </a>
+            </div>
+
+            <button type="button" class="vs-drawer-secondary-btn" data-switch-auth="register">
+              Create Account
+            </button>
+          {% endform %}
+        </div>
+
+        <div id="vs-recover-view" class="vs-drawer-auth-view" style="display: none;">
+          <h3 class="vs-drawer-subheading">Reset your password</h3>
+          <p class="vs-drawer-info">We will send you an email to reset your password.</p>
+
+          {% form 'recover_customer_password', class: 'vs-drawer-form' %}
+            {{ form.errors | default_errors }}
+
+            <div class="vs-drawer-field">
+              <label for="vs-recover-email" class="vs-drawer-label">
+                Email Address <span class="vs-required-star">*</span>
+              </label>
+              <input
+                type="email"
+                name="email"
+                id="vs-recover-email"
+                class="vs-drawer-input"
+                placeholder="Email Address"
+                autocomplete="email"
+                required
+              >
+            </div>
+
+            <button type="submit" class="vs-drawer-submit-btn">
+              Submit
+            </button>
+
+            <button type="button" class="vs-drawer-link-btn" data-switch-auth="login">
+              Cancel & Return to Login
+            </button>
+          {% endform %}
+        </div>
+
+        <div id="vs-register-view" class="vs-drawer-auth-view" style="display: none;">
+          <h3 class="vs-drawer-subheading">Create Account</h3>
+          <p class="vs-drawer-info">Join Vedant Pure for seamless orders, rewards & updates.</p>
+
+          {% form 'create_customer', class: 'vs-drawer-form' %}
+            {{ form.errors | default_errors }}
+
+            <div class="vs-drawer-field">
+              <label for="vs-reg-first-name" class="vs-drawer-label">First Name</label>
+              <input
+                type="text"
+                name="customer[first_name]"
+                id="vs-reg-first-name"
+                class="vs-drawer-input"
+                placeholder="First Name"
+              >
+            </div>
+
+            <div class="vs-drawer-field">
+              <label for="vs-reg-last-name" class="vs-drawer-label">Last Name</label>
+              <input
+                type="text"
+                name="customer[last_name]"
+                id="vs-reg-last-name"
+                class="vs-drawer-input"
+                placeholder="Last Name"
+              >
+            </div>
+
+            <div class="vs-drawer-field">
+              <label for="vs-reg-email" class="vs-drawer-label">
+                Email Address <span class="vs-required-star">*</span>
+              </label>
+              <input
+                type="email"
+                name="customer[email]"
+                id="vs-reg-email"
+                class="vs-drawer-input"
+                placeholder="Email Address"
+                required
+              >
+            </div>
+
+            <div class="vs-drawer-field">
+              <label for="vs-reg-password" class="vs-drawer-label">
+                Password <span class="vs-required-star">*</span>
+              </label>
+              <input
+                type="password"
+                name="customer[password]"
+                id="vs-reg-password"
+                class="vs-drawer-input"
+                placeholder="Password"
+                required
+              >
+            </div>
+
+            <button type="submit" class="vs-drawer-submit-btn">
+              Create My Account
+            </button>
+
+            <button type="button" class="vs-drawer-link-btn" data-switch-auth="login">
+              Already have an account? Log In
+            </button>
+          {% endform %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% # Mobile Search Overlay Drawer / Popup %}
+  <div class="vs-modal vs-mobile-search-modal" id="vs-mobile-search-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="vs-modal__backdrop" data-close-mobile-search></div>
+    <div class="vs-mobile-search-card">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar vs-search-bar--mobile-modal">
+        <svg class="vs-search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="Search sweets, mithai, gift boxes..."
+          class="vs-search-bar__input"
+          aria-label="Search sweets"
+          autocomplete="off"
+          id="vs-mobile-search-input"
+        >
+        <button type="button" class="vs-search-bar__voice-btn" data-voice-search aria-label="Voice Search" title="Search by Voice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="22"></line>
+          </svg>
+        </button>
+        <button type="submit" class="vs-search-bar__submit-btn" aria-label="Submit search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16" y2="16"></line>
+          </svg>
+        </button>
+      </form>
+      <button type="button" class="vs-mobile-search-close" data-close-mobile-search aria-label="Close search">
+        Close
+      </button>
+    </div>
+  </div>
+
+  {% # Mobile Bottom Navigation Bar (App / Modern E-Commerce style) %}
+  <nav class="vs-bottom-bar" aria-label="Mobile Bottom Navigation">
+    <a href="{{ routes.root_url }}" class="vs-bottom-bar__item is-active">
+      <div class="vs-bottom-bar__icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="vs-bottom-bar__label">Home</span>
+    </a>
+
+    <button type="button" class="vs-bottom-bar__item" data-open-location-modal aria-label="Delivery Location">
+      <div class="vs-bottom-bar__icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8Z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+      </div>
+      <span class="vs-bottom-bar__label vs-bottom-bar__location-label" data-current-delivery-address>Location</span>
+    </button>
+
+    <a href="/collections/all" class="vs-bottom-bar__item">
+      <div class="vs-bottom-bar__icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+      </div>
+      <span class="vs-bottom-bar__label">Shop</span>
+    </a>
+
+    <button type="button" class="vs-bottom-bar__item" data-open-mobile-search aria-label="Search">
+      <div class="vs-bottom-bar__icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <span class="vs-bottom-bar__label">Search</span>
+    </button>
+
+    <a href="{{ routes.cart_url }}" class="vs-bottom-bar__item" aria-label="Cart">
+      <div class="vs-bottom-bar__icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+          <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+        </svg>
+        <span class="vs-badge-count">{{ cart.item_count | default: 0 }}</span>
+      </div>
+      <span class="vs-bottom-bar__label">Cart</span>
+    </a>
+
+    <button type="button" class="vs-bottom-bar__item" data-open-login-drawer aria-label="Sign In">
+      <div class="vs-bottom-bar__icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path>
+        </svg>
+      </div>
+      <span class="vs-bottom-bar__label">Profile</span>
+    </button>
+  </nav>
 </header>
 
 {% schema %}

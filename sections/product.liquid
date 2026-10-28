@@ -1,50 +1,479 @@
 {% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+  Vedant Pure - Artisanal Product Detail Page (PDP)
+  Fully Dynamic: reads directly from Shopify Admin product data,
+  product tags, inventory, vendor, description, variants, and metafields.
 {% endcomment %}
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign featured_media = current_variant.featured_media | default: product.featured_media %}
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+<article class="vs-pdp-section" data-product-id="{{ product.id }}" data-section-id="{{ section.id }}">
+  <div class="vs-pdp-container">
+    {% # Breadcrumb Navigation %}
+    <nav class="vs-breadcrumbs" aria-label="Breadcrumb">
+      <ol class="vs-breadcrumbs__list">
+        <li class="vs-breadcrumbs__item">
+          <a href="{{ routes.root_url }}" class="vs-breadcrumbs__link">Home</a>
+          <span class="vs-breadcrumbs__sep">/</span>
+        </li>
+        {% if collection %}
+          <li class="vs-breadcrumbs__item">
+            <a href="{{ collection.url }}" class="vs-breadcrumbs__link">{{ collection.title | escape }}</a>
+            <span class="vs-breadcrumbs__sep">/</span>
+          </li>
+        {% elsif product.collections.size > 0 %}
+          <li class="vs-breadcrumbs__item">
+            <a href="{{ product.collections.first.url }}" class="vs-breadcrumbs__link">{{ product.collections.first.title | escape }}</a>
+            <span class="vs-breadcrumbs__sep">/</span>
+          </li>
+        {% else %}
+          <li class="vs-breadcrumbs__item">
+            <a href="/collections/all" class="vs-breadcrumbs__link">Catalog</a>
+            <span class="vs-breadcrumbs__sep">/</span>
+          </li>
+        {% endif %}
+        <li class="vs-breadcrumbs__item vs-breadcrumbs__item--active" aria-current="page">
+          <span>{{ product.title | escape }}</span>
+        </li>
+      </ol>
+    </nav>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
-
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
+    <div class="vs-pdp-layout" id="vs-pdp-main-trigger">
+      {% # Left Column: Gallery with Main Image and Thumbnails %}
+      <div class="vs-pdp-gallery">
+        <div class="vs-pdp-gallery__stage">
+          {% if product.compare_at_price > product.price %}
+            {% assign savings = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
+            <span class="vs-pdp-badge vs-pdp-badge--sale">Save {{ savings }}%</span>
+          {% elsif product.tags contains 'Bestseller' or product.tags contains 'bestseller' %}
+            <span class="vs-pdp-badge vs-pdp-badge--bestseller">Bestseller</span>
+          {% elsif product.tags contains 'New' or product.tags contains 'new' %}
+            <span class="vs-pdp-badge vs-pdp-badge--fresh">New Arrival</span>
           {% endif %}
+
+          <div class="vs-pdp-gallery__main-wrap">
+            {% if featured_media != blank %}
+              <img
+                id="vs-pdp-main-image"
+                src="{{ featured_media | image_url: width: 900 }}"
+                alt="{{ featured_media.alt | default: product.title | escape }}"
+                width="900"
+                height="900"
+                loading="eager"
+                class="vs-pdp-gallery__main-img"
+              >
+            {% else %}
+              {{ 'product-1' | placeholder_svg_tag: 'vs-pdp-gallery__placeholder' }}
+            {% endif %}
+          </div>
+        </div>
+
+        {% if product.images.size > 1 %}
+          <div class="vs-pdp-gallery__thumbnails" role="tablist" aria-label="Product Media">
+            {% for image in product.images %}
+              <button
+                type="button"
+                class="vs-pdp-thumb{% if forloop.first %} is-active{% endif %}"
+                data-thumbnail-src="{{ image | image_url: width: 900 }}"
+                data-thumbnail-index="{{ forloop.index0 }}"
+                aria-label="View product image {{ forloop.index }}"
+                role="tab"
+                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              >
+                <img
+                  src="{{ image | image_url: width: 150, height: 150, crop: 'center' }}"
+                  alt="{{ image.alt | default: product.title | escape }}"
+                  width="70"
+                  height="70"
+                  loading="lazy"
+                >
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% # Right Column: Product Info, Options, and Purchasing Form %}
+      <div class="vs-pdp-details">
+        {% if product.vendor != blank %}
+          <span class="vs-pdp-vendor">{{ product.vendor | escape }}</span>
+        {% endif %}
+
+        <h1 class="vs-pdp-title">{{ product.title | escape }}</h1>
+
+        {% # Dynamic Meta Row: Stock Status and SKU %}
+        <div class="vs-pdp-meta-row">
+          <div class="vs-pdp-stock-status">
+            {% if current_variant.available %}
+              <span class="vs-stock-bullet vs-stock-bullet--in-stock"></span>
+              <span class="vs-stock-text" data-stock-text>
+                {% if current_variant.inventory_management and current_variant.inventory_quantity > 0 %}
+                  In Stock ({{ current_variant.inventory_quantity }} available)
+                {% else %}
+                  In Stock
+                {% endif %}
+              </span>
+            {% else %}
+              <span class="vs-stock-bullet vs-stock-bullet--out-of-stock"></span>
+              <span class="vs-stock-text vs-stock-text--sold" data-stock-text>Sold Out</span>
+            {% endif %}
+          </div>
+
+          {% if current_variant.sku != blank %}
+            <span class="vs-pdp-meta-dot">•</span>
+            <span class="vs-pdp-sku" data-sku-text>SKU: {{ current_variant.sku }}</span>
+          {% endif %}
+        </div>
+
+        {% # Pricing Area %}
+        <div class="vs-pdp-pricing">
+          <span class="vs-pdp-current-price" data-product-price>
+            {{ current_variant.price | money }}
+          </span>
+          {% if current_variant.compare_at_price > current_variant.price %}
+            <s class="vs-pdp-compare-price" data-compare-price>
+              {{ current_variant.compare_at_price | money }}
+            </s>
+          {% endif %}
+          <span class="vs-pdp-tax-note">
+            {% if shop.taxes_included %}
+              Inclusive of all taxes
+            {% else %}
+              Tax calculated at checkout
+            {% endif %}
+          </span>
+        </div>
+
+        {% # Product Highlights: only show if product has tags or description %}
+        {% if product.tags.size > 0 %}
+          <div class="vs-pdp-tags-row">
+            {% for tag in product.tags %}
+              <span class="vs-pdp-tag-chip">{{ tag | escape }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% # Purchase Form %}
+        <div class="vs-pdp-purchase-card">
+          {% form 'product', product, id: 'vs-product-form', class: 'vs-pdp-form' %}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" id="vs-variant-id-input">
+
+            {% # Variant Selectors if multiple variants %}
+            {% unless product.has_only_default_variant %}
+              <div class="vs-pdp-variants">
+                {% for option in product.options_with_values %}
+                  <div class="vs-pdp-option-group">
+                    <div class="vs-pdp-option-header">
+                      <label class="vs-pdp-option-label">{{ option.name }}</label>
+                      <span class="vs-pdp-option-selected" data-option-value-display="{{ forloop.index0 }}">
+                        {{ option.selected_value }}
+                      </span>
+                    </div>
+
+                    <div class="vs-pdp-option-pills" role="radiogroup">
+                      {% for value in option.values %}
+                        <button
+                          type="button"
+                          class="vs-pdp-pill{% if option.selected_value == value %} is-active{% endif %}"
+                          data-option-index="{{ forloop.parentloop.index0 }}"
+                          data-option-value="{{ value | escape }}"
+                        >
+                          {{ value }}
+                        </button>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endfor %}
+
+                {% # Fallback native select for robust form submission %}
+                <select id="vs-native-variant-select" class="vs-pdp-native-select" style="display: none;">
+                  {% for variant in product.variants %}
+                    <option
+                      value="{{ variant.id }}"
+                      data-price="{{ variant.price | money }}"
+                      data-compare-price="{{ variant.compare_at_price | money }}"
+                      data-available="{{ variant.available }}"
+                      data-sku="{{ variant.sku | default: '' }}"
+                      data-inventory="{{ variant.inventory_quantity | default: 0 }}"
+                      {% if variant == current_variant %}selected="selected"{% endif %}
+                    >
+                      {{ variant.title }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            {% endunless %}
+
+            {% # Quantity Selector and Actions %}
+            <div class="vs-pdp-actions-row">
+              <div class="vs-pdp-qty-control" aria-label="Quantity selector">
+                <button type="button" class="vs-qty-btn" data-qty-action="decrease" aria-label="Decrease quantity">−</button>
+                <input
+                  type="number"
+                  name="quantity"
+                  id="vs-product-qty"
+                  min="1"
+                  value="1"
+                  class="vs-qty-input"
+                  aria-label="Quantity"
+                >
+                <button type="button" class="vs-qty-btn" data-qty-action="increase" aria-label="Increase quantity">+</button>
+                
+                {% # Subtle quantity update feedback loader spinner %}
+                <div class="vs-pdp-qty-loader" aria-hidden="true" title="Updating...">
+                  <svg class="vs-pdp-qty-spinner-svg" viewBox="0 0 24 24" fill="none">
+                    <circle class="vs-pdp-qty-spinner-track" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                    <path class="vs-pdp-qty-spinner-head" d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                  </svg>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                name="add"
+                class="vs-pdp-add-btn vs-pdp-add-btn--shaking"
+                {% unless current_variant.available %}disabled{% endunless %}
+              >
+                <span class="vs-pdp-add-text">
+                  {% if current_variant.available %}
+                    Add to Cart
+                  {% else %}
+                    Sold Out
+                  {% endif %}
+                </span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="vs-pdp-add-icon">
+                  <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+                  <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                class="vs-card-wishlist-btn vs-pdp-wishlist-btn"
+                data-wishlist-btn
+                data-product-id="{{ product.id }}"
+                data-product-handle="{{ product.handle }}"
+                data-product-title="{{ product.title | escape }}"
+                data-product-vendor="{{ product.vendor | escape }}"
+                data-product-price="{{ current_variant.price | money }}"
+                data-variant-id="{{ current_variant.id }}"
+                data-product-img="{{ product.featured_media | image_url: width: 300, height: 300 }}"
+                aria-label="Add {{ product.title | escape }} to Wishlist"
+                title="Add to Wishlist"
+              >
+                <svg class="vs-wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                </svg>
+              </button>
+            </div>
+
+            {% # Buy It Now Dynamic Checkout Button %}
+            <div class="vs-pdp-direct-buy">
+              {{ form | payment_button }}
+            </div>
+          {% endform %}
+        </div>
+      </div>
+    </div>
+
+    {% # Section 1: Clean Horizontal Tabs (Product Details, Return & Exchange, Shipping Information) %}
+    <section class="vs-pdp-tabs-section" aria-label="Product Information Tabs">
+      <div class="vs-pdp-tabs-nav" role="tablist">
+        <button
+          type="button"
+          class="vs-pdp-tab-btn is-active"
+          data-tab-target="tab-details"
+          role="tab"
+          aria-selected="true"
+          aria-controls="tab-details"
         >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+          Product Details
+        </button>
+        <button
+          type="button"
+          class="vs-pdp-tab-btn"
+          data-tab-target="tab-return"
+          role="tab"
+          aria-selected="false"
+          aria-controls="tab-return"
+        >
+          Return & Exchange
+        </button>
+        <button
+          type="button"
+          class="vs-pdp-tab-btn"
+          data-tab-target="tab-shipping"
+          role="tab"
+          aria-selected="false"
+          aria-controls="tab-shipping"
+        >
+          Shipping Information
+        </button>
+      </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+      <div class="vs-pdp-tab-panels">
+        <div id="tab-details" class="vs-pdp-tab-panel is-active" role="tabpanel">
+          <div class="vs-pdp-prose rte">
+            {% if product.description != blank %}
+              {{ product.description }}
+            {% else %}
+              <p>No description entered for this product.</p>
+            {% endif %}
+          </div>
+        </div>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+        <div id="tab-return" class="vs-pdp-tab-panel" role="tabpanel" style="display: none;">
+          <div class="vs-pdp-prose">
+            <p>Our return and exchange policy:</p>
+            <ul>
+              <li>Returns accepted within 14 days of delivery in original unused condition with all packaging intact.</li>
+              <li>To initiate a return or exchange, please reach out through our contact page with your order details.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="tab-shipping" class="vs-pdp-tab-panel" role="tabpanel" style="display: none;">
+          <div class="vs-pdp-prose">
+            <p>Shipping details and timelines:</p>
+            <ul>
+              <li>Standard delivery: 2–5 business days.</li>
+              <li>Express shipping available at checkout for eligible postal codes.</li>
+              <li>Tracking number is emailed as soon as the package is dispatched.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {% # Section 2: Related Products Showcase Carousel %}
+    <section class="vs-pdp-related-section" aria-label="Related Products">
+      <div class="vs-pdp-related-header">
+        <h2 class="vs-pdp-related-title">Related Products</h2>
+        <div class="vs-pdp-related-controls">
+          <button type="button" class="vs-pdp-carousel-nav" data-related-nav="prev" aria-label="Previous products">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button type="button" class="vs-pdp-carousel-nav" data-related-nav="next" aria-label="Next products">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="vs-pdp-related-track" id="vs-related-track">
+        {% assign related_coll = collection | default: product.collections.first | default: collections.all %}
+        {% assign shown_count = 0 %}
+        {% if related_coll and related_coll.products.size > 1 %}
+          {% for rel_product in related_coll.products %}
+            {% if rel_product.id != product.id and shown_count < 8 %}
+              {% assign shown_count = shown_count | plus: 1 %}
+              <div class="vs-pdp-related-card">
+                <a href="{{ rel_product.url }}" class="vs-pdp-related-card__media">
+                  {% if rel_product.featured_image != blank %}
+                    <img
+                      src="{{ rel_product.featured_image | image_url: width: 500, height: 500, crop: 'center' }}"
+                      alt="{{ rel_product.title | escape }}"
+                      width="260"
+                      height="260"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    {{ 'product-2' | placeholder_svg_tag: 'vs-placeholder-thumb' }}
+                  {% endif %}
+                </a>
+                <div class="vs-pdp-related-card__info">
+                  <h3 class="vs-pdp-related-card__title">
+                    <a href="{{ rel_product.url }}">{{ rel_product.title | escape }}</a>
+                  </h3>
+                  <div class="vs-pdp-related-card__price">
+                    <span>{{ rel_product.price | money }}</span>
+                    {% if rel_product.compare_at_price > rel_product.price %}
+                      <s>{{ rel_product.compare_at_price | money }}</s>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  {% # Sticky Bottom Bar on Scroll (Matching User's Reference Screenshot) %}
+  <aside class="vs-sticky-bar" id="vs-pdp-sticky-bar" aria-label="Sticky Purchase Bar">
+    <div class="vs-sticky-bar__container">
+      <div class="vs-sticky-bar__product">
+        {% if featured_media != blank %}
+          <img
+            src="{{ featured_media | image_url: width: 120, height: 120, crop: 'center' }}"
+            alt="{{ product.title | escape }}"
+            width="52"
+            height="52"
+            loading="lazy"
+            class="vs-sticky-bar__thumb"
+          >
+        {% endif %}
+        <div class="vs-sticky-bar__meta">
+          <span class="vs-sticky-bar__title">{{ product.title | escape }}</span>
+          <span class="vs-sticky-bar__price" data-sticky-price>{{ current_variant.price | money }}</span>
+        </div>
+      </div>
+
+      <div class="vs-sticky-bar__actions">
+        {% unless product.has_only_default_variant %}
+          <div class="vs-sticky-bar__select-wrap">
+            <select id="vs-sticky-variant-select" class="vs-sticky-bar__select" aria-label="Select variant">
+              {% for variant in product.variants %}
+                <option
+                  value="{{ variant.id }}"
+                  data-price="{{ variant.price | money }}"
+                  data-available="{{ variant.available }}"
+                  {% if variant == current_variant %}selected="selected"{% endif %}
+                >
+                  {{ variant.title }}
+                </option>
+              {% endfor %}
+            </select>
+            <svg class="vs-sticky-bar__select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        {% endunless %}
+
+        <button
+          type="button"
+          class="vs-sticky-bar__btn"
+          id="vs-sticky-add-btn"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          <span id="vs-sticky-btn-text">
+            {% if current_variant.available %}
+              Add To Cart
+            {% else %}
+              Sold Out
+            {% endif %}
+          </span>
+        </button>
+      </div>
+    </div>
+  </aside>
+</article>
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show brand / vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_info",
+      "label": "Enable sticky details column on desktop",
+      "default": true
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

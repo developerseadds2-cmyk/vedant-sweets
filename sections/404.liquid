@@ -1,19 +1,92 @@
 {% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/404
+  404 Section with Client-Side Wishlist Fallback
+  If a merchant visits /pages/wishlist before creating the page object in Shopify Admin,
+  this section seamlessly displays the full Wishlist page experience instead of a 404 error.
 {% endcomment %}
 
-<h1>{{ '404.title' | t }}</h1>
+<div id="vs-fallback-wishlist-view" style="display: none;">
+  <section class="vs-wishlist-page full-width" id="vs-wishlist-section">
+    <div class="vs-wishlist-container">
+      <div class="vs-wishlist-header-row">
+        <h1 class="vs-wishlist-main-heading">MY WISHLIST</h1>
+        <div class="vs-wishlist-actions-bar" id="vs-wishlist-bar" style="display: none;">
+          <span class="vs-wishlist-count-label">
+            Saved Delights: <strong id="vs-wishlist-count-num">0</strong> items
+          </span>
+          <button type="button" class="vs-wishlist-clear-btn" id="vs-wishlist-clear-all">
+            Clear Wishlist
+          </button>
+        </div>
+      </div>
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+      {% # Dynamic Wishlist Items Table Container %}
+      <div class="vs-wishlist-table-wrapper" id="vs-wishlist-table-wrap" style="display: none;">
+        <table class="vs-cart-table vs-wishlist-table">
+          <thead>
+            <tr>
+              <th class="vs-cart-th-product">PRODUCT</th>
+              <th class="vs-cart-th-price">PRICE</th>
+              <th class="vs-wishlist-th-action">ACTION</th>
+              <th class="vs-cart-th-remove"><span class="visually-hidden">Remove</span></th>
+            </tr>
+          </thead>
+          <tbody id="vs-wishlist-table-body"></tbody>
+        </table>
+      </div>
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+      {% # Empty State %}
+      <div class="vs-wishlist-empty-state" id="vs-wishlist-empty" style="display: none;">
+        <div class="vs-wishlist-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+        </div>
+        <h2 class="vs-wishlist-empty-title">Your Wishlist is currently empty</h2>
+        <p class="vs-wishlist-empty-desc">Explore our freshly prepared traditional sweets, festive hampers, and save your favorites here.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="vs-wishlist-empty-btn">
+          Explore Best Sellers →
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="vs-standard-404-view" class="vs-404-section-wrap" style="background-image: url('{{ 'ahopbycategoy.png' | asset_url }}');">
+  <div class="vs-404-overlay"></div>
+  <div class="vs-page-container vs-404-container">
+    <div class="vs-404-card">
+      <span class="vs-404-badge">ERROR 404</span>
+      <h1 class="vs-404-title">{{ '404.title' | t }}</h1>
+      <p class="vs-404-desc">{{ '404.not_found' | t }}</p>
+      <div class="vs-404-lotus-divider" aria-hidden="true">
+        <span class="vs-lotus-line"></span>
+        <svg class="vs-lotus-icon" viewBox="0 0 36 20" fill="none" stroke="currentColor">
+          <path d="M18 18C18 18 12 11 12 6.5C12 3.5 14.5 1 18 1C21.5 1 24 3.5 24 6.5C24 11 18 18 18 18Z" stroke-width="1.3"/>
+          <path d="M18 18C18 18 8 13.5 6 9C4 4.5 6.5 2 9.5 2.5C12.5 3 15.5 8 18 18Z" stroke-width="1.2"/>
+          <path d="M18 18C18 18 28 13.5 30 9C32 4.5 29.5 2 26.5 2.5C23.5 3 20.5 8 18 18Z" stroke-width="1.2"/>
+        </svg>
+        <span class="vs-lotus-line"></span>
+      </div>
+      <a href="{{ routes.all_products_collection_url }}" class="vs-404-btn">
+        <span>{{ '404.back_to_shopping' | t }}</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var isWishlistPath = window.location.pathname.indexOf('/pages/wishlist') !== -1;
+    if (isWishlistPath) {
+      var wishlistView = document.getElementById('vs-fallback-wishlist-view');
+      var notFoundView = document.getElementById('vs-standard-404-view');
+      if (wishlistView) wishlistView.style.display = 'block';
+      if (notFoundView) notFoundView.style.display = 'none';
+      document.title = 'My Wishlist | ' + {{ shop.name | json }};
+    }
+  })();
+</script>
 
 {% schema %}
 {

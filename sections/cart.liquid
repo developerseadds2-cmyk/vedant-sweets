@@ -1,33 +1,280 @@
 {% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
+  Vedant Pure - Artisanal Cart Page
+  Matching reference design:
+  - Breadcrumbs: Home > Your Cart
+  - Heading: YOUR CART
+  - Responsive Table: Product, Price, Quantity (with loader spinner), Total, Remove (x)
+  - Left Column Extras:
+      - Add Order Note (textarea)
+      - Pre-Order Booking (Date picker with custom styled dark-wood box and disclaimer)
+      - Secure Shopping Guarantee badge
+      - Order Note / Dispatch guidelines
+  - Right Column (Order Summary Card):
+      - Subtotal
+      - Coupon Code input with notice
+      - TOTAL
+      - Proceed To Checkout button (deep forest green / warm leather)
+      - Continue Shopping button
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+<section class="vs-cart-page" id="vs-cart-section" data-section-id="{{ section.id }}">
+  <div class="vs-cart-container">
+    {% # Breadcrumbs %}
+    <nav class="vs-breadcrumbs vs-cart-breadcrumbs" aria-label="Breadcrumb">
+      <ol class="vs-breadcrumbs__list">
+        <li class="vs-breadcrumbs__item">
+          <a href="{{ routes.root_url }}" class="vs-breadcrumbs__link">Home</a>
+          <span class="vs-breadcrumbs__sep">&gt;</span>
+        </li>
+        <li class="vs-breadcrumbs__item vs-breadcrumbs__item--active" aria-current="page">
+          <span>Your Cart</span>
+        </li>
+      </ol>
+    </nav>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+    <h1 class="vs-cart-main-heading">YOUR CART</h1>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+    {% if cart.item_count > 0 %}
+      <form action="{{ routes.cart_url }}" method="post" id="vs-cart-form" class="vs-cart-layout">
+        {% # Left / Main Column %}
+        <div class="vs-cart-main-col">
+          {% # Items Table %}
+          <div class="vs-cart-table-wrapper">
+            <table class="vs-cart-table">
+              <thead>
+                <tr>
+                  <th class="vs-cart-th-product">PRODUCT</th>
+                  <th class="vs-cart-th-price">PRICE</th>
+                  <th class="vs-cart-th-qty">QUANTITY</th>
+                  <th class="vs-cart-th-total">TOTAL</th>
+                  <th class="vs-cart-th-remove"><span class="visually-hidden">Remove</span></th>
+                </tr>
+              </thead>
+              <tbody id="vs-cart-items-body">
+                {% for item in cart.items %}
+                  <tr class="vs-cart-row" data-line-key="{{ item.key }}" data-line-index="{{ forloop.index }}">
+                    <td class="vs-cart-cell-product">
+                      <div class="vs-cart-prod-flex">
+                        <a href="{{ item.url }}" class="vs-cart-prod-img-wrap">
+                          {% if item.image %}
+                            <img
+                              src="{{ item.image | image_url: width: 180, height: 180, crop: 'center' }}"
+                              alt="{{ item.title | escape }}"
+                              width="90"
+                              height="90"
+                              loading="lazy"
+                            >
+                          {% else %}
+                            {{ 'product-1' | placeholder_svg_tag: 'vs-cart-prod-img-placeholder' }}
+                          {% endif %}
+                        </a>
+
+                        <div class="vs-cart-prod-info">
+                          <a href="{{ item.url }}" class="vs-cart-prod-title">
+                            {{ item.product.title }}
+                          </a>
+                          {% unless item.product.has_only_default_variant %}
+                            <div class="vs-cart-prod-variant">
+                              {{ item.variant.title }}
+                            </div>
+                          {% endunless %}
+                          {% if item.vendor != blank %}
+                            <div class="vs-cart-prod-vendor">{{ item.vendor }}</div>
+                          {% endif %}
+                          {% if item.selling_plan_allocation %}
+                            <div class="vs-cart-prod-plan">{{ item.selling_plan_allocation.selling_plan.name }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </td>
+
+                    <td class="vs-cart-cell-price">
+                      <span class="vs-cart-price-num">{{ item.final_price | money }}</span>
+                    </td>
+
+                    <td class="vs-cart-cell-qty">
+                      <div class="vs-cart-qty-pill-wrap">
+                        <div class="vs-cart-qty-pill" data-line-key="{{ item.key }}">
+                          <button
+                            type="button"
+                            class="vs-cart-qty-btn vs-cart-qty-btn--minus"
+                            data-qty-action="decrease"
+                            aria-label="Decrease quantity for {{ item.title | escape }}"
+                          >−</button>
+                          
+                          <input
+                            type="number"
+                            name="updates[]"
+                            id="updates_{{ item.key }}"
+                            class="vs-cart-qty-val"
+                            value="{{ item.quantity }}"
+                            min="0"
+                            data-line-key="{{ item.key }}"
+                            aria-label="Quantity"
+                          >
+
+                          <button
+                            type="button"
+                            class="vs-cart-qty-btn vs-cart-qty-btn--plus"
+                            data-qty-action="increase"
+                            aria-label="Increase quantity for {{ item.title | escape }}"
+                          >+</button>
+
+                          {% # Inline Loader Spinner on quantity input %}
+                          <div class="vs-cart-qty-spinner" aria-hidden="true" title="Updating...">
+                            <svg class="vs-cart-spinner-svg" viewBox="0 0 24 24" fill="none">
+                              <circle class="vs-cart-spinner-track" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                              <path class="vs-cart-spinner-head" d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td class="vs-cart-cell-total">
+                      <span class="vs-cart-line-total">{{ item.final_line_price | money }}</span>
+                    </td>
+
+                    <td class="vs-cart-cell-remove">
+                      <button
+                        type="button"
+                        class="vs-cart-remove-btn"
+                        data-remove-line="{{ item.key }}"
+                        aria-label="Remove {{ item.title | escape }}"
+                      >
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          {% # Dual Box: Order Note & Pre-Order Booking %}
+          <div class="vs-cart-extras-row">
+            {% # Order Note Box %}
+            <div class="vs-cart-note-box">
+              <label for="CartSpecialInstructions" class="vs-cart-note-label">Add Order Note</label>
+              <textarea
+                name="note"
+                id="CartSpecialInstructions"
+                class="vs-cart-note-textarea"
+                placeholder="Special instruction for seller..."
+                rows="4"
+              >{{ cart.note }}</textarea>
+            </div>
+
+            {% # Pre-Order Booking Date Selector Box %}
+            <div class="vs-cart-booking-box">
+              <h3 class="vs-cart-booking-heading">Pre-Order Booking</h3>
+              <div class="vs-cart-booking-card">
+                <label for="vs-delivery-date" class="vs-cart-booking-label">
+                  Please Select Your Preferred Delivery Date:
+                </label>
+                <div class="vs-cart-date-input-wrap">
+                  <input
+                    type="date"
+                    id="vs-delivery-date"
+                    name="attributes[Preferred Delivery Date]"
+                    value="{{ cart.attributes['Preferred Delivery Date'] }}"
+                    class="vs-cart-date-input"
+                  >
+                </div>
+                <div class="vs-cart-booking-notice">
+                  <p>We will make an effort to deliver it on your preferred date; however, there may be an early arrival or a delay of 1-2 days.</p>
+                  <p>We greatly value your cooperation in this matter.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% # Secure Shopping Guarantee %}
+          <div class="vs-cart-guarantee">
+            <svg class="vs-cart-guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+            <span class="vs-cart-guarantee-text">Secure Shopping Guarantee</span>
+          </div>
+
+          {% # Order Note Dispatch Info %}
+          <div class="vs-cart-dispatch-guidelines">
+            <h4 class="vs-cart-dispatch-title">Order Note</h4>
+            <ul class="vs-cart-dispatch-list">
+              <li>Order received before 5pm (Monday-Saturday) will be dispatched on same day, rest order will be processed next working day.</li>
+              <li>Our standard delivery time for Gujarat &amp; Mumbai within 2-3 working days, Delhi, Chennai, Bangalore, Pune within 4 days &amp; Rest India within 4-5 working days.</li>
+            </ul>
+          </div>
+        </div>
+
+        {% # Right Column: Order Summary Card %}
+        <div class="vs-cart-summary-col">
+          <div class="vs-cart-summary-card">
+            <h2 class="vs-cart-summary-title">ORDER SUMMARY</h2>
+
+            <div class="vs-cart-summary-subtotal-row">
+              <span class="vs-cart-subtotal-label">Subtotal</span>
+              <span class="vs-cart-subtotal-value" id="vs-cart-subtotal">{{ cart.total_price | money }}</span>
+            </div>
+
+            {% # Coupon Code Box %}
+            <div class="vs-cart-coupon-box">
+              <label for="vs-cart-coupon-input" class="vs-cart-coupon-label">Coupon Code</label>
+              <div class="vs-cart-coupon-input-wrap">
+                <input
+                  type="text"
+                  id="vs-cart-coupon-input"
+                  name="discount"
+                  placeholder="Enter Coupon Code"
+                  class="vs-cart-coupon-input"
+                >
+              </div>
+              <p class="vs-cart-coupon-note">Coupon code will be applied on the checkout page</p>
+            </div>
+
+            {% # Total Row %}
+            <div class="vs-cart-total-row">
+              <span class="vs-cart-total-label">TOTAL:</span>
+              <span class="vs-cart-total-value" id="vs-cart-total">{{ cart.total_price | money }}</span>
+            </div>
+
+            {% # Action Buttons %}
+            <div class="vs-cart-summary-actions">
+              <button
+                type="submit"
+                name="checkout"
+                class="vs-cart-checkout-btn"
+                id="vs-cart-checkout-btn"
+              >
+                Proceed To Checkout
+              </button>
+
+              <a href="/collections/all" class="vs-cart-continue-btn">
+                Continue Shopping
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+    {% else %}
+      {% # Empty Cart State %}
+      <div class="vs-cart-empty-state">
+        <div class="vs-cart-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+            <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+          </svg>
+        </div>
+        <h2 class="vs-cart-empty-title">Your cart is currently empty</h2>
+        <p class="vs-cart-empty-desc">Explore our freshly handcrafted sweets, festive gift packs, and pure delicacies.</p>
+        <a href="/collections/all" class="vs-cart-checkout-btn vs-cart-empty-btn">
+          Explore Our Collection
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
 
 {% schema %}
 {

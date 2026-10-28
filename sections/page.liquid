@@ -173,6 +173,50 @@
           ></iframe>
         </div>
       </div>
+    {% elsif page.handle == 'wishlist' %}
+      <style>
+        #vs-page-{{ section.id }} .vs-collection-banner { display: none !important; }
+      </style>
+      <div class="vs-wishlist-header-row">
+        <h1 class="vs-wishlist-main-heading">MY WISHLIST</h1>
+        <div class="vs-wishlist-actions-bar" id="vs-wishlist-bar" style="display: none;">
+          <span class="vs-wishlist-count-label">
+            Saved Delights: <strong id="vs-wishlist-count-num">0</strong> items
+          </span>
+          <button type="button" class="vs-wishlist-clear-btn" id="vs-wishlist-clear-all">
+            Clear Wishlist
+          </button>
+        </div>
+      </div>
+
+      {% # Dynamic Wishlist Items Table Container %}
+      <div class="vs-wishlist-table-wrapper" id="vs-wishlist-table-wrap" style="display: none;">
+        <table class="vs-cart-table vs-wishlist-table">
+          <thead>
+            <tr>
+              <th class="vs-cart-th-product">PRODUCT</th>
+              <th class="vs-cart-th-price">PRICE</th>
+              <th class="vs-wishlist-th-action">ACTION</th>
+              <th class="vs-cart-th-remove"><span class="visually-hidden">Remove</span></th>
+            </tr>
+          </thead>
+          <tbody id="vs-wishlist-table-body"></tbody>
+        </table>
+      </div>
+
+      {% # Empty State %}
+      <div class="vs-wishlist-empty-state" id="vs-wishlist-empty" style="display: none;">
+        <div class="vs-wishlist-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+          </svg>
+        </div>
+        <h2 class="vs-wishlist-empty-title">Your Wishlist is currently empty</h2>
+        <p class="vs-wishlist-empty-desc">Explore our freshly prepared traditional sweets, festive hampers, and save your favorites here.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="vs-wishlist-empty-btn">
+          Explore Best Sellers →
+        </a>
+      </div>
     {% else %}
       {% # Standard page content wrapper %}
       <div class="vs-page-content rte">

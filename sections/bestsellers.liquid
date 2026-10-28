@@ -1,0 +1,346 @@
+{% comment %}
+  Vedant Pure - Artisanal Best Sellers Showcase Slider Section
+  - Fully dynamic: connects directly to selected collection or all products
+  - Slider Features: Infinite loop, Auto-scroll, navigation arrows
+  - Product Card Features:
+      - Media (primary + secondary image on hover)
+      - Dynamic badges: Save X%, Bestseller
+      - Wishlist button (stores in localStorage & updates header badge count)
+      - Quick View button (opens interactive modal with gallery, variants, price & purchase form)
+      - Direct Add to Cart (#C98C5F)
+{% endcomment %}
+
+<section
+  class="vs-bestsellers-section full-width"
+  id="vs-bestsellers-{{ section.id }}"
+  style="--vs-bs-padding-y: {{ section.settings.padding_y }}px"
+>
+  <div class="vs-bestsellers-inner">
+    {% # Header %}
+    <header class="vs-bestsellers-header">
+      {% if section.settings.eyebrow != blank %}
+        <div class="vs-bestsellers-eyebrow">
+          <span class="vs-ornament-line" aria-hidden="true"></span>
+          <span class="vs-eyebrow-text">{{ section.settings.eyebrow | escape }}</span>
+          <span class="vs-ornament-line" aria-hidden="true"></span>
+        </div>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 class="vs-bestsellers-heading">{{ section.settings.heading | escape }}</h2>
+      {% endif %}
+
+      {% if section.settings.subtitle != blank %}
+        <p class="vs-bestsellers-subtitle">{{ section.settings.subtitle | escape }}</p>
+      {% endif %}
+
+      <div class="vs-bestsellers-lotus-divider" aria-hidden="true">
+        <span class="vs-lotus-line"></span>
+        <svg class="vs-lotus-icon" viewBox="0 0 36 20" fill="none" stroke="currentColor">
+          <path d="M18 18C18 18 12 11 12 6.5C12 3.5 14.5 1 18 1C21.5 1 24 3.5 24 6.5C24 11 18 18 18 18Z" stroke-width="1.3"/>
+          <path d="M18 18C18 18 8 13.5 6 9C4 4.5 6.5 2 9.5 2.5C12.5 3 15.5 8 18 18Z" stroke-width="1.2"/>
+          <path d="M18 18C18 18 28 13.5 30 9C32 4.5 29.5 2 26.5 2.5C23.5 3 20.5 8 18 18Z" stroke-width="1.2"/>
+        </svg>
+        <span class="vs-lotus-line"></span>
+      </div>
+    </header>
+
+    {% # Dynamic Product Source %}
+    {% assign target_collection = section.settings.collection %}
+    {% if target_collection != blank and target_collection.products_count > 0 %}
+      {% assign products_to_render = target_collection.products %}
+    {% else %}
+      {% assign products_to_render = collections.all.products %}
+    {% endif %}
+
+    {% # Slider Wrapper %}
+    <div
+      class="vs-bestsellers-slider-wrapper"
+      data-bestsellers-slider
+      data-autoplay="{{ section.settings.autoplay }}"
+      data-interval="{{ section.settings.autoplay_interval | times: 1000 }}"
+      data-loop="{{ section.settings.infinite_loop }}"
+    >
+      <button
+        type="button"
+        class="vs-carousel-arrow vs-carousel-arrow--prev"
+        data-bs-prev
+        aria-label="Previous best sellers"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m15 18-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="vs-bestsellers-track" data-bs-track role="list">
+        {% for product in products_to_render limit: section.settings.products_to_show %}
+          {% assign current_variant = product.selected_or_first_available_variant %}
+          
+          <article class="vs-bs-card" role="listitem" data-product-handle="{{ product.handle }}">
+            <div class="vs-bs-card__media-wrap">
+              {% # Badges %}
+              <div class="vs-bs-card__badges">
+                {% if product.compare_at_price > product.price %}
+                  {% assign savings = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
+                  <span class="vs-bs-badge vs-bs-badge--sale">Save {{ savings }}%</span>
+                {% elsif forloop.index <= 2 or product.tags contains 'Bestseller' or product.tags contains 'bestseller' %}
+                  <span class="vs-bs-badge vs-bs-badge--bestseller">Bestseller</span>
+                {% endif %}
+              </div>
+
+              {% # Floating Action: Wishlist %}
+              <button
+                type="button"
+                class="vs-card-wishlist-btn"
+                data-wishlist-btn
+                data-product-id="{{ product.id }}"
+                data-product-handle="{{ product.handle }}"
+                data-product-title="{{ product.title | escape }}"
+                data-product-vendor="{{ product.vendor | escape }}"
+                data-product-price="{{ current_variant.price | money }}"
+                data-variant-id="{{ current_variant.id }}"
+                data-product-img="{{ product.featured_media | image_url: width: 300, height: 300 }}"
+                aria-label="Add {{ product.title | escape }} to Wishlist"
+              >
+                <svg class="vs-wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                </svg>
+              </button>
+
+              {% # Floating Action: Quick View %}
+              <button
+                type="button"
+                class="vs-card-quickview-btn"
+                data-quickview-btn
+                data-product-url="{{ product.url }}"
+                data-product-handle="{{ product.handle }}"
+                aria-label="Quick view {{ product.title | escape }}"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>Quick View</span>
+              </button>
+
+              {% # Product Image Link %}
+              <a href="{{ product.url }}" class="vs-bs-card__media-link" aria-label="{{ product.title | escape }}">
+                {% if product.featured_media != blank %}
+                  <img
+                    src="{{ product.featured_media | image_url: width: 600, height: 600, crop: 'center' }}"
+                    alt="{{ product.featured_media.alt | default: product.title | escape }}"
+                    class="vs-bs-card__img vs-bs-card__img--primary"
+                    width="300"
+                    height="300"
+                    loading="lazy"
+                  >
+                  {% if product.media.size > 1 %}
+                    <img
+                      src="{{ product.media[1] | image_url: width: 600, height: 600, crop: 'center' }}"
+                      alt="{{ product.media[1].alt | default: product.title | escape }}"
+                      class="vs-bs-card__img vs-bs-card__img--secondary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  {% endif %}
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'vs-bs-card__placeholder' }}
+                {% endif %}
+              </a>
+
+              {% # Direct Add to Cart Action %}
+              <div class="vs-bs-card__quick-add">
+                {% form 'product', product, class: 'vs-bs-add-form' %}
+                  <input type="hidden" name="id" value="{{ current_variant.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button
+                    type="submit"
+                    name="add"
+                    class="vs-bs-add-btn"
+                    {% unless current_variant.available %}disabled{% endunless %}
+                    aria-label="Add {{ product.title | escape }} to Cart"
+                  >
+                    <span class="vs-bs-add-btn__text">
+                      {% if current_variant.available %}
+                        Add To Cart
+                      {% else %}
+                        Sold Out
+                      {% endif %}
+                    </span>
+                    <svg class="vs-bs-add-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+                      <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                    </svg>
+                  </button>
+                {% endform %}
+              </div>
+            </div>
+
+            {% # Product Meta %}
+            <div class="vs-bs-card__content">
+              {% if section.settings.show_vendor and product.vendor != blank %}
+                <div class="vs-bs-card__vendor">{{ product.vendor }}</div>
+              {% endif %}
+
+              <h3 class="vs-bs-card__title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+
+              <div class="vs-bs-card__price-row">
+                <span class="vs-bs-card__price">{{ current_variant.price | money }}</span>
+                {% if current_variant.compare_at_price > current_variant.price %}
+                  <s class="vs-bs-card__compare-price">{{ current_variant.compare_at_price | money }}</s>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <button
+        type="button"
+        class="vs-carousel-arrow vs-carousel-arrow--next"
+        data-bs-next
+        aria-label="Next best sellers"
+      >
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+          <path d="m9 18 6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    {% # View All Button %}
+    {% if section.settings.show_view_all and target_collection != blank %}
+      <div class="vs-bestsellers-footer">
+        <a href="{{ target_collection.url }}" class="vs-bestsellers-view-all">
+          View All Bestsellers
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    {% elsif section.settings.show_view_all %}
+      <div class="vs-bestsellers-footer">
+        <a href="/collections/all" class="vs-bestsellers-view-all">
+          View All Products
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% # Global Quick View Modal Dialog %}
+<div id="vs-quickview-modal" class="vs-quickview-modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="vs-quickview-backdrop" data-close-quickview></div>
+  <div class="vs-quickview-dialog">
+    <button type="button" class="vs-quickview-close" data-close-quickview aria-label="Close modal">✕</button>
+    <div class="vs-quickview-body" id="vs-quickview-body">
+      <div class="vs-quickview-loading">
+        <svg class="vs-quickview-spinner" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bestsellers Showcase",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "CUSTOMER FAVORITES"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Vedant Sweets Top Pick"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Handcrafted with pure cow ghee and rich dry fruits, loved across every home and celebration."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Choose a collection to showcase (e.g. Best Sellers). Leave blank to automatically display all available products."
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to Show",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show Brand / Vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' Button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Slider & Carousel Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-scroll Slider",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_interval",
+      "label": "Auto-scroll Interval (seconds)",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "s",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_loop",
+      "label": "Enable Infinite Loop",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bestsellers Showcase",
+      "settings": {
+        "eyebrow": "CUSTOMER FAVORITES",
+        "heading": "Our Best Sellers",
+        "subtitle": "Handcrafted with pure cow ghee and rich dry fruits, loved across every home and celebration.",
+        "products_to_show": 10
+      }
+    }
+  ]
+}
+{% endschema %}

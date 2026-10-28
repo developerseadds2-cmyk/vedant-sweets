@@ -61,24 +61,54 @@
             </div>
           </div>
 
-          {% # Filter Group 1: Sweet Categories %}
+          {% # Filter Group 1: Sweet Categories (Dynamic from store collections) %}
           <div class="vs-filter-group">
             <h4 class="vs-filter-group__title">Categories</h4>
             <ul class="vs-filter-list">
-              {% assign filter_cats = "All Sweets,Mithai,Laddoo,Peda,Kaju Sweets,Dry Fruits,Gift Packs" | split: "," %}
-              {% assign filter_slugs = "/collections/all,/collections/mithai,/collections/laddoo,/collections/peda,/collections/kaju,/collections/dry-fruits,/collections/gift-packs" | split: "," %}
-              {% for cat in filter_cats %}
-                {% assign idx = forloop.index0 %}
-                <li class="vs-filter-item">
-                  <a
-                    href="{{ filter_slugs[idx] }}"
-                    class="vs-filter-link{% if collection.handle == 'all' and cat == 'All Sweets' %} is-active{% elsif collection.title == cat %} is-active{% endif %}"
-                  >
-                    <span class="vs-filter-checkbox"></span>
-                    <span class="vs-filter-name">{{ cat }}</span>
-                  </a>
-                </li>
-              {% endfor %}
+              {% # All Products / All Sweets Root Option %}
+              <li class="vs-filter-item">
+                <a
+                  href="{{ routes.all_products_collection_url }}"
+                  class="vs-filter-link{% if collection.handle == 'all' %} is-active{% endif %}"
+                >
+                  <span class="vs-filter-checkbox"></span>
+                  <span class="vs-filter-name">All Sweets</span>
+                </a>
+              </li>
+
+              {% # Dynamic Collections from Store Admin %}
+              {% if collections.size > 0 %}
+                {% for coll in collections %}
+                  {% if coll.handle == 'frontpage' or coll.handle == 'all' %}
+                    {% continue %}
+                  {% endif %}
+                  <li class="vs-filter-item">
+                    <a
+                      href="{{ coll.url }}"
+                      class="vs-filter-link{% if collection.handle == coll.handle %} is-active{% endif %}"
+                    >
+                      <span class="vs-filter-checkbox"></span>
+                      <span class="vs-filter-name">{{ coll.title | escape }}</span>
+                    </a>
+                  </li>
+                {% endfor %}
+              {% else %}
+                {% # Fallback if store has no custom collections created yet %}
+                {% assign fallback_cats = "Mithai,Laddoo,Peda,Kaju Sweets,Dry Fruits,Gift Packs" | split: "," %}
+                {% assign fallback_slugs = "/collections/mithai,/collections/laddoo,/collections/peda,/collections/kaju,/collections/dry-fruits,/collections/gift-packs" | split: "," %}
+                {% for cat in fallback_cats %}
+                  {% assign idx = forloop.index0 %}
+                  <li class="vs-filter-item">
+                    <a
+                      href="{{ fallback_slugs[idx] }}"
+                      class="vs-filter-link{% if collection.title == cat %} is-active{% endif %}"
+                    >
+                      <span class="vs-filter-checkbox"></span>
+                      <span class="vs-filter-name">{{ cat }}</span>
+                    </a>
+                  </li>
+                {% endfor %}
+              {% endif %}
             </ul>
           </div>
 
@@ -400,9 +430,11 @@
               </a>
             </div>
           {% endif %}
-        {% endif %}
+        </div>
+      {% endif %}
       </div>
     </div>
+  </div>
   {% endpaginate %}
 </section>
 
