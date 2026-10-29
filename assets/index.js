@@ -593,10 +593,69 @@ function initCollectionFilters() {
 initCollectionFilters();
 
 /* ==========================================================================
-   Mega Menu Dynamic Category Tab Switching on Hover / Focus
+   Mega Menu Dynamic Category & Product Hover Image Switching
    ========================================================================== */
 function initMegaMenuTabs() {
   document.addEventListener('mouseover', (event) => {
+    // 1. Support for Category Left-Nav Hover (data-mega-cat)
+    const navItem = event.target.closest('.vs-megamenu__nav-item[data-mega-cat]');
+    if (navItem) {
+      const menu = navItem.closest('.vs-megamenu');
+      if (menu) {
+        const catKey = navItem.dataset.megaCat;
+        const allNavItems = menu.querySelectorAll('.vs-megamenu__nav-item');
+        allNavItems.forEach((item) => item.classList.remove('is-active'));
+        navItem.classList.add('is-active');
+
+        const allPanels = menu.querySelectorAll('.vs-megamenu__panel');
+        allPanels.forEach((panel) => panel.classList.remove('is-active'));
+
+        const targetPanel = menu.querySelector(`#mega-panel-${catKey}`);
+        if (targetPanel) {
+          targetPanel.classList.add('is-active');
+          // Reset card back to default collection view when switching categories
+          const card = targetPanel.querySelector('.vs-megamenu__photo-card');
+          if (card && card.dataset.defaultImg) {
+            const img = card.querySelector('.vs-megamenu__photo-img');
+            const title = card.querySelector('.vs-megamenu__photo-title');
+            const cta = card.querySelector('.vs-megamenu__photo-cta');
+            if (img) img.src = card.dataset.defaultImg;
+            if (title && card.dataset.defaultTitle) title.textContent = card.dataset.defaultTitle;
+            if (cta && card.dataset.defaultCta) cta.textContent = card.dataset.defaultCta;
+            if (card.dataset.defaultHref) card.href = card.dataset.defaultHref;
+          }
+        }
+      }
+      return;
+    }
+
+    // 2. Product link hover: Update right-side photo card to show that specific product's photo
+    const prodLink = event.target.closest('.vs-megamenu__product-link[data-mega-prod-img]');
+    if (prodLink) {
+      const panel = prodLink.closest('.vs-megamenu__panel');
+      if (panel) {
+        const card = panel.querySelector('.vs-megamenu__photo-card');
+        if (card) {
+          const img = card.querySelector('.vs-megamenu__photo-img');
+          const title = card.querySelector('.vs-megamenu__photo-title');
+          const cta = card.querySelector('.vs-megamenu__photo-cta');
+
+          if (img && prodLink.dataset.megaProdImg) {
+            img.src = prodLink.dataset.megaProdImg;
+          }
+          if (title && prodLink.dataset.megaProdTitle) {
+            title.textContent = prodLink.dataset.megaProdTitle;
+          }
+          if (cta) {
+            cta.textContent = prodLink.dataset.megaProdPrice ? `Buy Now — ${prodLink.dataset.megaProdPrice} →` : 'View Product →';
+          }
+          card.href = prodLink.href;
+        }
+      }
+      return;
+    }
+
+    // 3. Legacy fallback support
     const catItem = event.target.closest('.vs-megamenu__cat-item');
     if (!catItem) return;
 
@@ -1154,26 +1213,62 @@ function initPDPInteractions() {
   const addBtn = pdpSection.querySelector('.vs-pdp-add-btn');
   const addBtnText = pdpSection.querySelector('.vs-pdp-add-text');
 
-  // Thumbnail switching
-  thumbs.forEach((thumb) => {
-    thumb.addEventListener('click', () => {
-      thumbs.forEach((t) => {
-        t.classList.remove('is-active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      thumb.classList.add('is-active');
-      thumb.setAttribute('aria-selected', 'true');
+  // Thumbnail switching & auto-play slideshow when multiple photos exist
+  let activeIndex = 0;
+  let autoplayTimer = null;
 
-      const src = thumb.dataset.thumbnailSrc;
-      if (src && mainImg) {
-        mainImg.style.opacity = '0.4';
-        mainImg.src = src;
-        mainImg.onload = () => {
-          mainImg.style.opacity = '1';
-        };
-      }
+  function switchToIndex(index) {
+    if (!thumbs || thumbs.length <= 1) return;
+    activeIndex = (index + thumbs.length) % thumbs.length;
+    thumbs.forEach((t, i) => {
+      const isActive = i === activeIndex;
+      t.classList.toggle('is-active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    const targetThumb = thumbs[activeIndex];
+    const src = targetThumb ? targetThumb.dataset.thumbnailSrc : null;
+    if (src && mainImg) {
+      mainImg.style.opacity = '0.35';
+      mainImg.src = src;
+      mainImg.onload = () => {
+        mainImg.style.opacity = '1';
+      };
+    }
+  }
+
+  function startAutoplay() {
+    if (thumbs.length > 1 && !autoplayTimer) {
+      autoplayTimer = setInterval(() => {
+        switchToIndex(activeIndex + 1);
+      }, 3500);
+    }
+  }
+
+  function pauseAutoplay() {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+  }
+
+  thumbs.forEach((thumb, idx) => {
+    thumb.addEventListener('click', () => {
+      pauseAutoplay();
+      switchToIndex(idx);
+      startAutoplay();
     });
   });
+
+  const galleryEl = pdpSection.querySelector('.vs-pdp-gallery');
+  if (galleryEl) {
+    galleryEl.addEventListener('mouseenter', pauseAutoplay);
+    galleryEl.addEventListener('mouseleave', startAutoplay);
+  }
+
+  if (thumbs.length > 1) {
+    startAutoplay();
+  }
 
   // Quantity controls with visual reloader feedback
   document.addEventListener('click', (e) => {
@@ -1256,7 +1351,8 @@ function initPDPInteractions() {
             compareDisplay.textContent = matchingOption.dataset.comparePrice;
           }
 
-          const isAvailable = matchingOption.dataset.available === 'true';
+          const qty = parseInt(matchingOption.dataset.inventory, 10);
+          const isAvailable = matchingOption.dataset.available === 'true' || qty > 0;
           if (addBtn) {
             addBtn.disabled = !isAvailable;
             if (addBtnText) addBtnText.textContent = isAvailable ? 'Add to Cart' : 'Sold Out';
@@ -1266,13 +1362,16 @@ function initPDPInteractions() {
           const stockBullet = pdpSection.querySelector('.vs-stock-bullet');
           const stockText = pdpSection.querySelector('[data-stock-text]');
           const skuDisplay = pdpSection.querySelector('[data-sku-text]');
-          const qty = parseInt(matchingOption.dataset.inventory, 10);
 
           if (stockBullet && stockText) {
             if (isAvailable) {
               stockBullet.className = 'vs-stock-bullet vs-stock-bullet--in-stock';
               stockText.className = 'vs-stock-text';
-              stockText.textContent = qty > 0 ? `In Stock (${qty} available)` : 'In Stock';
+              if (qty > 0) {
+                stockText.textContent = qty <= 5 ? `Only ${qty} left in stock!` : `In Stock — ${qty} available`;
+              } else {
+                stockText.textContent = 'In Stock';
+              }
             } else {
               stockBullet.className = 'vs-stock-bullet vs-stock-bullet--out-of-stock';
               stockText.className = 'vs-stock-text vs-stock-text--sold';
@@ -1296,18 +1395,25 @@ function initPDPInteractions() {
   const mainTrigger = document.getElementById('vs-pdp-main-trigger');
   const mainForm = document.getElementById('vs-product-form');
 
-  // Show/Hide sticky bar on scroll
-  if (stickyBar && mainTrigger) {
+  // Show/Hide sticky bar: Appears whenever user scrolls down to or past the Product Details section
+  if (stickyBar) {
+    const tabsSection = pdpSection.querySelector('.vs-pdp-tabs-section');
+    const targetElement = tabsSection || mainForm?.querySelector('.vs-pdp-actions-row') || mainTrigger;
+
     const handleScroll = () => {
-      const rect = mainTrigger.getBoundingClientRect();
-      // Show sticky bar once the user scrolls past the main buy buttons
-      if (rect.bottom < 150) {
+      if (!targetElement) return;
+      const rect = targetElement.getBoundingClientRect();
+      // When tabs section reaches top half of viewport, or buy buttons scrolled past
+      if (rect.top <= window.innerHeight * 0.75) {
         stickyBar.classList.add('is-visible');
       } else {
         stickyBar.classList.remove('is-visible');
       }
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    // Check on initial load
     handleScroll();
   }
 
@@ -1715,7 +1821,7 @@ function initWishlist() {
     }
   };
 
-  const saveWishlist = (items) => {
+  let saveWishlist = (items) => {
     try {
       localStorage.setItem('vs_wishlist', JSON.stringify(items));
     } catch (e) {
@@ -2059,11 +2165,17 @@ function initWishlist() {
    Quick View Modal Functionality
    ========================================================================== */
 function initQuickView() {
-  const modal = document.getElementById('vs-quickview-modal');
-  const modalBody = document.getElementById('vs-quickview-body');
-  if (!modal || !modalBody) return;
+  const getModal = () => document.getElementById('vs-quickview-modal');
+  const getModalBody = () => document.getElementById('vs-quickview-body');
 
   const openQuickView = async (productUrl, productHandle) => {
+    const modal = getModal();
+    const modalBody = getModalBody();
+    if (!modal || !modalBody) {
+      console.warn('Quick view modal elements not found in DOM');
+      return;
+    }
+
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
@@ -2078,60 +2190,165 @@ function initQuickView() {
     `;
 
     try {
-      const url = productUrl.includes('?') ? `${productUrl}&view=quickview` : `${productUrl}?section_id=product`;
-      const res = await fetch(productUrl);
-      if (!res.ok) throw new Error('Failed to load product');
+      // 1. Fetch product JSON data
+      const jsonUrl = productUrl.includes('?') ? productUrl.split('?')[0] + '.js' : `${productUrl}.js`;
+      const jsonRes = await fetch(jsonUrl);
+      if (!jsonRes.ok) throw new Error('Product JSON not found');
+      const prodData = await jsonRes.json();
 
-      const text = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, 'text/html');
+      const formatMoney = (cents) => {
+        if (!cents && cents !== 0) return '';
+        const amt = (cents / 100).toFixed(2);
+        return `Rs. ${Number(amt).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      };
 
-      const mainImg = doc.querySelector('#vs-pdp-main-image')?.src || '';
-      const title = doc.querySelector('.vs-pdp-title')?.textContent?.trim() || 'Product';
-      const price = doc.querySelector('.vs-pdp-current-price')?.textContent?.trim() || '';
-      const comparePrice = doc.querySelector('.vs-pdp-compare-price')?.textContent?.trim() || '';
-      const desc = doc.querySelector('.vs-pdp-prose')?.innerHTML || '';
-      const variantId = doc.querySelector('#vs-variant-id-input')?.value || '';
-      const isAvailable = !doc.querySelector('.vs-pdp-add-btn')?.disabled;
+      const title = prodData.title || 'Product';
+      const images = (Array.isArray(prodData.images) && prodData.images.length > 0)
+        ? prodData.images.map((img) => (img.startsWith('//') ? `https:${img}` : img))
+        : (prodData.featured_image ? [prodData.featured_image.startsWith('//') ? `https:${prodData.featured_image}` : prodData.featured_image] : []);
+      const mainImg = images[0] || '';
+      const currentVariant = prodData.variants?.[0] || {};
+      const price = formatMoney(currentVariant.price || prodData.price);
+      const comparePrice = currentVariant.compare_at_price ? formatMoney(currentVariant.compare_at_price) : '';
+      const isAvailable = currentVariant.available !== false;
+      const variantId = currentVariant.id || '';
+      const desc = prodData.description || '';
+
+      const thumbsHtml = images.length > 1
+        ? `
+          <div class="vs-qv-thumbs" role="tablist" aria-label="Product thumbnails">
+            ${images.map((imgUrl, idx) => `
+              <button
+                type="button"
+                class="vs-qv-thumb ${idx === 0 ? 'is-active' : ''}"
+                data-qv-thumb-src="${imgUrl}"
+                data-qv-thumb-index="${idx}"
+                aria-label="Image ${idx + 1}"
+                role="tab"
+                aria-selected="${idx === 0 ? 'true' : 'false'}"
+              >
+                <img src="${imgUrl}" alt="${title} thumbnail ${idx + 1}" width="60" height="60" loading="lazy">
+              </button>
+            `).join('')}
+          </div>
+        `
+        : '';
+
+      const sliderArrowsHtml = images.length > 1
+        ? `
+          <button type="button" class="vs-qv-nav vs-qv-nav--prev" data-qv-nav="prev" aria-label="Previous image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="vs-qv-nav vs-qv-nav--next" data-qv-nav="next" aria-label="Next image">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        `
+        : '';
 
       modalBody.innerHTML = `
         <div class="vs-qv-grid">
-          <div class="vs-qv-image-wrap">
-            <img src="${mainImg}" alt="${title}" width="400" height="400" loading="eager">
+          <div class="vs-qv-media">
+            <div class="vs-qv-image-wrap">
+              <img id="vs-qv-main-img" src="${mainImg}" alt="${title}" width="500" height="500" loading="eager">
+              ${sliderArrowsHtml}
+            </div>
+            ${thumbsHtml}
           </div>
           <div class="vs-qv-info">
             <h2 class="vs-qv-title">${title}</h2>
             <div class="vs-qv-price">
-              <span>${price}</span>
-              ${comparePrice ? `<s>${comparePrice}</s>` : ''}
+              <span class="vs-qv-current-price">${price}</span>
+              ${comparePrice ? `<s class="vs-qv-compare-price">${comparePrice}</s>` : ''}
             </div>
-            <div class="vs-qv-desc">${desc}</div>
-            <form action="/cart/add" method="post">
+            ${desc ? `<div class="vs-qv-desc">${desc}</div>` : ''}
+            <form action="/cart/add" method="post" class="vs-qv-form" data-qv-form>
               <input type="hidden" name="id" value="${variantId}">
               <input type="hidden" name="quantity" value="1">
               <button type="submit" class="vs-qv-action-btn" ${!isAvailable ? 'disabled' : ''}>
-                ${isAvailable ? 'Add To Cart' : 'Sold Out'}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>${isAvailable ? 'Add To Cart' : 'Sold Out'}</span>
               </button>
             </form>
             <a href="${productUrl}" class="vs-qv-view-pdp-link">View Full Details →</a>
           </div>
         </div>
       `;
+
+      // Multi-image interaction handler
+      if (images.length > 1) {
+        let currentIdx = 0;
+        const mainImgEl = modalBody.querySelector('#vs-qv-main-img');
+        const thumbs = modalBody.querySelectorAll('.vs-qv-thumb');
+
+        const setActiveImage = (idx) => {
+          if (idx < 0) idx = images.length - 1;
+          if (idx >= images.length) idx = 0;
+          currentIdx = idx;
+
+          if (mainImgEl) {
+            mainImgEl.style.opacity = '0.4';
+            mainImgEl.src = images[currentIdx];
+            mainImgEl.onload = () => {
+              mainImgEl.style.opacity = '1';
+            };
+          }
+
+          thumbs.forEach((t, i) => {
+            const isActive = i === currentIdx;
+            t.classList.toggle('is-active', isActive);
+            t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+        };
+
+        modalBody.addEventListener('click', (ev) => {
+          const thumbBtn = ev.target.closest('.vs-qv-thumb');
+          if (thumbBtn) {
+            ev.preventDefault();
+            const idx = parseInt(thumbBtn.dataset.qvThumbIndex, 10);
+            if (!isNaN(idx)) setActiveImage(idx);
+            return;
+          }
+
+          const navBtn = ev.target.closest('[data-qv-nav]');
+          if (navBtn) {
+            ev.preventDefault();
+            const dir = navBtn.dataset.qvNav;
+            if (dir === 'prev') {
+              setActiveImage(currentIdx - 1);
+            } else if (dir === 'next') {
+              setActiveImage(currentIdx + 1);
+            }
+          }
+        });
+      }
     } catch (e) {
+      console.error('Quick view error:', e);
       modalBody.innerHTML = `
-        <div style="text-align: center; padding: 2rem;">
-          <p>Unable to load quick view. <a href="${productUrl}">Click here to view product</a></p>
+        <div style="text-align: center; padding: 2.5rem 1rem;">
+          <p style="font-size: 1rem; color: #333; margin-bottom: 1rem;">View full product information on the product page.</p>
+          <a href="${productUrl}" class="vs-qv-action-btn" style="display: inline-flex; width: auto; padding: 0.75rem 2rem; text-decoration: none;">View Product →</a>
         </div>
       `;
     }
   };
 
   const closeQuickView = () => {
+    const modal = getModal();
+    if (!modal) return;
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
   };
 
+  // Global click delegator
   document.addEventListener('click', (e) => {
     const qvBtn = e.target.closest('[data-quickview-btn]');
     if (qvBtn) {
@@ -2148,7 +2365,8 @@ function initQuickView() {
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+    const modal = getModal();
+    if (e.key === 'Escape' && modal && modal.classList.contains('is-open')) {
       closeQuickView();
     }
   });
@@ -2236,6 +2454,7 @@ function initTestimonialsSlider(root = document) {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initCartInteractions();
+    initCategoryCarousels();
     initBestsellersSlider();
     initWishlist();
     initQuickView();
@@ -2243,6 +2462,7 @@ if (document.readyState === 'loading') {
   });
 } else {
   initCartInteractions();
+  initCategoryCarousels();
   initBestsellersSlider();
   initWishlist();
   initQuickView();
@@ -2250,6 +2470,7 @@ if (document.readyState === 'loading') {
 }
 document.addEventListener('shopify:section:load', (event) => {
   initCartInteractions();
+  initCategoryCarousels(event.target);
   initBestsellersSlider(event.target);
   initWishlist();
   initTestimonialsSlider(event.target);

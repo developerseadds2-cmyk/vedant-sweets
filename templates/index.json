@@ -2,9 +2,86 @@
   "sections": {
     "main": {
       "type": "hero-slider",
+      "blocks": {
+        "slide_pinni": {
+          "type": "slide",
+          "settings": {
+            "preset_image": "s1.png",
+            "eyebrow": "Traditional Delicacy",
+            "heading": "Artisanal Desi Ghee\nPunjabi Pinni",
+            "copy": "Handcrafted with slow-roasted whole wheat flour, crunchy dry fruits, and pure desi cow ghee for wholesome warmth.",
+            "button_label": "Order Pinni",
+            "button_link": "/products/punjabi-desi-ghee-pinni"
+          }
+        },
+        "slide_panjiri": {
+          "type": "slide",
+          "settings": {
+            "preset_image": "s2.png",
+            "eyebrow": "Authentic Recipe",
+            "heading": "Wholesome & Pure\nDesi Panjiri",
+            "copy": "Nutrient-packed traditional delicacy enriched with makhana, roasted dry fruits, gond, and pure ghee goodness.",
+            "button_label": "Explore Panjiri",
+            "button_link": "/collections/all"
+          }
+        },
+        "slide_ghevar": {
+          "type": "slide",
+          "settings": {
+            "preset_image": "s3.png",
+            "eyebrow": "Royal Celebration",
+            "heading": "Crispy & Syrupy\nRoyal Malai Ghevar",
+            "copy": "Honeycomb filigree disc infused with saffron rabri, roasted pistachios, and pure silver vark.",
+            "button_label": "Discover Ghevar",
+            "button_link": "/collections/all"
+          }
+        },
+        "slide_jalebi": {
+          "type": "slide",
+          "settings": {
+            "preset_image": "s4.png",
+            "eyebrow": "Fresh & Festive",
+            "heading": "Golden Crisp\nDesi Ghee Jalebi",
+            "copy": "Spiral swirls fried to perfection in 100% pure cow ghee, soaked in aromatic cardamom and saffron syrup.",
+            "button_label": "Taste The Tradition",
+            "button_link": "/collections/all"
+          }
+        },
+        "slide_prev_1": {
+          "type": "slide",
+          "settings": {
+            "preset_image": "Festive Indian Sweets in Gold and Maroon.png",
+            "eyebrow": "Vedanta Sweets",
+            "heading": "A Tradition\nof Pure Goodness",
+            "copy": "Bringing you the finest Indian sweets, crafted with traditional recipes, premium ingredients and a lot of love.",
+            "button_label": "Explore our sweets",
+            "button_link": "/collections/all"
+          }
+        },
+        "slide_prev_2": {
+          "type": "slide",
+          "settings": {
+            "preset_image": "Festive Indian Mithai Celebration.png",
+            "eyebrow": "A gift of tradition",
+            "heading": "Make every\ncelebration sweeter",
+            "copy": "Share beautifully crafted mithai, made to bring people together for life's most treasured moments.",
+            "button_label": "Discover our collection",
+            "button_link": "/collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "slide_pinni",
+        "slide_panjiri",
+        "slide_ghevar",
+        "slide_jalebi",
+        "slide_prev_1",
+        "slide_prev_2"
+      ],
       "settings": {
-        "button_link_one": "/collections/all",
-        "button_link_two": "/collections/all"
+        "autoplay": true,
+        "autoplay_interval": 5,
+        "desktop_height": 680
       }
     },
     "shop_by_category": {
@@ -79,7 +156,7 @@
         "subtitle": "Explore our wide range of traditional and premium sweets, crafted for every celebration and special moment.",
         "button_label": "View All Collections",
         "button_url": "/collections",
-        "collection_source": "all"
+        "collection_source": "blocks"
       }
     },
     "bestsellers": {
@@ -89,7 +166,17 @@
         "heading": "Vedant Sweets Top Pick",
         "subtitle": "Handcrafted with pure cow ghee and rich dry fruits, loved across every home and celebration.",
         "products_to_show": 8,
-        "show_view_all": true
+        "show_view_all": true,
+        "padding_y": 15
+      }
+    },
+    "compact_cta": {
+      "type": "compact-cta",
+      "settings": {
+        "eyebrow": "Custom Orders & Corporate Gifting",
+        "heading": "Celebrate Sweet Beginnings With Bespoke Mithai Boxes\nHandcrafted Fresh With 100% Pure Desi Cow Ghee",
+        "button_label": "Contact Us",
+        "button_link": "/pages/contact"
       }
     },
     "testimonials": {
@@ -160,6 +247,7 @@
     "main",
     "shop_by_category",
     "bestsellers",
+    "compact_cta",
     "testimonials"
   ]
 }

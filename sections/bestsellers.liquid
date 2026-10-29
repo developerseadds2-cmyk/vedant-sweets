@@ -107,22 +107,6 @@
                 </svg>
               </button>
 
-              {% # Floating Action: Quick View %}
-              <button
-                type="button"
-                class="vs-card-quickview-btn"
-                data-quickview-btn
-                data-product-url="{{ product.url }}"
-                data-product-handle="{{ product.handle }}"
-                aria-label="Quick view {{ product.title | escape }}"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-                <span>Quick View</span>
-              </button>
-
               {% # Product Image Link %}
               <a href="{{ product.url }}" class="vs-bs-card__media-link" aria-label="{{ product.title | escape }}">
                 {% if product.featured_media != blank %}
@@ -149,8 +133,44 @@
                 {% endif %}
               </a>
 
-              {% # Direct Add to Cart Action %}
-              <div class="vs-bs-card__quick-add">
+              {% # Hover Action: Quick View Button (Placed on Image overlay) %}
+              <div class="vs-bs-card__quick-view-overlay">
+                <button
+                  type="button"
+                  class="vs-bs-quickview-btn"
+                  data-quickview-btn
+                  data-product-url="{{ product.url }}"
+                  data-product-handle="{{ product.handle }}"
+                  aria-label="Quick view {{ product.title | escape }}"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>Quick View</span>
+                </button>
+              </div>
+            </div>
+
+            {% # Product Meta %}
+            <div class="vs-bs-card__content">
+              {% if section.settings.show_vendor and product.vendor != blank %}
+                <div class="vs-bs-card__vendor">{{ product.vendor }}</div>
+              {% endif %}
+
+              <h3 class="vs-bs-card__title">
+                <a href="{{ product.url }}">{{ product.title }}</a>
+              </h3>
+
+              <div class="vs-bs-card__price-row">
+                <span class="vs-bs-card__price">{{ current_variant.price | money }}</span>
+                {% if current_variant.compare_at_price > current_variant.price %}
+                  <s class="vs-bs-card__compare-price">{{ current_variant.compare_at_price | money }}</s>
+                {% endif %}
+              </div>
+
+              {% # Add to Cart Action Placed Below Price %}
+              <div class="vs-bs-card__add-row">
                 {% form 'product', product, class: 'vs-bs-add-form' %}
                   <input type="hidden" name="id" value="{{ current_variant.id }}">
                   <input type="hidden" name="quantity" value="1">
@@ -174,24 +194,6 @@
                     </svg>
                   </button>
                 {% endform %}
-              </div>
-            </div>
-
-            {% # Product Meta %}
-            <div class="vs-bs-card__content">
-              {% if section.settings.show_vendor and product.vendor != blank %}
-                <div class="vs-bs-card__vendor">{{ product.vendor }}</div>
-              {% endif %}
-
-              <h3 class="vs-bs-card__title">
-                <a href="{{ product.url }}">{{ product.title }}</a>
-              </h3>
-
-              <div class="vs-bs-card__price-row">
-                <span class="vs-bs-card__price">{{ current_variant.price | money }}</span>
-                {% if current_variant.compare_at_price > current_variant.price %}
-                  <s class="vs-bs-card__compare-price">{{ current_variant.compare_at_price | money }}</s>
-                {% endif %}
               </div>
             </div>
           </article>
@@ -228,22 +230,6 @@
     {% endif %}
   </div>
 </section>
-
-{% # Global Quick View Modal Dialog %}
-<div id="vs-quickview-modal" class="vs-quickview-modal" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="vs-quickview-backdrop" data-close-quickview></div>
-  <div class="vs-quickview-dialog">
-    <button type="button" class="vs-quickview-close" data-close-quickview aria-label="Close modal">✕</button>
-    <div class="vs-quickview-body" id="vs-quickview-body">
-      <div class="vs-quickview-loading">
-        <svg class="vs-quickview-spinner" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
-        </svg>
-      </div>
-    </div>
-  </div>
-</div>
 
 {% schema %}
 {
@@ -324,11 +310,11 @@
       "type": "range",
       "id": "padding_y",
       "label": "Vertical Padding",
-      "min": 24,
+      "min": 10,
       "max": 100,
-      "step": 4,
+      "step": 1,
       "unit": "px",
-      "default": 64
+      "default": 15
     }
   ],
   "presets": [

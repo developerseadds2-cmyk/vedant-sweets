@@ -1,0 +1,79 @@
+{% comment %}
+  Vedant Pure - Artisanal Dark CTA Banner Card
+  Framed inside the container grid with rounded corners, subtle gold borders,
+  ornamental lotus motif, elegant Playfair typography, and gold pill CTA.
+{% endcomment %}
+
+<section class="vs-compact-cta-wrap" id="vs-compact-cta-{{ section.id }}">
+  <div class="vs-compact-cta-card">
+    {% # Subtle Decorative Gold Corner Mandalas %}
+    <div class="vs-compact-cta-bg-ornament vs-compact-cta-bg-ornament--left" aria-hidden="true"></div>
+    <div class="vs-compact-cta-bg-ornament vs-compact-cta-bg-ornament--right" aria-hidden="true"></div>
+
+    <div class="vs-compact-cta-content">
+      <div class="vs-compact-cta-badge">
+        <svg class="vs-compact-cta-lotus" viewBox="0 0 36 20" fill="none" stroke="currentColor">
+          <path d="M18 18C18 18 12 11 12 6.5C12 3.5 14.5 1 18 1C21.5 1 24 3.5 24 6.5C24 11 18 18 18 18Z" stroke-width="1.3"/>
+          <path d="M18 18C18 18 8 13.5 6 9C4 4.5 6.5 2 9.5 2.5C12.5 3 15.5 8 18 18Z" stroke-width="1.2"/>
+          <path d="M18 18C18 18 28 13.5 30 9C32 4.5 29.5 2 26.5 2.5C23.5 3 20.5 8 18 18Z" stroke-width="1.2"/>
+        </svg>
+        {% if section.settings.eyebrow != blank %}
+          <span>{{ section.settings.eyebrow | escape }}</span>
+        {% endif %}
+      </div>
+
+      <h2 class="vs-compact-cta-heading">
+        {{ section.settings.heading | escape | newline_to_br }}
+      </h2>
+    </div>
+
+    <div class="vs-compact-cta-action">
+      <a
+        href="{{ section.settings.button_link | default: '/pages/contact' }}"
+        class="vs-compact-cta-btn"
+      >
+        <span>{{ section.settings.button_label | escape }}</span>
+        <svg class="vs-cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Artisanal Dark CTA",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow / Badge",
+      "default": "Bespoke Corporate & Wedding Gifting"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading (2 Lines)",
+      "default": "Celebrate Sweet Beginnings with Handcrafted Gift Hampers\nCustomised Fresh in 100% Pure Desi Cow Ghee"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Enquire Now"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Artisanal Dark CTA"
+    }
+  ]
+}
+{% endschema %}

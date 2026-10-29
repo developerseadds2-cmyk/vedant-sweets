@@ -4,8 +4,19 @@
   product tags, inventory, vendor, description, variants, and metafields.
 {% endcomment %}
 
-{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign current_variant = product.selected_or_first_available_variant | default: product.variants.first %}
 {% assign featured_media = current_variant.featured_media | default: product.featured_media %}
+
+{% assign is_in_stock = false %}
+{% if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy != 'continue' %}
+  {% if current_variant.inventory_quantity > 0 %}
+    {% assign is_in_stock = true %}
+  {% elsif current_variant.available %}
+    {% assign is_in_stock = true %}
+  {% endif %}
+{% elsif current_variant.available or product.available %}
+  {% assign is_in_stock = true %}
+{% endif %}
 
 <article class="vs-pdp-section" data-product-id="{{ product.id }}" data-section-id="{{ section.id }}">
   <div class="vs-pdp-container">
@@ -39,8 +50,32 @@
     </nav>
 
     <div class="vs-pdp-layout" id="vs-pdp-main-trigger">
-      {% # Left Column: Gallery with Main Image and Thumbnails %}
-      <div class="vs-pdp-gallery">
+      {% # Left Column: Gallery with Left Thumbnails & Main Image Showcase %}
+      <div class="vs-pdp-gallery" data-pdp-gallery>
+        {% if product.images.size > 1 %}
+          <div class="vs-pdp-gallery__thumbnails" role="tablist" aria-label="Product Media">
+            {% for image in product.images %}
+              <button
+                type="button"
+                class="vs-pdp-thumb{% if forloop.first %} is-active{% endif %}"
+                data-thumbnail-src="{{ image | image_url: width: 900 }}"
+                data-thumbnail-index="{{ forloop.index0 }}"
+                aria-label="View product image {{ forloop.index }}"
+                role="tab"
+                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              >
+                <img
+                  src="{{ image | image_url: width: 150, height: 150, crop: 'center' }}"
+                  alt="{{ image.alt | default: product.title | escape }}"
+                  width="70"
+                  height="70"
+                  loading="lazy"
+                >
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+
         <div class="vs-pdp-gallery__stage">
           {% if product.compare_at_price > product.price %}
             {% assign savings = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
@@ -67,30 +102,6 @@
             {% endif %}
           </div>
         </div>
-
-        {% if product.images.size > 1 %}
-          <div class="vs-pdp-gallery__thumbnails" role="tablist" aria-label="Product Media">
-            {% for image in product.images %}
-              <button
-                type="button"
-                class="vs-pdp-thumb{% if forloop.first %} is-active{% endif %}"
-                data-thumbnail-src="{{ image | image_url: width: 900 }}"
-                data-thumbnail-index="{{ forloop.index0 }}"
-                aria-label="View product image {{ forloop.index }}"
-                role="tab"
-                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-              >
-                <img
-                  src="{{ image | image_url: width: 150, height: 150, crop: 'center' }}"
-                  alt="{{ image.alt | default: product.title | escape }}"
-                  width="70"
-                  height="70"
-                  loading="lazy"
-                >
-              </button>
-            {% endfor %}
-          </div>
-        {% endif %}
       </div>
 
       {% # Right Column: Product Info, Options, and Purchasing Form %}
@@ -104,11 +115,15 @@
         {% # Dynamic Meta Row: Stock Status and SKU %}
         <div class="vs-pdp-meta-row">
           <div class="vs-pdp-stock-status">
-            {% if current_variant.available %}
+            {% if is_in_stock %}
               <span class="vs-stock-bullet vs-stock-bullet--in-stock"></span>
               <span class="vs-stock-text" data-stock-text>
-                {% if current_variant.inventory_management and current_variant.inventory_quantity > 0 %}
-                  In Stock ({{ current_variant.inventory_quantity }} available)
+                {% if current_variant.inventory_quantity > 0 %}
+                  {% if current_variant.inventory_quantity <= 5 %}
+                    Only {{ current_variant.inventory_quantity }} left in stock!
+                  {% else %}
+                    In Stock — {{ current_variant.inventory_quantity }} available
+                  {% endif %}
                 {% else %}
                   In Stock
                 {% endif %}
@@ -232,10 +247,10 @@
                 type="submit"
                 name="add"
                 class="vs-pdp-add-btn vs-pdp-add-btn--shaking"
-                {% unless current_variant.available %}disabled{% endunless %}
+                {% unless is_in_stock %}disabled{% endunless %}
               >
                 <span class="vs-pdp-add-text">
-                  {% if current_variant.available %}
+                  {% if is_in_stock %}
                     Add to Cart
                   {% else %}
                     Sold Out
@@ -442,10 +457,10 @@
           type="button"
           class="vs-sticky-bar__btn"
           id="vs-sticky-add-btn"
-          {% unless current_variant.available %}disabled{% endunless %}
+          {% unless is_in_stock %}disabled{% endunless %}
         >
           <span id="vs-sticky-btn-text">
-            {% if current_variant.available %}
+            {% if is_in_stock %}
               Add To Cart
             {% else %}
               Sold Out

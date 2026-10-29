@@ -36,5 +36,21 @@
     {{ content_for_layout }}
 
     {% sections 'footer-group' %}
+
+    {% # Global Quick View Modal Dialog %}
+    <div id="vs-quickview-modal" class="vs-quickview-modal" aria-hidden="true" role="dialog" aria-modal="true">
+      <div class="vs-quickview-backdrop" data-close-quickview></div>
+      <div class="vs-quickview-dialog">
+        <button type="button" class="vs-quickview-close" data-close-quickview aria-label="Close modal">✕</button>
+        <div class="vs-quickview-body" id="vs-quickview-body">
+          <div class="vs-quickview-loading">
+            <svg class="vs-quickview-spinner" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

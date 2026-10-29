@@ -1,164 +1,555 @@
 {% doc %}
-  Renders the comprehensive multi-column Mega Menu for Vedant Pure categories.
-  Organizes the 15 categories with all sub-items into elegant columns with direct links.
+  Renders the interactive Category-Hover Mega Menu for Vedant Pure.
+  Features:
+  - Left navigation: Dynamic store collections with custom outline icons and active hover tab pill
+  - Middle: Golden lotus motif header, collection title, collection description, golden line accent, and 2-column product links under that collection
+  - Right: Category photo card featuring collection image (or first product image), collection title, and "Shop [Collection] →" action
+  - Footer bar: Leaf note and "View All Collections →" link
 {% enddoc %}
 
-<div class="vs-megamenu vs-megamenu--catalog" id="vs-megamenu-panel">
-  <div class="vs-megamenu__catalog-inner">
-    <div class="vs-megamenu__columns-grid">
-      {% # Column 1: Sweets & Mithai %}
-      <div class="vs-megamenu__col">
-        <h3 class="vs-megamenu__col-title">
-          <a href="/collections/all">1. Sweets & Mithai</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Kaju Katli & Kaju Sweets</a></li>
-          <li><a href="/collections/all">Barfi</a></li>
-          <li><a href="/collections/all">Ladoo</a></li>
-          <li><a href="/collections/all">Peda</a></li>
-          <li><a href="/collections/all">Gulab Jamun & Kala Jamun</a></li>
-          <li><a href="/collections/all">Rasgulla & Rasmalai</a></li>
-          <li><a href="/collections/all">Cham Cham & Sandesh</a></li>
-          <li><a href="/collections/all">Milk Cake & Kalakand</a></li>
-          <li><a href="/collections/all">Soan Papdi & Soan Roll</a></li>
-          <li><a href="/collections/all">Bengali & Malai Sweets</a></li>
-          <li><a href="/collections/all">Halwa, Jalebi & Imarti</a></li>
-          <li><a href="/collections/all">Sugar-Free Sweets</a></li>
-          <li><a href="/collections/all">Traditional Punjabi Sweets</a></li>
-        </ul>
-      </div>
+{% # Filter out system collections and gather valid store collections %}
+{% assign valid_colls_count = 0 %}
+{% for c in collections %}
+  {% if c.handle != 'all' and c.handle != 'frontpage' %}
+    {% assign valid_colls_count = valid_colls_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
 
-      {% # Column 2: Namkeen, Bhujia & Savouries %}
-      <div class="vs-megamenu__col">
-        <h3 class="vs-megamenu__col-title">
-          <a href="/collections/all">2. Namkeen & Bhujia</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Aloo & Bikaneri Bhujia</a></li>
-          <li><a href="/collections/all">Plain & Masala Bhujia</a></li>
-          <li><a href="/collections/all">Ratlami & Nylon Sev</a></li>
-          <li><a href="/collections/all">Khatta Meetha Mixture</a></li>
-          <li><a href="/collections/all">Navratan & Punjabi Mixture</a></li>
-          <li><a href="/collections/all">Chana Dal & Moong Dal</a></li>
-          <li><a href="/collections/all">Masala & Salted Peanuts</a></li>
-          <li><a href="/collections/all">Roasted & Masala Chana</a></li>
-          <li><a href="/collections/all">Cornflakes Mixture & Dal Moth</a></li>
-        </ul>
+<div class="vs-megamenu vs-megamenu--interactive" id="vs-megamenu-panel">
+  <div class="vs-megamenu__hover-container">
+    {% # Left navigation: Collections with thematic icons %}
+    <nav class="vs-megamenu__nav-col" aria-label="Mega menu collections">
+      <ul class="vs-megamenu__nav-list">
+        {% if valid_colls_count > 0 %}
+          {% assign nav_idx = 0 %}
+          {% for coll in collections %}
+            {% if coll.handle == 'all' or coll.handle == 'frontpage' %}
+              {% continue %}
+            {% endif %}
+            {% assign nav_idx = nav_idx | plus: 1 %}
+            {% if nav_idx > 6 %}
+              {% break %}
+            {% endif %}
+            <li class="vs-megamenu__nav-item {% if nav_idx == 1 %}is-active{% endif %}" data-mega-cat="{{ coll.handle }}">
+              <a href="{{ coll.url }}" class="vs-megamenu__nav-link">
+                <span class="vs-megamenu__nav-icon">
+                  {% assign icon_mod = nav_idx | modulo: 5 %}
+                  {% case icon_mod %}
+                    {% when 1 %}
+                      {% # Ghee Jar Icon %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 4h10M8 4v2a4 4 0 0 0 8 0V4M6 9h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/>
+                        <path d="M10 14h4"/>
+                      </svg>
+                    {% when 2 %}
+                      {% # Diamond Mithai / Kaju Katli Icon %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3 9 9-9 9-9-9 9-9Z"/>
+                        <path d="m3 12 9 9 9-9"/>
+                      </svg>
+                    {% when 3 %}
+                      {% # Savoury Bowl Icon %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 11h18a1 1 0 0 1 1 1 9 9 0 0 1-18 0 1 1 0 0 1-1-1Z"/>
+                        <path d="M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"/>
+                      </svg>
+                    {% when 4 %}
+                      {% # Almond / Nut Icon %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2C8 6 5 10 5 15a7 7 0 0 0 14 0c0-5-3-9-7-13Z"/>
+                        <path d="M12 6c-2 3-3 6-3 9"/>
+                      </svg>
+                    {% else %}
+                      {% # Gift Box Icon %}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="8" width="18" height="4" rx="1"/>
+                        <path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                        <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 4.8 0 0 1 12 8a4.8 4.8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+                      </svg>
+                  {% endcase %}
+                </span>
+                <span class="vs-megamenu__nav-text">{{ coll.title | escape }}</span>
+                <svg class="vs-megamenu__nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </a>
+            </li>
+          {% endfor %}
+        {% else %}
+          {% # Fallback 5 Core Collections if store collections are not yet populated %}
+          <li class="vs-megamenu__nav-item is-active" data-mega-cat="desi-ghee">
+            <a href="/collections/all" class="vs-megamenu__nav-link">
+              <span class="vs-megamenu__nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 4h10M8 4v2a4 4 0 0 0 8 0V4M6 9h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/>
+                  <path d="M10 14h4"/>
+                </svg>
+              </span>
+              <span class="vs-megamenu__nav-text">Traditional Desi Ghee Pinni & Sweets</span>
+              <svg class="vs-megamenu__nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </li>
+          <li class="vs-megamenu__nav-item" data-mega-cat="sweets">
+            <a href="/collections/all" class="vs-megamenu__nav-link">
+              <span class="vs-megamenu__nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m12 3 9 9-9 9-9-9 9-9Z"/>
+                  <path d="m3 12 9 9 9-9"/>
+                </svg>
+              </span>
+              <span class="vs-megamenu__nav-text">Fresh Artisanal Mithai</span>
+              <svg class="vs-megamenu__nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </li>
+          <li class="vs-megamenu__nav-item" data-mega-cat="namkeen">
+            <a href="/collections/all" class="vs-megamenu__nav-link">
+              <span class="vs-megamenu__nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 11h18a1 1 0 0 1 1 1 9 9 0 0 1-18 0 1 1 0 0 1-1-1Z"/>
+                  <path d="M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"/>
+                </svg>
+              </span>
+              <span class="vs-megamenu__nav-text">Crispy Namkeen & Savouries</span>
+              <svg class="vs-megamenu__nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </li>
+          <li class="vs-megamenu__nav-item" data-mega-cat="dryfruits">
+            <a href="/collections/dry-fruits" class="vs-megamenu__nav-link">
+              <span class="vs-megamenu__nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2C8 6 5 10 5 15a7 7 0 0 0 14 0c0-5-3-9-7-13Z"/>
+                  <path d="M12 6c-2 3-3 6-3 9"/>
+                </svg>
+              </span>
+              <span class="vs-megamenu__nav-text">Handpicked Dry Fruits & Nuts</span>
+              <svg class="vs-megamenu__nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </li>
+          <li class="vs-megamenu__nav-item" data-mega-cat="giftboxes">
+            <a href="/collections/gift-packs" class="vs-megamenu__nav-link">
+              <span class="vs-megamenu__nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="8" width="18" height="4" rx="1"/>
+                  <path d="M12 8v13M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>
+                  <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 4.8 0 0 1 12 8a4.8 4.8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+                </svg>
+              </span>
+              <span class="vs-megamenu__nav-text">Festive & Celebration Hampers</span>
+              <svg class="vs-megamenu__nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
 
-        <h3 class="vs-megamenu__col-title vs-megamenu__col-title--spaced">
-          <a href="/collections/all">3. Snacks & Savouries</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Samosa & Kachori</a></li>
-          <li><a href="/collections/all">Mathri & Namak Para</a></li>
-          <li><a href="/collections/all">Shakkar Para & Papdi</a></li>
-          <li><a href="/collections/all">Fafda & Gathiya</a></li>
-          <li><a href="/collections/all">Chakli & Murukku</a></li>
-          <li><a href="/collections/all">Khakhra & Farsan</a></li>
-          <li><a href="/collections/all">Ready-to-Eat Tea-Time Snacks</a></li>
-        </ul>
-      </div>
+    {% # Right pane: Panels swapped dynamically on collection hover %}
+    <div class="vs-megamenu__preview-col">
+      {% if valid_colls_count > 0 %}
+        {% assign panel_idx = 0 %}
+        {% for coll in collections %}
+          {% if coll.handle == 'all' or coll.handle == 'frontpage' %}
+            {% continue %}
+          {% endif %}
+          {% assign panel_idx = panel_idx | plus: 1 %}
+          {% if panel_idx > 6 %}
+            {% break %}
+          {% endif %}
+          
+          {% # Dynamic collection image, fallback to collection featured image, product image or theme asset %}
+          {% assign coll_img = coll.featured_image | default: coll.image | default: coll.products.first.featured_image %}
+          {% assign coll_desc = coll.description | strip_html | truncate: 85 %}
+          {% if coll_desc == blank %}
+            {% assign coll_desc = "Handcrafted with 100% Pure Cow Desi Ghee & Fresh Ingredients" %}
+          {% endif %}
 
-      {% # Column 3: Dry Fruits & Gift Hampers %}
-      <div class="vs-megamenu__col">
-        <h3 class="vs-megamenu__col-title">
-          <a href="/collections/dry-fruits">4. Dry Fruits & Nuts</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/dry-fruits">Almonds & Cashews</a></li>
-          <li><a href="/collections/dry-fruits">Pistachios & Walnuts</a></li>
-          <li><a href="/collections/dry-fruits">Raisins & Dates</a></li>
-          <li><a href="/collections/dry-fruits">Figs (Anjeer) & Apricots</a></li>
-          <li><a href="/collections/dry-fruits">Fox Nuts (Makhana)</a></li>
-          <li><a href="/collections/dry-fruits">Roasted & Salted Nuts</a></li>
-          <li><a href="/collections/dry-fruits">Royal Trail & Dry Fruit Mix</a></li>
-        </ul>
+          <div class="vs-megamenu__panel {% if panel_idx == 1 %}is-active{% endif %}" id="mega-panel-{{ coll.handle }}">
+            <div class="vs-megamenu__panel-body">
+              <div class="vs-megamenu__panel-content">
+                <div class="vs-megamenu__panel-header">
+                  <h4 class="vs-megamenu__panel-title">
+                    <span class="vs-megamenu__lotus-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3c-1.2 3.2-3.8 6.5-7 7.5 2.8 1.4 5.7 1 7-1 1.3 2 4.2 2.4 7 1-3.2-1-5.8-4.3-7-7.5Z"/>
+                        <path d="M12 11.5c-2.3 2.5-6.2 3.8-10 2.5 3 2.5 7.2 2.2 9.2-.5.5-.7.8-1.5.8-2Z"/>
+                        <path d="M12 11.5c2.3 2.5 6.2 3.8 10 2.5-3 2.5-7.2 2.2-9.2-.5-.5-.7-.8-1.5-.8-2Z"/>
+                        <path d="M7 16.5c2 .8 3.5 1.5 5 1.5s3-.7 5-1.5c-1.5 2.2-3.2 3.5-5 3.5s-3.5-1.3-5-3.5Z"/>
+                      </svg>
+                    </span>
+                    <span>{{ coll.title | escape }}</span>
+                  </h4>
+                  <p class="vs-megamenu__panel-subtitle">{{ coll_desc | escape }}</p>
+                </div>
 
-        <h3 class="vs-megamenu__col-title vs-megamenu__col-title--spaced">
-          <a href="/collections/gift-packs">5. Gift Boxes & Hampers</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/gift-packs">Sweets Gift Boxes</a></li>
-          <li><a href="/collections/gift-packs">Assorted Mithai Boxes</a></li>
-          <li><a href="/collections/gift-packs">Dry Fruit Gift Boxes</a></li>
-          <li><a href="/collections/gift-packs">Namkeen Gift Packs</a></li>
-          <li><a href="/collections/gift-packs">Festive & Wedding Hampers</a></li>
-          <li><a href="/collections/gift-packs">Corporate Gift Boxes</a></li>
-          <li><a href="/collections/gift-packs">Custom & Festival Packs</a></li>
-        </ul>
-      </div>
+                {% # Dynamic list of products under this collection %}
+                <div class="vs-megamenu__panel-grid">
+                  {% assign coll_products = coll.products %}
+                  {% if coll_products.size > 0 %}
+                    <ul class="vs-megamenu__sublist">
+                      {% for prod in coll_products limit: 4 %}
+                        {% assign prod_img = prod.featured_media | default: prod.featured_image %}
+                        <li>
+                          <a
+                            href="{{ prod.url }}"
+                            class="vs-megamenu__product-link"
+                            data-mega-prod-img="{% if prod_img != blank %}{{ prod_img | image_url: width: 600, height: 420, crop: 'center' }}{% endif %}"
+                            data-mega-prod-title="{{ prod.title | escape }}"
+                            data-mega-prod-price="{{ prod.price | money }}"
+                          >
+                            <span class="vs-megamenu__chevron">›</span>
+                            <span>{{ prod.title | escape }}</span>
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    <ul class="vs-megamenu__sublist">
+                      {% for prod in coll_products offset: 4 limit: 4 %}
+                        {% assign prod_img = prod.featured_media | default: prod.featured_image %}
+                        <li>
+                          <a
+                            href="{{ prod.url }}"
+                            class="vs-megamenu__product-link"
+                            data-mega-prod-img="{% if prod_img != blank %}{{ prod_img | image_url: width: 600, height: 420, crop: 'center' }}{% endif %}"
+                            data-mega-prod-title="{{ prod.title | escape }}"
+                            data-mega-prod-price="{{ prod.price | money }}"
+                          >
+                            <span class="vs-megamenu__chevron">›</span>
+                            <span>{{ prod.title | escape }}</span>
+                          </a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </div>
+              </div>
 
-      {% # Column 4: Bakery, Papad & Traditional Specials %}
-      <div class="vs-megamenu__col">
-        <h3 class="vs-megamenu__col-title">
-          <a href="/collections/all">6. Bakery & Biscuits</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Cookies & Biscuits</a></li>
-          <li><a href="/collections/all">Rusk, Toast & Khari</a></li>
-          <li><a href="/collections/all">Butter & Jeera Cookies</a></li>
-        </ul>
+              <div class="vs-megamenu__panel-photo">
+                {% assign default_card_img = '' %}
+                {% if coll_img != blank %}
+                  {% assign default_card_img = coll_img | image_url: width: 600, height: 420, crop: 'center' %}
+                {% else %}
+                  {% assign mod_img = panel_idx | modulo: 5 %}
+                  {% case mod_img %}
+                    {% when 1 %}{% assign default_img_name = 'collection-laddoo.jpg' %}
+                    {% when 2 %}{% assign default_img_name = 'collection-mithai.jpg' %}
+                    {% when 3 %}{% assign default_img_name = 'product-dharwad-peda.jpg' %}
+                    {% when 4 %}{% assign default_img_name = 'collection-dry-fruits.jpg' %}
+                    {% else %}{% assign default_img_name = 'collection-gift-packs.jpg' %}
+                  {% endcase %}
+                  {% assign default_card_img = default_img_name | asset_url %}
+                {% endif %}
 
-        <h3 class="vs-megamenu__col-title vs-megamenu__col-title--spaced">
-          <a href="/collections/all">7. Papad & Fryums</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Punjabi & Masala Papad</a></li>
-          <li><a href="/collections/all">Moong & Urad Papad</a></li>
-          <li><a href="/collections/all">Potato & Banana Chips</a></li>
-        </ul>
+                <a
+                  href="{{ coll.url }}"
+                  class="vs-megamenu__photo-card"
+                  data-default-href="{{ coll.url }}"
+                  data-default-img="{{ default_card_img }}"
+                  data-default-title="{{ coll.title | escape }}"
+                  data-default-cta="Shop {{ coll.title | escape }} →"
+                >
+                  <div class="vs-megamenu__photo-img-wrap">
+                    <img 
+                      src="{{ default_card_img }}" 
+                      alt="{{ coll.title | escape }}" 
+                      class="vs-megamenu__photo-img"
+                      loading="lazy"
+                      width="410"
+                      height="245"
+                    >
+                  </div>
+                  <div class="vs-megamenu__photo-info">
+                    <span class="vs-megamenu__photo-title">{{ coll.title | escape }}</span>
+                    <span class="vs-megamenu__photo-cta">Shop {{ coll.title | escape }} →</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% # Fallback 5 Core Panels when store collections are not yet created %}
+        {% # Panel 1: Traditional Desi Ghee Pinni & Sweets (Default Active) %}
+        <div class="vs-megamenu__panel is-active" id="mega-panel-desi-ghee">
+          <div class="vs-megamenu__panel-body">
+            <div class="vs-megamenu__panel-content">
+              <div class="vs-megamenu__panel-header">
+                <h4 class="vs-megamenu__panel-title">
+                  <span class="vs-megamenu__lotus-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3c-1.2 3.2-3.8 6.5-7 7.5 2.8 1.4 5.7 1 7-1 1.3 2 4.2 2.4 7 1-3.2-1-5.8-4.3-7-7.5Z"/>
+                      <path d="M12 11.5c-2.3 2.5-6.2 3.8-10 2.5 3 2.5 7.2 2.2 9.2-.5.5-.7.8-1.5.8-2Z"/>
+                      <path d="M12 11.5c2.3 2.5 6.2 3.8 10 2.5-3 2.5-7.2 2.2-9.2-.5-.5-.7-.8-1.5-.8-2Z"/>
+                      <path d="M7 16.5c2 .8 3.5 1.5 5 1.5s3-.7 5-1.5c-1.5 2.2-3.2 3.5-5 3.5s-3.5-1.3-5-3.5Z"/>
+                    </svg>
+                  </span>
+                  <span>Traditional Desi Ghee Pinni & Sweets</span>
+                </h4>
+                <p class="vs-megamenu__panel-subtitle">Handcrafted with 100% Pure Cow Desi Ghee</p>
+              </div>
+              <div class="vs-megamenu__panel-grid">
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Punjabi Desi Ghee Pinni</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Atta & Besan Pinni</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Desi Ghee Besan Ladoo</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Desi Ghee Motichoor Ladoo</a></li>
+                </ul>
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Desi Ghee Soan Papdi</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Traditional Panjiri</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> 100% Pure Desi Cow Ghee</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Festive Desi Ghee Hampers</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="vs-megamenu__panel-photo">
+              <a href="/collections/all" class="vs-megamenu__photo-card">
+                <div class="vs-megamenu__photo-img-wrap">
+                  <img 
+                    src="{{ 'collection-laddoo.jpg' | asset_url }}" 
+                    alt="Traditional Desi Ghee Pinni & Sweets" 
+                    class="vs-megamenu__photo-img"
+                    loading="lazy"
+                    width="410"
+                    height="245"
+                  >
+                </div>
+                <div class="vs-megamenu__photo-info">
+                  <span class="vs-megamenu__photo-title">Traditional Desi Ghee Pinni & Sweets</span>
+                  <span class="vs-megamenu__photo-cta">Shop Pinni & Sweets →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
-        <h3 class="vs-megamenu__col-title vs-megamenu__col-title--spaced">
-          <a href="/collections/all">8. Pickles & Chutneys</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Mango, Lemon & Green Chilli</a></li>
-          <li><a href="/collections/all">Mixed & Sweet Mango Pickle</a></li>
-          <li><a href="/collections/all">Mint, Tamarind & Sweet Chutney</a></li>
-        </ul>
-      </div>
+        {% # Panel 2: Fresh Artisanal Mithai %}
+        <div class="vs-megamenu__panel" id="mega-panel-sweets">
+          <div class="vs-megamenu__panel-body">
+            <div class="vs-megamenu__panel-content">
+              <div class="vs-megamenu__panel-header">
+                <h4 class="vs-megamenu__panel-title">
+                  <span class="vs-megamenu__lotus-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3c-1.2 3.2-3.8 6.5-7 7.5 2.8 1.4 5.7 1 7-1 1.3 2 4.2 2.4 7 1-3.2-1-5.8-4.3-7-7.5Z"/>
+                      <path d="M12 11.5c-2.3 2.5-6.2 3.8-10 2.5 3 2.5 7.2 2.2 9.2-.5.5-.7.8-1.5.8-2Z"/>
+                      <path d="M12 11.5c2.3 2.5 6.2 3.8 10 2.5-3 2.5-7.2 2.2-9.2-.5-.5-.7-.8-1.5-.8-2Z"/>
+                      <path d="M7 16.5c2 .8 3.5 1.5 5 1.5s3-.7 5-1.5c-1.5 2.2-3.2 3.5-5 3.5s-3.5-1.3-5-3.5Z"/>
+                    </svg>
+                  </span>
+                  <span>Fresh Artisanal Mithai</span>
+                </h4>
+                <p class="vs-megamenu__panel-subtitle">Prepared fresh daily with finest dry fruits & khoya</p>
+              </div>
+              <div class="vs-megamenu__panel-grid">
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Kaju Katli & Kaju Sweets</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Pista & Badam Barfi</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Milk Cake & Kalakand</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Gulab Jamun & Rasgulla</a></li>
+                </ul>
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Rasmalai & Sandesh</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Bengali & Malai Sweets</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Sugar-Free Mithai</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Assorted Mithai Box</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="vs-megamenu__panel-photo">
+              <a href="/collections/all" class="vs-megamenu__photo-card">
+                <div class="vs-megamenu__photo-img-wrap">
+                  <img 
+                    src="{{ 'collection-mithai.jpg' | asset_url }}" 
+                    alt="Fresh Artisanal Mithai" 
+                    class="vs-megamenu__photo-img"
+                    loading="lazy"
+                    width="410"
+                    height="245"
+                  >
+                </div>
+                <div class="vs-megamenu__photo-info">
+                  <span class="vs-megamenu__photo-title">Fresh Artisanal Mithai</span>
+                  <span class="vs-megamenu__photo-cta">Shop All Mithai →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
-      {% # Column 5: Seasonal Specials & Pantry Essentials %}
-      <div class="vs-megamenu__col">
-        <h3 class="vs-megamenu__col-title">
-          <a href="/collections/all">9. Traditional & Seasonal</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Gajak & Rewri</a></li>
-          <li><a href="/collections/all">Til, Gond & Atta Ladoo</a></li>
-          <li><a href="/collections/all">Panjiri & Punjabi Pinni</a></li>
-          <li><a href="/collections/all">Diwali & Lohri Specials</a></li>
-        </ul>
+        {% # Panel 3: Crispy Namkeen & Savouries %}
+        <div class="vs-megamenu__panel" id="mega-panel-namkeen">
+          <div class="vs-megamenu__panel-body">
+            <div class="vs-megamenu__panel-content">
+              <div class="vs-megamenu__panel-header">
+                <h4 class="vs-megamenu__panel-title">
+                  <span class="vs-megamenu__lotus-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3c-1.2 3.2-3.8 6.5-7 7.5 2.8 1.4 5.7 1 7-1 1.3 2 4.2 2.4 7 1-3.2-1-5.8-4.3-7-7.5Z"/>
+                      <path d="M12 11.5c-2.3 2.5-6.2 3.8-10 2.5 3 2.5 7.2 2.2 9.2-.5.5-.7.8-1.5.8-2Z"/>
+                      <path d="M12 11.5c2.3 2.5 6.2 3.8 10 2.5-3 2.5-7.2 2.2-9.2-.5-.5-.7-.8-1.5-.8-2Z"/>
+                      <path d="M7 16.5c2 .8 3.5 1.5 5 1.5s3-.7 5-1.5c-1.5 2.2-3.2 3.5-5 3.5s-3.5-1.3-5-3.5Z"/>
+                    </svg>
+                  </span>
+                  <span>Crispy Namkeen & Savouries</span>
+                </h4>
+                <p class="vs-megamenu__panel-subtitle">Authentic Rajasthani & Punjabi spice blends</p>
+              </div>
+              <div class="vs-megamenu__panel-grid">
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Aloo & Bikaneri Bhujia</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Ratlami & Nylon Sev</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Khatta Meetha Mixture</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Navratan & Punjabi Mixture</a></li>
+                </ul>
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Chana Dal & Moong Dal</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Samosa & Khasta Kachori</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Mathri & Namak Para</a></li>
+                  <li><a href="/collections/all"><span class="vs-megamenu__chevron">›</span> Tea-Time Farsan</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="vs-megamenu__panel-photo">
+              <a href="/collections/all" class="vs-megamenu__photo-card">
+                <div class="vs-megamenu__photo-img-wrap">
+                  <img 
+                    src="{{ 'product-dharwad-peda.jpg' | asset_url }}" 
+                    alt="Crispy Namkeen & Savouries" 
+                    class="vs-megamenu__photo-img"
+                    loading="lazy"
+                    width="410"
+                    height="245"
+                  >
+                </div>
+                <div class="vs-megamenu__photo-info">
+                  <span class="vs-megamenu__photo-title">Crispy Namkeen & Savouries</span>
+                  <span class="vs-megamenu__photo-cta">View All Namkeen →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
-        <h3 class="vs-megamenu__col-title vs-megamenu__col-title--spaced">
-          <a href="/collections/all">10. Pantry & Essentials</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Pure Desi Cow Ghee</a></li>
-          <li><a href="/collections/all">Honey & Jaggery (Gur)</a></li>
-          <li><a href="/collections/all">Mishri, Saunf & Mouth Fresheners</a></li>
-        </ul>
+        {% # Panel 4: Handpicked Dry Fruits & Nuts %}
+        <div class="vs-megamenu__panel" id="mega-panel-dryfruits">
+          <div class="vs-megamenu__panel-body">
+            <div class="vs-megamenu__panel-content">
+              <div class="vs-megamenu__panel-header">
+                <h4 class="vs-megamenu__panel-title">
+                  <span class="vs-megamenu__lotus-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3c-1.2 3.2-3.8 6.5-7 7.5 2.8 1.4 5.7 1 7-1 1.3 2 4.2 2.4 7 1-3.2-1-5.8-4.3-7-7.5Z"/>
+                      <path d="M12 11.5c-2.3 2.5-6.2 3.8-10 2.5 3 2.5 7.2 2.2 9.2-.5.5-.7.8-1.5.8-2Z"/>
+                      <path d="M12 11.5c2.3 2.5 6.2 3.8 10 2.5-3 2.5-7.2 2.2-9.2-.5-.5-.7-.8-1.5-.8-2Z"/>
+                      <path d="M7 16.5c2 .8 3.5 1.5 5 1.5s3-.7 5-1.5c-1.5 2.2-3.2 3.5-5 3.5s-3.5-1.3-5-3.5Z"/>
+                    </svg>
+                  </span>
+                  <span>Handpicked Dry Fruits & Nuts</span>
+                </h4>
+                <p class="vs-megamenu__panel-subtitle">Premium Grade-A selection, roasted & plain</p>
+              </div>
+              <div class="vs-megamenu__panel-grid">
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Premium Almonds (Badam)</a></li>
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Cashews (Kaju)</a></li>
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Pistachios & Walnuts</a></li>
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Raisins & Royal Dates</a></li>
+                </ul>
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Figs (Anjeer)</a></li>
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Fox Nuts (Makhana)</a></li>
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Roasted & Salted Mix</a></li>
+                  <li><a href="/collections/dry-fruits"><span class="vs-megamenu__chevron">›</span> Royal Trail Mix</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="vs-megamenu__panel-photo">
+              <a href="/collections/dry-fruits" class="vs-megamenu__photo-card">
+                <div class="vs-megamenu__photo-img-wrap">
+                  <img 
+                    src="{{ 'collection-dry-fruits.jpg' | asset_url }}" 
+                    alt="Handpicked Dry Fruits & Nuts" 
+                    class="vs-megamenu__photo-img"
+                    loading="lazy"
+                    width="410"
+                    height="245"
+                  >
+                </div>
+                <div class="vs-megamenu__photo-info">
+                  <span class="vs-megamenu__photo-title">Handpicked Dry Fruits & Nuts</span>
+                  <span class="vs-megamenu__photo-cta">Shop Dry Fruits →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
 
-        <h3 class="vs-megamenu__col-title vs-megamenu__col-title--spaced">
-          <a href="/collections/all">11-15. More Speciality</a>
-        </h3>
-        <ul class="vs-megamenu__sublist">
-          <li><a href="/collections/all">Chips & Wafers</a></li>
-          <li><a href="/collections/all">Beverages & Thandai Mix</a></li>
-          <li><a href="/collections/all">Chocolates & Confectionery</a></li>
-          <li><a href="/collections/all">Sugar-Free & Millet Snacks</a></li>
-          <li><a href="/collections/all">Ready-to-Eat & Frozen Snacks</a></li>
-        </ul>
-      </div>
+        {% # Panel 5: Festive & Celebration Hampers %}
+        <div class="vs-megamenu__panel" id="mega-panel-giftboxes">
+          <div class="vs-megamenu__panel-body">
+            <div class="vs-megamenu__panel-content">
+              <div class="vs-megamenu__panel-header">
+                <h4 class="vs-megamenu__panel-title">
+                  <span class="vs-megamenu__lotus-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3c-1.2 3.2-3.8 6.5-7 7.5 2.8 1.4 5.7 1 7-1 1.3 2 4.2 2.4 7 1-3.2-1-5.8-4.3-7-7.5Z"/>
+                      <path d="M12 11.5c-2.3 2.5-6.2 3.8-10 2.5 3 2.5 7.2 2.2 9.2-.5.5-.7.8-1.5.8-2Z"/>
+                      <path d="M12 11.5c2.3 2.5 6.2 3.8 10 2.5-3 2.5-7.2 2.2-9.2-.5-.5-.7-.8-1.5-.8-2Z"/>
+                      <path d="M7 16.5c2 .8 3.5 1.5 5 1.5s3-.7 5-1.5c-1.5 2.2-3.2 3.5-5 3.5s-3.5-1.3-5-3.5Z"/>
+                    </svg>
+                  </span>
+                  <span>Festive & Celebration Hampers</span>
+                </h4>
+                <p class="vs-megamenu__panel-subtitle">Luxury packaging for weddings, corporate & festivals</p>
+              </div>
+              <div class="vs-megamenu__panel-grid">
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Assorted Mithai Boxes</a></li>
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Desi Ghee Sweets Gift Pack</a></li>
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Royal Dry Fruit Boxes</a></li>
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Festive Celebration Hampers</a></li>
+                </ul>
+                <ul class="vs-megamenu__sublist">
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Wedding Gift Boxes</a></li>
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Corporate Gift Packs</a></li>
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Custom Festival Packs</a></li>
+                  <li><a href="/collections/gift-packs"><span class="vs-megamenu__chevron">›</span> Signature Luxury Boxes</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="vs-megamenu__panel-photo">
+              <a href="/collections/gift-packs" class="vs-megamenu__photo-card">
+                <div class="vs-megamenu__photo-img-wrap">
+                  <img 
+                    src="{{ 'collection-gift-packs.jpg' | asset_url }}" 
+                    alt="Festive & Celebration Hampers" 
+                    class="vs-megamenu__photo-img"
+                    loading="lazy"
+                    width="410"
+                    height="245"
+                  >
+                </div>
+                <div class="vs-megamenu__photo-info">
+                  <span class="vs-megamenu__photo-title">Festive & Celebration Hampers</span>
+                  <span class="vs-megamenu__photo-cta">Explore Gift Packs →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
     </div>
+  </div>
 
-    <div class="vs-megamenu__footer-bar">
-      <div class="vs-megamenu__footer-note">
-        <span class="vs-megamenu__dot" aria-hidden="true"></span>
-        <span>100% Pure Cow Desi Ghee & Fresh Artisanal Recipes prepared daily</span>
-      </div>
-      <a href="/collections" class="vs-megamenu__footer-link">
-        <span>Explore All 15 Product Categories</span>
+  {% # Footer note bar %}
+  <div class="vs-megamenu__footer-bar">
+    <div class="vs-megamenu__footer-note">
+      <svg class="vs-megamenu__footer-leaf" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z"/>
+      </svg>
+      <span>Made with 100% Pure Desi Cow Ghee & Traditional Punjabi Recipes</span>
+    </div>
+    <div class="vs-megamenu__footer-action">
+      <span class="vs-megamenu__footer-sep" aria-hidden="true">|</span>
+      <a href="/collections/all" class="vs-megamenu__footer-link">
+        <span>View All Collections</span>
         <span aria-hidden="true">→</span>
       </a>
     </div>

@@ -45,6 +45,35 @@
         </ul>
       </div>
     {% endif %}
+
+    {% # Country / Region & Currency Selector (Official Shopify Localization Form) %}
+    {% if localization.available_countries.size > 1 %}
+      <div class="vs-footer-localization">
+        <h2 class="vs-footer-heading">Country / Region</h2>
+        {% form 'localization', id: 'vs-localization-form' %}
+          <div class="vs-localization-select-wrap">
+            <select
+              name="country_code"
+              class="vs-localization-select"
+              aria-label="Country / Currency"
+              onchange="this.form.submit()"
+            >
+              {% for country in localization.available_countries %}
+                <option
+                  value="{{ country.iso_code }}"
+                  {% if country.iso_code == localization.country.iso_code %}selected{% endif %}
+                >
+                  {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+                </option>
+              {% endfor %}
+            </select>
+            <svg class="vs-localization-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        {% endform %}
+      </div>
+    {% endif %}
   </div>
 
   <div class="vs-footer-bottom">
