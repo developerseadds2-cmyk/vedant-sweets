@@ -1,12 +1,22 @@
 <section class="vs-collection-page full-width" id="vs-collection-{{ section.id }}">
   {% # Breadcrumb Banner %}
+  {% assign banner_image = collection.image | default: collection.featured_image %}
+  {% if banner_image == blank %}
+    {% if section.settings.default_banner_image != blank %}
+      {% assign banner_image = section.settings.default_banner_image %}
+    {% else %}
+      {% assign first_coll_with_img = collections | where: 'image' | first %}
+      {% assign banner_image = first_coll_with_img.image | default: 'Festive Indian Sweets in Gold and Maroon.png' %}
+    {% endif %}
+  {% endif %}
+
   <header
     class="vs-collection-banner"
     style="
-      {% if collection.image != blank %}
-        --vs-banner-bg: url('{{ collection.image | image_url: width: 2000 }}');
-      {% elsif collection.featured_image != blank %}
-        --vs-banner-bg: url('{{ collection.featured_image | image_url: width: 2000 }}');
+      {% if banner_image.src != blank %}
+        --vs-banner-bg: url('{{ banner_image | image_url: width: 2000 }}');
+      {% elsif banner_image != blank %}
+        --vs-banner-bg: url('{{ banner_image | asset_url }}');
       {% else %}
         --vs-banner-bg: none;
       {% endif %}
@@ -471,6 +481,11 @@
       "id": "show_sample_preview",
       "label": "Show sample preview when collection is empty",
       "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "default_banner_image",
+      "label": "Default Banner Background Image"
     }
   ]
 }

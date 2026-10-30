@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vedant Sweets - Pure Desi Ghee Indian Sweets &amp; Confectionery</title>
+    <meta name="description" content="Authentic Indian artisanal sweets crafted with 100% pure cow desi ghee, handpicked dry fruits and generational recipes.">
+
+    <!-- Theme Critical & Main Stylesheets -->
+    <link rel="stylesheet" href="assets/css/critical.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core Storefront Scripts -->
+    <script src="assets/js/index.js" defer></script>
+    <script src="assets/js/main.js" defer></script>
+
+    <!-- Essential Base Theme Reset & Static 4-Grid Helper -->
+    <style>
+      :root {
+        --vs-font-heading: "Playfair Display", serif;
+        --vs-font-body: "Poppins", sans-serif;
+      }
+      body {
+        padding-bottom: 0 !important;
+      }
+      ul, ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      /* Clean Responsive Products Grid Layout matching Bestsellers */
+      .vs-static-4-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.75rem;
+        width: 100%;
+        max-width: 1140px;
+        margin: 1rem auto 0;
+      }
+      @media (max-width: 991px) {
+        .vs-static-4-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.25rem;
+        }
+      }
+      @media (max-width: 576px) {
+        .vs-static-4-grid {
+          grid-template-columns: 1fr;
+          max-width: 360px;
+        }
+      }
+      .vs-static-4-grid .vs-bs-card {
+        flex: unset !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+      }
+      /* Header Mobile & Desktop Layout */
+      .vs-header-main {
+        background-color: #FFFFFF !important;
+        border-bottom: 1px solid rgba(249, 168, 37, 0.25) !important;
+      }
+      .vs-header-categories-bar {
+        display: block;
+        background-color: #FFFFFF !important;
+        border: none !important;
+        border-top: none !important;
+        border-bottom: none !important;
+        box-shadow: none !important;
+        width: 100%;
+        position: relative;
+        z-index: 105;
+      }
+      .vs-header-categories-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .vs-header-main .vs-menu-toggle {
+        display: none;
+      }
+
+      @media (min-width: 1051px) {
+        .vs-header-inner {
+          justify-content: center !important;
+          display: flex !important;
+        }
+        .vs-brand-link {
+          margin: 0 auto !important;
+        }
+        .vs-header-categories-bar {
+          display: block !important;
+        }
+        .vs-header-categories-bar .vs-navigation {
+          position: static !important;
+          display: block !important;
+          width: 100% !important;
+          height: auto !important;
+          background: transparent !important;
+          padding: 0 !important;
+          transform: none !important;
+          visibility: visible !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+        .vs-header-categories-bar .vs-nav-menu--categories {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 0 !important;
+          margin: 0 auto !important;
+          padding: 0.25rem 0 !important;
+          list-style: none !important;
+          width: 100% !important;
+        }
+        .vs-header-categories-bar .vs-nav-menu--categories .vs-nav-item {
+          position: relative !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          border: none !important;
+        }
+        .vs-header-categories-bar .vs-nav-menu--categories .vs-nav-item:not(:last-child)::after {
+          content: '' !important;
+          display: inline-block !important;
+          width: 1px !important;
+          height: 13px !important;
+          background: #EAEAEA !important;
+        }
+        .vs-header-categories-bar .vs-nav-menu--categories .vs-nav-anchor {
+          display: inline-flex !important;
+          align-items: center !important;
+          padding: 0.65rem 0.85rem !important;
+          font-family: var(--vs-font-body) !important;
+          font-size: 0.88rem !important;
+          font-weight: 600 !important;
+          color: #1A1A1A !important;
+          text-transform: capitalize !important;
+          letter-spacing: 0.01em !important;
+          white-space: nowrap !important;
+        }
+        .vs-header-categories-bar .vs-nav-menu--categories .vs-nav-anchor.is-current,
+        .vs-header-categories-bar .vs-nav-menu--categories .vs-nav-anchor:hover {
+          color: #00452F !important;
+        }
+      }
+
+      @media (max-width: 1050px) {
+        .vs-header-inner {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          width: 100% !important;
+          padding: 0.45rem 1rem !important;
+          box-sizing: border-box !important;
+          min-height: 70px !important;
+        }
+        .vs-brand-link {
+          margin: 0 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+        }
+        .vs-logo-img {
+          max-width: 190px !important;
+          max-height: 55px !important;
+          width: auto !important;
+          height: auto !important;
+        }
+        .vs-header-main .vs-menu-toggle {
+          display: grid !important;
+          place-items: center !important;
+          margin-left: auto !important;
+          z-index: 10 !important;
+        }
+        .vs-header-categories-bar {
+          position: static !important;
+          border: none !important;
+          background: transparent !important;
+          display: block !important;
+          height: 0 !important;
+          overflow: visible !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body style='--vs-font-heading: "Playfair Display", serif; --vs-font-body: "Poppins", sans-serif;'>
+    <!-- Preloader -->
+    <div id="vs-preloader" class="vs-preloader" aria-hidden="true">
+      <div class="vs-preloader__inner">
+        <div class="vs-preloader__ring"></div>
+        <img
+          class="vs-preloader__logo"
+          src="assets/images/logo.png"
+          alt="Vedant Sweets"
+          width="554"
+          height="450"
+        >
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         EXACT STORE HEADER
+         ========================================================================== -->
+    <div id="shopify-section-sections--header" class="shopify-section shopify-section-group-header-group">
+      <header
+        class="vs-header-root full-width"
+        data-sticky="true"
+        style="--vs-header-padding-y: 5px"
+      >
+        <!-- Announcement Bar -->
+        <div class="vs-announcement" aria-label="Announcements">
+          <div class="vs-announcement__marquee-wrapper">
+            <div class="vs-announcement__marquee" aria-hidden="false">
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                <span class="vs-announcement__text">Free Delivery on orders above ₹999</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                </svg>
+                <span class="vs-announcement__text">Handcrafted with Love</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+                <span class="vs-announcement__text">100% Pure Desi Ghee</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                <span class="vs-announcement__text">Freshly Made Daily</span>
+              </div>
+            </div>
+            <div class="vs-announcement__marquee" aria-hidden="true">
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                <span class="vs-announcement__text">Free Delivery on orders above ₹999</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                </svg>
+                <span class="vs-announcement__text">Handcrafted with Love</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+                <span class="vs-announcement__text">100% Pure Desi Ghee</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                <span class="vs-announcement__text">Freshly Made Daily</span>
+              </div>
+            </div>
+            <div class="vs-announcement__marquee" aria-hidden="true">
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                <span class="vs-announcement__text">Free Delivery on orders above ₹999</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+                </svg>
+                <span class="vs-announcement__text">Handcrafted with Love</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+                <span class="vs-announcement__text">100% Pure Desi Ghee</span>
+              </div>
+              <div class="vs-announcement__item">
+                <svg class="vs-announcement__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13"></rect>
+                  <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                <span class="vs-announcement__text">Freshly Made Daily</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Main Header Inner -->
+        <div class="vs-header-main">
+          <div class="vs-header-inner">
+            <a class="vs-brand-link" href="index.html" aria-label="Vedant Sweets">
+              <img
+                class="vs-logo-img"
+                src="assets/images/logo.png"
+                alt="Vedant Sweets"
+                width="554"
+                height="450"
+                loading="eager"
+              >
+            </a>
+
+            <!-- Mobile Hamburger Toggle Button (Right side on phone) -->
+            <button
+              class="vs-menu-toggle"
+              type="button"
+              data-mobile-menu-toggle
+              aria-controls="vs-landing-nav"
+              aria-expanded="false"
+              aria-label="Open menu"
+              data-open-label="Open menu"
+              data-close-label="Close menu"
+            >
+              <span class="vs-menu-toggle__bars vs-menu-toggle__open-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+              <svg class="vs-menu-toggle__close-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+                <path d="m6 6 12 12M18 6 6 18"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Categories Navigation Bar (Desktop bar & Mobile Drawer) -->
+        <div class="vs-header-categories-bar">
+          <div class="vs-header-categories-inner">
+            <nav class="vs-navigation" id="vs-landing-nav" aria-label="Main navigation">
+              <!-- Mobile Drawer Header -->
+              <div class="vs-navigation__header">
+                <a class="vs-navigation__brand" href="index.html" aria-label="Vedant Sweets">
+                  <img
+                    class="vs-navigation__logo"
+                    src="assets/images/logo.png"
+                    alt="Vedant Sweets"
+                    width="554"
+                    height="450"
+                    loading="lazy"
+                  >
+                </a>
+                <button
+                  class="vs-navigation__close"
+                  type="button"
+                  data-mobile-menu-close
+                  aria-label="Close menu"
+                >
+                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
+                    <path d="m6 6 12 12M18 6 6 18"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <ul class="vs-nav-menu vs-nav-menu--categories">
+                <li class="vs-nav-item">
+                  <a class="vs-nav-anchor is-current" href="index.html">
+                    Home
+                  </a>
+                </li>
+                <li class="vs-nav-item">
+                  <a class="vs-nav-anchor" href="privacy-policy.html">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li class="vs-nav-item">
+                  <a class="vs-nav-anchor" href="terms-and-conditions.html">
+                    Terms &amp; Conditions
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+            <!-- Mobile Drawer Backdrop -->
+            <button
+              class="vs-mobile-nav-backdrop"
+              type="button"
+              data-mobile-menu-close
+              aria-label="Close menu"
+              tabindex="-1"
+            ></button>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <!-- ==========================================================================
+         HERO BANNER (Static Landing Hero Banner Image)
+         ========================================================================== -->
+    <div id="shopify-section-template--main" class="shopify-section">
+      <section
+        class="vs-hero-slider full-width"
+        role="region"
+        aria-label="Vedant Sweets pure celebrations"
+        style="--vs-hero-height: auto; background: none;"
+      >
+        <div style="width: 100%; display: block; overflow: hidden; line-height: 0;">
+          <img
+            src="assets/images/landinghero.png"
+            alt="Make Every Celebration Sweeter - Vedant Sweets"
+            style="width: 100%; height: auto; display: block; object-fit: cover;"
+            width="1920"
+            height="680"
+            loading="eager"
+          >
+        </div>
+      </section>
+    </div>
+
+    <!-- ==========================================================================
+         4 FEATURED PRODUCTS SECTION (Exact Bestsellers Component)
+         ========================================================================== -->
+    <div id="shopify-section-template--bestsellers" class="shopify-section">
+      <section
+        class="vs-bestsellers-section full-width"
+        id="products-section"
+        style="--vs-bs-padding-y: 25px; padding: 25px 0 50px;"
+      >
+        <div class="vs-bestsellers-inner">
+          <header class="vs-bestsellers-header">
+            <div class="vs-bestsellers-eyebrow">
+              <span class="vs-ornament-line" aria-hidden="true"></span>
+              <span class="vs-eyebrow-text">CUSTOMER FAVORITES</span>
+              <span class="vs-ornament-line" aria-hidden="true"></span>
+            </div>
+
+            <h2 class="vs-bestsellers-heading">Vedant Sweets Top Pick</h2>
+
+            <p class="vs-bestsellers-subtitle">Handcrafted with pure cow ghee and rich dry fruits, loved across every home and celebration.</p>
+
+            <div class="vs-bestsellers-lotus-divider" aria-hidden="true">
+              <span class="vs-lotus-line"></span>
+              <svg class="vs-lotus-icon" viewBox="0 0 36 20" fill="none" stroke="currentColor">
+                <path d="M18 18C18 18 12 11 12 6.5C12 3.5 14.5 1 18 1C21.5 1 24 3.5 24 6.5C24 11 18 18 18 18Z" stroke-width="1.3"/>
+                <path d="M18 18C18 18 8 13.5 6 9C4 4.5 6.5 2 9.5 2.5C12.5 3 15.5 8 18 18Z" stroke-width="1.2"/>
+                <path d="M18 18C18 18 28 13.5 30 9C32 4.5 29.5 2 26.5 2.5C23.5 3 20.5 8 18 18Z" stroke-width="1.2"/>
+              </svg>
+              <span class="vs-lotus-line"></span>
+            </div>
+          </header>
+
+          <!-- Products Grid (Artisanal Sweets Top Picks) -->
+            <div class="vs-static-4-grid" role="list">
+              <!-- Product 1: Desi Ghee Halwa (1st Row, 1st Col) -->
+              <article class="vs-bs-card" role="listitem">
+                <div class="vs-bs-card__media-wrap">
+                  <div class="vs-bs-card__badges">
+                    <span class="vs-bs-badge vs-bs-badge--bestseller">Generational Recipe</span>
+                  </div>
+                  <div class="vs-bs-card__media-link">
+                    <img
+                      src="assets/images/halwa.webp"
+                      alt="Desi Ghee Halwa"
+                      class="vs-bs-card__img vs-bs-card__img--primary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                </div>
+                <div class="vs-bs-card__content" style="text-align: center;">
+                  <h3 class="vs-bs-card__title" style="text-align: center; justify-content: center;">
+                    <span>Desi Ghee Halwa</span>
+                  </h3>
+                </div>
+              </article>
+
+              <!-- Product 2: Punjabi Desi Ghee Pinni (1st Row, 2nd Col) -->
+              <article class="vs-bs-card" role="listitem">
+                <div class="vs-bs-card__media-wrap">
+                  <div class="vs-bs-card__badges">
+                    <span class="vs-bs-badge vs-bs-badge--bestseller">Rich Dry Fruits</span>
+                  </div>
+                  <div class="vs-bs-card__media-link">
+                    <img
+                      src="assets/images/pinni1.webp"
+                      alt="Punjabi Desi Ghee Pinni"
+                      class="vs-bs-card__img vs-bs-card__img--primary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                </div>
+                <div class="vs-bs-card__content" style="text-align: center;">
+                  <h3 class="vs-bs-card__title" style="text-align: center; justify-content: center;">
+                    <span>Punjabi Desi Ghee Pinni</span>
+                  </h3>
+                </div>
+              </article>
+
+              <!-- Product 3: Gulab Jamun (1st Row, 3rd Col) -->
+              <article class="vs-bs-card" role="listitem">
+                <div class="vs-bs-card__media-wrap">
+                  <div class="vs-bs-card__badges">
+                    <span class="vs-bs-badge vs-bs-badge--bestseller">100% Pure Ghee</span>
+                  </div>
+                  <div class="vs-bs-card__media-link">
+                    <img
+                      src="assets/images/gulab jamun.png"
+                      alt="Gulab Jamun"
+                      class="vs-bs-card__img vs-bs-card__img--primary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                </div>
+                <div class="vs-bs-card__content" style="text-align: center;">
+                  <h3 class="vs-bs-card__title" style="text-align: center; justify-content: center;">
+                    <span>Gulab Jamun</span>
+                  </h3>
+                </div>
+              </article>
+
+              <!-- Product 4: Kaju Katli (2nd Row, 1st Col) -->
+              <article class="vs-bs-card" role="listitem">
+                <div class="vs-bs-card__media-wrap">
+                  <div class="vs-bs-card__badges">
+                    <span class="vs-bs-badge vs-bs-badge--bestseller">Bestseller</span>
+                  </div>
+                  <div class="vs-bs-card__media-link">
+                    <img
+                      src="assets/images/kaju katli.png"
+                      alt="Kaju Katli"
+                      class="vs-bs-card__img vs-bs-card__img--primary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                </div>
+                <div class="vs-bs-card__content" style="text-align: center;">
+                  <h3 class="vs-bs-card__title" style="text-align: center; justify-content: center;">
+                    <span>Kaju Katli</span>
+                  </h3>
+                </div>
+              </article>
+
+              <!-- Product 5: Pure Desi Ghee (2nd Row, 2nd Col) -->
+              <article class="vs-bs-card" role="listitem">
+                <div class="vs-bs-card__media-wrap">
+                  <div class="vs-bs-card__badges">
+                    <span class="vs-bs-badge vs-bs-badge--bestseller">100% Pure</span>
+                  </div>
+                  <div class="vs-bs-card__media-link">
+                    <img
+                      src="assets/images/ghee.png"
+                      alt="Pure Desi Ghee"
+                      class="vs-bs-card__img vs-bs-card__img--primary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                </div>
+                <div class="vs-bs-card__content" style="text-align: center;">
+                  <h3 class="vs-bs-card__title" style="text-align: center; justify-content: center;">
+                    <span>Pure Desi Ghee</span>
+                  </h3>
+                </div>
+              </article>
+
+              <!-- Product 6: Mathura Pede (2nd Row, 3rd Col) -->
+              <article class="vs-bs-card" role="listitem">
+                <div class="vs-bs-card__media-wrap">
+                  <div class="vs-bs-card__badges">
+                    <span class="vs-bs-badge vs-bs-badge--bestseller">Artisanal</span>
+                  </div>
+                  <div class="vs-bs-card__media-link">
+                    <img
+                      src="assets/images/pede.webp"
+                      alt="Mathura Pede"
+                      class="vs-bs-card__img vs-bs-card__img--primary"
+                      width="300"
+                      height="300"
+                      loading="lazy"
+                    >
+                  </div>
+                </div>
+                <div class="vs-bs-card__content" style="text-align: center;">
+                  <h3 class="vs-bs-card__title" style="text-align: center; justify-content: center;">
+                    <span>Mathura Pede</span>
+                  </h3>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+    </div>
+
+    <!-- ==========================================================================
+         COMPACT FOOTER (Centered Logo, Tagline, Socials, 3 Links & Punjab IT Credit)
+         ========================================================================== -->
+    <div id="shopify-section-sections--footer" class="shopify-section shopify-section-group-footer-group">
+      <footer class="vs-footer full-width" style="padding: 1.75rem 0 1.25rem; background: var(--vs-deep-green); color: #FFFFFF;">
+        <div class="vs-footer-inner" style="max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.65rem;">
+          
+          <!-- Centered Brand Logo (Small & Compact) -->
+          <a class="vs-footer-logo-card" href="index.html" aria-label="Vedant Sweets" style="display: inline-flex; align-items: center; justify-content: center; background: #FFFFFF; padding: 0.35rem 0.85rem; border-radius: 8px;">
+            <img
+              class="vs-footer-logo"
+              src="assets/images/logo.png"
+              alt="Vedant Sweets"
+              width="554"
+              height="450"
+              style="max-width: 105px; height: auto; display: block;"
+              loading="lazy"
+            >
+          </a>
+
+          <!-- Tagline -->
+          <div class="vs-footer-tagline-wrap" style="display: flex; align-items: center; justify-content: center; gap: 0.65rem; margin-top: 0.15rem;">
+            <span style="height: 1px; width: 30px; background: rgba(247, 208, 112, 0.5);"></span>
+            <span class="vs-footer-tagline" style="color: #F7D070; font-family: var(--vs-font-body); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;">A TRADITION WORTH SHARING</span>
+            <span style="height: 1px; width: 30px; background: rgba(247, 208, 112, 0.5);"></span>
+          </div>
+
+          <!-- Description -->
+          <div class="vs-footer-description rte" style="max-width: 540px; margin: 0 auto; color: rgba(255, 248, 233, 0.85); font-size: 0.82rem; line-height: 1.45;">
+            <p style="margin: 0;">Celebrating India's confectionery heritage with thoughtful ingredients and time-honoured craft.</p>
+          </div>
+
+          <!-- Social Icons -->
+          <div class="vs-footer-socials" aria-label="Social media" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin: 0.25rem 0;">
+            <a href="https://facebook.com" class="vs-footer-social-btn" aria-label="Facebook" target="_blank" rel="noopener noreferrer" style="display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(247, 208, 112, 0.3); color: #FFFFFF; transition: all 180ms ease;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+              </svg>
+            </a>
+            <a href="https://instagram.com" class="vs-footer-social-btn" aria-label="Instagram" target="_blank" rel="noopener noreferrer" style="display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(247, 208, 112, 0.3); color: #FFFFFF; transition: all 180ms ease;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+            </a>
+            <a href="https://youtube.com" class="vs-footer-social-btn" aria-label="YouTube" target="_blank" rel="noopener noreferrer" style="display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(247, 208, 112, 0.3); color: #FFFFFF; transition: all 180ms ease;">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+                <path d="M21.543 6.498C22 8.28 22 12 22 12s0 3.72-.457 5.502c-.254.985-.997 1.76-1.938 2.022C17.89 20 12 20 12 20s-5.89 0-7.605-.476c-.945-.266-1.687-1.04-1.938-2.022C2 15.72 2 12 2 12s0-3.72.457-5.502c.254-.985.997-1.76 1.938-2.022C6.11 4 12 4 12 4s5.89 0 7.605.476c.945.266 1.687 1.04 1.938 2.022zM10 15.5l6-3.5-6-3.5v7z"/>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Three Navigation Links -->
+          <nav aria-label="Footer Navigation" style="margin: 0.25rem 0 0.5rem;">
+            <ul style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1rem 1.5rem; list-style: none; margin: 0; padding: 0;">
+              <li>
+                <a href="index.html" style="color: #FFFFFF; font-weight: 500; font-size: 0.86rem; text-decoration: none; transition: color 150ms ease;">Home</a>
+              </li>
+              <li style="color: rgba(247, 208, 112, 0.6);" aria-hidden="true">•</li>
+              <li>
+                <a href="privacy-policy.html" style="color: #FFFFFF; font-weight: 500; font-size: 0.86rem; text-decoration: none; transition: color 150ms ease;">Privacy Policy</a>
+              </li>
+              <li style="color: rgba(247, 208, 112, 0.6);" aria-hidden="true">•</li>
+              <li>
+                <a href="terms-and-conditions.html" style="color: #FFFFFF; font-weight: 500; font-size: 0.86rem; text-decoration: none; transition: color 150ms ease;">Terms &amp; Conditions</a>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Bottom Bar Divider & Credits -->
+          <div style="width: 100%; border-top: 1px solid rgba(247, 208, 112, 0.2); padding-top: 0.85rem; margin-top: 0.35rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; font-size: 0.78rem; color: rgba(255, 255, 255, 0.75);">
+            <p style="margin: 0;">
+              &copy; 2026 vedant sweets . All rights reserved
+            </p>
+            <div>
+              Designed and developed by <a href="https://punjabit.co/" target="_blank" rel="noopener noreferrer" style="color: #F7D070; font-weight: 600; text-decoration: underline;">punjabit</a>
+            </div>
+          </div>
+
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

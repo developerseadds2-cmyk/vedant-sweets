@@ -1483,6 +1483,36 @@ function initPDPInteractions() {
     });
   });
 
+  // Read More Smooth Scroll & Tab Focus Handler
+  const readMoreBtn = pdpSection.querySelector('[data-scroll-to-tabs]');
+  if (readMoreBtn) {
+    readMoreBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tabsSection = document.getElementById('vs-pdp-tabs');
+      if (tabsSection) {
+        // Activate "Product Details" tab
+        const detailsTabBtn = tabsSection.querySelector('[data-tab-target="tab-details"]');
+        if (detailsTabBtn && !detailsTabBtn.classList.contains('is-active')) {
+          detailsTabBtn.click();
+        }
+
+        // Measure actual header height dynamically to ensure tabs & title are completely visible
+        const header = document.querySelector('.vs-header-root');
+        const headerHeight = header ? header.offsetHeight : 140;
+        const extraBuffer = 35; // Breathing room above tab headings
+        const totalOffset = headerHeight + extraBuffer;
+
+        const elementPosition = tabsSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - totalOffset;
+
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth'
+        });
+      }
+    });
+  }
+
   // Related Products Carousel Arrows
   const track = document.getElementById('vs-related-track');
   const prevBtn = pdpSection.querySelector('[data-related-nav="prev"]');

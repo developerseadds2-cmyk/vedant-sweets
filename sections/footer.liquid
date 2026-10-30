@@ -1,90 +1,222 @@
 <footer class="vs-footer full-width">
-  <div class="vs-footer-main">
-    <div class="vs-footer-brand">
-      <a class="vs-footer-logo-link" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
-        <img
-          class="vs-footer-logo"
-          src="{{ 'logo.png' | asset_url }}"
-          alt="{{ shop.name | escape }}"
-          width="554"
-          height="450"
-          loading="lazy"
-        >
-      </a>
-      {% if section.settings.tagline != blank %}
-        <p class="vs-footer-tagline">{{ section.settings.tagline | escape }}</p>
-      {% endif %}
-      {% if section.settings.description != blank %}
-        <div class="vs-footer-description rte">{{ section.settings.description }}</div>
-      {% endif %}
-      {% if section.settings.contact_email != blank %}
-        <a class="vs-footer-email" href="mailto:{{ section.settings.contact_email | escape }}">
-          {{ section.settings.contact_email | escape }}
+  <div class="vs-footer-inner">
+    <div class="vs-footer-main">
+      {% # Column 1: Brand & Bio %}
+      <div class="vs-footer-col vs-footer-brand-col">
+        <a class="vs-footer-logo-card" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }}">
+          <img
+            class="vs-footer-logo"
+            src="{{ 'logo.png' | asset_url }}"
+            alt="{{ shop.name | escape }}"
+            width="554"
+            height="450"
+            loading="lazy"
+          >
         </a>
-      {% endif %}
+
+        {% if section.settings.tagline != blank %}
+          <div class="vs-footer-tagline-wrap">
+            <span class="vs-footer-tagline">{{ section.settings.tagline | escape }}</span>
+            <span class="vs-footer-tagline-line" aria-hidden="true"></span>
+          </div>
+        {% endif %}
+
+        {% if section.settings.description != blank %}
+          <div class="vs-footer-description rte">
+            {{ section.settings.description }}
+          </div>
+        {% endif %}
+
+        <div class="vs-footer-socials" aria-label="Social media">
+          <a href="{{ section.settings.social_facebook_link | default: 'https://facebook.com' }}" class="vs-footer-social-btn" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+            </svg>
+          </a>
+          <a href="{{ section.settings.social_instagram_link | default: 'https://instagram.com' }}" class="vs-footer-social-btn" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+          <a href="{{ section.settings.social_youtube_link | default: 'https://youtube.com' }}" class="vs-footer-social-btn" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21.543 6.498C22 8.28 22 12 22 12s0 3.72-.457 5.502c-.254.985-.997 1.76-1.938 2.022C17.89 20 12 20 12 20s-5.89 0-7.605-.476c-.945-.266-1.687-1.04-1.938-2.022C2 15.72 2 12 2 12s0-3.72.457-5.502c.254-.985.997-1.76 1.938-2.022C6.11 4 12 4 12 4s5.89 0 7.605.476c.945.266 1.687 1.04 1.938 2.022zM10 15.5l6-3.5-6-3.5v7z"/>
+            </svg>
+          </a>
+          <a href="{{ section.settings.social_linkedin_link | default: 'https://linkedin.com' }}" class="vs-footer-social-btn" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      {% # Column 2: Quick Links %}
+      <div class="vs-footer-col vs-footer-nav-col">
+        <h3 class="vs-footer-heading">
+          <span>Quick Links</span>
+          <span class="vs-footer-heading-line" aria-hidden="true"></span>
+        </h3>
+        <ul class="vs-footer-links-list">
+          {% if section.settings.menu != blank and section.settings.menu.links != blank %}
+            {% for link in section.settings.menu.links %}
+              <li>
+                <a href="{{ link.url }}">
+                  <span class="vs-footer-arrow" aria-hidden="true">&rsaquo;</span>
+                  <span>{{ link.title | escape }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          {% else %}
+            <li>
+              <a href="{{ routes.root_url }}">
+                <span class="vs-footer-arrow" aria-hidden="true">&rsaquo;</span>
+                <span>Home</span>
+              </a>
+            </li>
+            <li>
+              <a href="/pages/about">
+                <span class="vs-footer-arrow" aria-hidden="true">&rsaquo;</span>
+                <span>About Us</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ routes.all_products_collection_url }}">
+                <span class="vs-footer-arrow" aria-hidden="true">&rsaquo;</span>
+                <span>Our Products</span>
+              </a>
+            </li>
+            <li>
+              <a href="/blogs/news">
+                <span class="vs-footer-arrow" aria-hidden="true">&rsaquo;</span>
+                <span>Blog</span>
+              </a>
+            </li>
+            <li>
+              <a href="/pages/contact">
+                <span class="vs-footer-arrow" aria-hidden="true">&rsaquo;</span>
+                <span>Contact Us</span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+
+      {% # Column 3: Customer Care %}
+      <div class="vs-footer-col vs-footer-contact-col">
+        <h3 class="vs-footer-heading">
+          <span>Customer Care</span>
+          <span class="vs-footer-heading-line" aria-hidden="true"></span>
+        </h3>
+        <ul class="vs-footer-contact-list">
+          {% if section.settings.phone_number != blank %}
+            <li class="vs-footer-contact-item">
+              <span class="vs-footer-contact-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                </svg>
+              </span>
+              <a href="tel:{{ section.settings.phone_number | replace: ' ', '' }}">{{ section.settings.phone_number }}</a>
+            </li>
+          {% endif %}
+
+          {% if section.settings.contact_email != blank %}
+            <li class="vs-footer-contact-item">
+              <span class="vs-footer-contact-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+              </span>
+              <a href="mailto:{{ section.settings.contact_email }}">{{ section.settings.contact_email }}</a>
+            </li>
+          {% endif %}
+
+          {% if section.settings.address != blank %}
+            <li class="vs-footer-contact-item">
+              <span class="vs-footer-contact-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+              </span>
+              <span>{{ section.settings.address }}</span>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+
+      {% # Column 4: Secure Payment Methods %}
+      <div class="vs-footer-col vs-footer-payment-col">
+        <h3 class="vs-footer-heading">
+          <span>Secure Payment Methods</span>
+          <span class="vs-footer-heading-line" aria-hidden="true"></span>
+        </h3>
+        <div class="vs-footer-payments-wrap">
+          {% if shop.enabled_payment_types != empty %}
+            <ul class="vs-payment-list" aria-label="Secure payment methods">
+              {% for type in shop.enabled_payment_types %}
+                <li>{{ type | payment_type_svg_tag: class: 'vs-payment-icon' }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="vs-payment-badges-row">
+              <span class="vs-pay-badge vs-pay-badge--visa">VISA</span>
+              <span class="vs-pay-badge vs-pay-badge--mc"><span class="mc-c1"></span><span class="mc-c2"></span></span>
+              <span class="vs-pay-badge vs-pay-badge--amex">AMEX</span>
+              <span class="vs-pay-badge vs-pay-badge--paypal">PayPal</span>
+              <span class="vs-pay-badge vs-pay-badge--diners">Diners</span>
+              <span class="vs-pay-badge vs-pay-badge--discover">DISCOVER</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% # Column 5: Country / Region %}
+      <div class="vs-footer-col vs-footer-loc-col">
+        <h3 class="vs-footer-heading">
+          <span>Country / Region</span>
+          <span class="vs-footer-heading-line" aria-hidden="true"></span>
+        </h3>
+        <div class="vs-footer-localization">
+          {% form 'localization', id: 'vs-localization-form' %}
+            <div class="vs-localization-select-wrap">
+              <select
+                name="country_code"
+                class="vs-localization-select"
+                aria-label="Country / Currency"
+                onchange="this.form.submit()"
+              >
+                {% for country in localization.available_countries %}
+                  {% if country.iso_code == 'US' %}
+                    {% continue %}
+                  {% endif %}
+                  <option
+                    value="{{ country.iso_code }}"
+                    {% if country.iso_code == localization.country.iso_code %}selected{% endif %}
+                  >
+                    {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+                  </option>
+                {% endfor %}
+              </select>
+              <svg class="vs-localization-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          {% endform %}
+        </div>
+      </div>
     </div>
 
-    {% if section.settings.menu != blank and section.settings.menu.links != blank %}
-      <nav class="vs-footer-navigation" aria-label="{{ 'sections.footer.navigation' | t }}">
-        <h2 class="vs-footer-heading">{{ 'sections.footer.quick_links' | t }}</h2>
-        <ul>
-          {% for link in section.settings.menu.links %}
-            <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
-          {% endfor %}
-        </ul>
-      </nav>
-    {% endif %}
-
-    {% if section.settings.show_payment_icons and shop.enabled_payment_types != empty %}
-      <div class="vs-footer-payment">
-        <h2 class="vs-footer-heading">{{ 'sections.footer.payment_methods' | t }}</h2>
-        <ul class="vs-payment-list" aria-label="{{ 'sections.footer.payment_methods' | t }}">
-          {% for type in shop.enabled_payment_types %}
-            <li>{{ type | payment_type_svg_tag: class: 'vs-payment-icon' }}</li>
-          {% endfor %}
-        </ul>
+    {% # Bottom Bar %}
+    <div class="vs-footer-bottom">
+      <p class="vs-footer-copyright">
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}. {{ 'sections.footer.rights_reserved' | t }}
+      </p>
+      <div class="vs-footer-powered">
+        Designed and developed by
+        <a href="https://punjabit.co/" target="_blank" rel="noopener noreferrer">punjabit</a>
       </div>
-    {% endif %}
-
-    {% # Country / Region & Currency Selector (Official Shopify Localization Form) %}
-    {% if localization.available_countries.size > 1 %}
-      <div class="vs-footer-localization">
-        <h2 class="vs-footer-heading">Country / Region</h2>
-        {% form 'localization', id: 'vs-localization-form' %}
-          <div class="vs-localization-select-wrap">
-            <select
-              name="country_code"
-              class="vs-localization-select"
-              aria-label="Country / Currency"
-              onchange="this.form.submit()"
-            >
-              {% for country in localization.available_countries %}
-                <option
-                  value="{{ country.iso_code }}"
-                  {% if country.iso_code == localization.country.iso_code %}selected{% endif %}
-                >
-                  {{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
-                </option>
-              {% endfor %}
-            </select>
-            <svg class="vs-localization-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
-        {% endform %}
-      </div>
-    {% endif %}
-  </div>
-
-  <div class="vs-footer-bottom">
-    <p>
-      &copy; {{ 'now' | date: '%Y' }}
-      <a href="{{ routes.root_url }}">{{ shop.name | escape }}</a>.
-      {{ 'sections.footer.rights_reserved' | t }}
-    </p>
-    <div class="vs-footer-powered">
-      Designed and developed by
-      <a href="https://punjabit.co/" target="_blank" rel="noopener noreferrer">punjabit</a>
     </div>
   </div>
 </footer>
@@ -97,13 +229,13 @@
       "type": "text",
       "id": "brand_name",
       "label": "t:sections.footer.settings.brand_name",
-      "default": "Vedanta Sweets"
+      "default": "Vedant Sweets"
     },
     {
       "type": "text",
       "id": "tagline",
-      "label": "t:sections.footer.settings.tagline",
-      "default": "A tradition worth sharing"
+      "label": "Tagline Eyebrow",
+      "default": "A TRADITION WORTH SHARING"
     },
     {
       "type": "richtext",
@@ -112,14 +244,55 @@
       "default": "<p>Celebrating India's confectionery heritage with thoughtful ingredients and time-honoured craft.</p>"
     },
     {
+      "type": "header",
+      "content": "Customer Care Contact Info"
+    },
+    {
+      "type": "text",
+      "id": "phone_number",
+      "label": "Phone Number",
+      "default": "+91 98765 43210"
+    },
+    {
       "type": "text",
       "id": "contact_email",
-      "label": "t:sections.footer.settings.contact_email"
+      "label": "t:sections.footer.settings.contact_email",
+      "default": "care@vedantfoods.in"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Store Address",
+      "default": "Shop No. 12, Model Town, Ludhiana, Punjab - 141002"
+    },
+    {
+      "type": "header",
+      "content": "Navigation & Social"
     },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "Quick Links Menu"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook_link",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram_link",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube_link",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "url",
+      "id": "social_linkedin_link",
+      "label": "LinkedIn URL"
     },
     {
       "type": "checkbox",

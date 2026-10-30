@@ -72,10 +72,6 @@
       },
       "block_order": [
         "slide_pinni",
-        "slide_panjiri",
-        "slide_ghevar",
-        "slide_jalebi",
-        "slide_prev_1",
         "slide_prev_2"
       ],
       "settings": {
@@ -156,7 +152,7 @@
         "subtitle": "Explore our wide range of traditional and premium sweets, crafted for every celebration and special moment.",
         "button_label": "View All Collections",
         "button_url": "/collections",
-        "collection_source": "blocks"
+        "collection_source": "all"
       }
     },
     "bestsellers": {
@@ -241,6 +237,17 @@
         "autoplay": true,
         "autoplay_interval": 4
       }
+    },
+    "bestsellers_bottom": {
+      "type": "bestsellers",
+      "settings": {
+        "eyebrow": "OUR SIGNATURE COLLECTION",
+        "heading": "Our Best Sellers",
+        "subtitle": "Freshly crafted traditional mithai made with 100% pure cow desi ghee.",
+        "products_to_show": 8,
+        "show_view_all": true,
+        "padding_y": 25
+      }
     }
   },
   "order": [
@@ -248,6 +255,7 @@
     "shop_by_category",
     "bestsellers",
     "compact_cta",
-    "testimonials"
+    "testimonials",
+    "bestsellers_bottom"
   ]
 }

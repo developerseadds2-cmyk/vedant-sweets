@@ -112,6 +112,25 @@
 
         <h1 class="vs-pdp-title">{{ product.title | escape }}</h1>
 
+        {% # Metafield: Short Description %}
+        {% assign short_desc = product.metafields.custom.short_description
+          | default: product.metafields.descriptors.subtitle
+          | default: product.metafields.global.short_description
+          | default: product.metafields.c_f.short_description
+          | default: product.metafields.my_fields.short_description
+        %}
+        {% if short_desc != blank %}
+          <div class="vs-pdp-short-desc">
+            <span class="vs-pdp-short-desc__text">{{ short_desc | metafield_tag }}</span>
+            <a href="#vs-pdp-tabs" class="vs-pdp-read-more-btn" data-scroll-to-tabs>
+              Read More
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </a>
+          </div>
+        {% endif %}
+
         {% # Dynamic Meta Row: Stock Status and SKU %}
         <div class="vs-pdp-meta-row">
           <div class="vs-pdp-stock-status">
@@ -292,7 +311,7 @@
     </div>
 
     {% # Section 1: Clean Horizontal Tabs (Product Details, Return & Exchange, Shipping Information) %}
-    <section class="vs-pdp-tabs-section" aria-label="Product Information Tabs">
+    <section class="vs-pdp-tabs-section" id="vs-pdp-tabs" aria-label="Product Information Tabs">
       <div class="vs-pdp-tabs-nav" role="tablist">
         <button
           type="button"

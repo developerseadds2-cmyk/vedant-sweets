@@ -10,6 +10,36 @@
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
 
+    {% # Auto-default localization to India (IN) if not currently set %}
+    {% unless localization.country.iso_code == 'IN' %}
+      <script>
+        (function() {
+          try {
+            var attempted = sessionStorage.getItem('vs_auto_loc_in');
+            if (!attempted) {
+              sessionStorage.setItem('vs_auto_loc_in', '1');
+              var formData = new FormData();
+              formData.append('_method', 'put');
+              formData.append('country_code', 'IN');
+              fetch('/localization', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+              }).then(function(res) {
+                if (res.ok) {
+                  window.location.reload();
+                }
+              }).catch(function(err) {
+                console.warn('Auto localization error:', err);
+              });
+            }
+          } catch(e) {
+            console.warn(e);
+          }
+        })();
+      </script>
+    {% endunless %}
+
     {{ content_for_header }}
   </head>
 
