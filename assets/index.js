@@ -276,7 +276,7 @@ document.addEventListener('click', (event) => {
   const navLink = event.target.closest('.vs-navigation a');
   if (navLink) {
     // If it's the mobile accordion toggle, DO NOT close the mobile menu!
-    if (navLink.hasAttribute('data-mobile-mega-toggle') && window.innerWidth <= 1050) {
+    if ((navLink.hasAttribute('data-mobile-mega-toggle') || navLink.hasAttribute('data-mobile-submenu-toggle')) && window.innerWidth <= 1050) {
       return;
     }
     const header = event.target.closest('.vs-header-root');
@@ -324,6 +324,9 @@ if (headerRoot) {
 }
 
 function initCategoryCarousels(root = document) {
+  // If on tablet/phone (<= 1024px), sections render in grid mode without slider initialization
+  if (window.innerWidth <= 1024) return;
+
   root.querySelectorAll('[data-category-carousel]').forEach((carousel) => {
     if (carousel.dataset.carouselReady === 'true') return;
 
@@ -486,6 +489,8 @@ function initCollectionFilters() {
     const backdropEl = document.querySelector('[data-filter-backdrop]');
 
     if (toggleBtn && sidebar) {
+      event.preventDefault();
+      event.stopPropagation();
       const isOpen = sidebar.classList.toggle('is-open');
       if (backdropEl) backdropEl.classList.toggle('is-active', isOpen);
       document.body.style.overflow = isOpen ? 'hidden' : '';
@@ -493,6 +498,8 @@ function initCollectionFilters() {
     }
 
     if (backdrop && sidebar) {
+      event.preventDefault();
+      event.stopPropagation();
       sidebar.classList.remove('is-open');
       backdrop.classList.remove('is-active');
       document.body.style.overflow = '';
@@ -531,15 +538,11 @@ function initCollectionFilters() {
         currentBanner.innerHTML = newBanner.innerHTML;
       }
 
-      // Update active state in sidebar category links
+      // Update active state in sidebar filters
       const newSidebar = doc.querySelector('.vs-filter-sidebar');
       const currentSidebar = document.querySelector('.vs-filter-sidebar');
       if (newSidebar && currentSidebar) {
-        const newCatGroup = newSidebar.querySelector('.vs-filter-group');
-        const currentCatGroup = currentSidebar.querySelector('.vs-filter-group');
-        if (newCatGroup && currentCatGroup) {
-          currentCatGroup.innerHTML = newCatGroup.innerHTML;
-        }
+        currentSidebar.innerHTML = newSidebar.innerHTML;
       }
 
       // Update browser URL history
@@ -800,6 +803,178 @@ function initVoiceSearch() {
 }
 
 initVoiceSearch();
+
+/* ==========================================================================
+   Predictive Debounced AJAX Search & Popular Search Suggestions
+   ========================================================================== */
+function initPredictiveSearch() {
+  const searchRoots = document.querySelectorAll('[data-predictive-search-root]');
+  if (!searchRoots.length) return;
+
+  searchRoots.forEach((root) => {
+    const form = root.querySelector('[data-search-form]');
+    const input = root.querySelector('[data-search-input]');
+    const dropdown = root.querySelector('[data-search-dropdown]');
+    const popularSection = root.querySelector('[data-search-popular]');
+    const resultsSection = root.querySelector('[data-search-results]');
+    const resultsList = root.querySelector('[data-search-list]');
+    const loadingEl = root.querySelector('[data-search-loading]');
+    const emptyEl = root.querySelector('[data-search-empty]');
+    const footerEl = root.querySelector('[data-search-footer]');
+    const queryText = root.querySelector('[data-search-query-text]');
+    const queryTextFooter = root.querySelector('[data-search-query-text-footer]');
+    const viewAllLink = root.querySelector('[data-search-view-all-link]');
+
+    if (!input || !dropdown) return;
+
+    let debounceTimer = null;
+    let abortController = null;
+
+    // Show Popular Searches state
+    const showPopularState = () => {
+      dropdown.classList.add('is-open');
+      dropdown.setAttribute('aria-hidden', 'false');
+      if (popularSection) popularSection.style.display = 'block';
+      if (resultsSection) resultsSection.style.display = 'none';
+    };
+
+    // Close Dropdown
+    const closeDropdown = () => {
+      dropdown.classList.remove('is-open');
+      dropdown.setAttribute('aria-hidden', 'true');
+    };
+
+    // Focus on Input: Show Popular Searches if query is empty
+    input.addEventListener('focus', () => {
+      const q = input.value.trim();
+      if (!q) {
+        showPopularState();
+      } else {
+        dropdown.classList.add('is-open');
+        dropdown.setAttribute('aria-hidden', 'false');
+      }
+    });
+
+    // Handle Popular Tag clicks
+    root.querySelectorAll('[data-search-keyword]').forEach((tag) => {
+      tag.addEventListener('click', (e) => {
+        e.preventDefault();
+        const keyword = tag.getAttribute('data-search-keyword');
+        input.value = keyword;
+        input.focus();
+        fetchResults(keyword);
+      });
+    });
+
+    // Debounced Input Handler
+    input.addEventListener('input', (e) => {
+      const query = e.target.value.trim();
+
+      clearTimeout(debounceTimer);
+
+      if (!query) {
+        showPopularState();
+        return;
+      }
+
+      // Show dropdown & loading state
+      dropdown.classList.add('is-open');
+      dropdown.setAttribute('aria-hidden', 'false');
+      if (popularSection) popularSection.style.display = 'none';
+      if (resultsSection) resultsSection.style.display = 'block';
+      if (loadingEl) loadingEl.style.display = 'flex';
+      if (emptyEl) emptyEl.style.display = 'none';
+      if (resultsList) resultsList.innerHTML = '';
+      if (footerEl) footerEl.style.display = 'none';
+
+      // 300ms Debounce
+      debounceTimer = setTimeout(() => {
+        fetchResults(query);
+      }, 300);
+    });
+
+    // Fetch predictive search results via Shopify Predictive Search API
+    const fetchResults = (query) => {
+      if (abortController) abortController.abort();
+      abortController = new AbortController();
+
+      const searchUrl = `/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product&resources[options][unavailable_products]=show&resources[options][fields]=title,vendor,product_type,variants.title`;
+
+      fetch(searchUrl, { signal: abortController.signal })
+        .then((res) => {
+          if (!res.ok) throw new Error('Search failed');
+          return res.json();
+        })
+        .then((data) => {
+          if (loadingEl) loadingEl.style.display = 'none';
+
+          const products = data.resources?.results?.products || [];
+
+          if (queryText) queryText.textContent = query;
+          if (queryTextFooter) queryTextFooter.textContent = query;
+          if (viewAllLink) viewAllLink.href = `/search?q=${encodeURIComponent(query)}`;
+
+          if (products.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'block';
+            if (resultsList) resultsList.innerHTML = '';
+            if (footerEl) footerEl.style.display = 'none';
+          } else {
+            if (emptyEl) emptyEl.style.display = 'none';
+            if (footerEl) footerEl.style.display = 'block';
+
+            renderProductResults(products);
+          }
+        })
+        .catch((err) => {
+          if (err.name === 'AbortError') return;
+          console.warn('Predictive search error:', err);
+          if (loadingEl) loadingEl.style.display = 'none';
+        });
+    };
+
+    // Render HTML product list inside dropdown
+    const renderProductResults = (products) => {
+      if (!resultsList) return;
+
+      const html = products.map((prod) => {
+        const title = prod.title;
+        const url = prod.url;
+        const vendor = prod.vendor || 'Vedant Sweets';
+        const img = prod.featured_image?.url || prod.image || '';
+        const price = prod.price ? `Rs. ${parseFloat(prod.price).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '';
+
+        return `
+          <a href="${url}" class="vs-search-item">
+            ${img ? `<img src="${img}" alt="${title}" class="vs-search-item__thumb" width="52" height="52" loading="lazy">` : '<div class="vs-search-item__thumb" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🍬</div>'}
+            <div class="vs-search-item__info">
+              <span class="vs-search-item__vendor">${vendor}</span>
+              <h4 class="vs-search-item__title">${title}</h4>
+              <span class="vs-search-item__price">${price}</span>
+            </div>
+          </a>
+        `;
+      }).join('');
+
+      resultsList.innerHTML = html;
+    };
+
+    // Close when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!root.contains(event.target)) {
+        closeDropdown();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeDropdown();
+      }
+    });
+  });
+}
+
+initPredictiveSearch();
 
 /* ==========================================================================
    Delivery Location Modal & Geolocation Handler
@@ -1153,8 +1328,9 @@ function initMobileInteractions() {
     if (openSearchBtn) {
       e.preventDefault();
       if (searchModal) {
-        searchModal.classList.add('is-open');
+        searchModal.removeAttribute('inert');
         searchModal.setAttribute('aria-hidden', 'false');
+        searchModal.classList.add('is-open');
         setTimeout(() => searchInput?.focus(), 150);
       }
       return;
@@ -1165,8 +1341,12 @@ function initMobileInteractions() {
     if (closeSearchBtn) {
       e.preventDefault();
       if (searchModal) {
+        if (searchModal.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
         searchModal.classList.remove('is-open');
         searchModal.setAttribute('aria-hidden', 'true');
+        searchModal.setAttribute('inert', '');
       }
       return;
     }
@@ -1179,6 +1359,18 @@ function initMobileInteractions() {
       if (parentItem) {
         parentItem.classList.toggle('is-expanded');
       }
+      return;
+    }
+
+    // Mobile Submenu Accordion Toggle
+    const submenuToggle = e.target.closest('[data-mobile-submenu-toggle]');
+    if (submenuToggle && window.innerWidth <= 1050) {
+      e.preventDefault();
+      const parentItem = submenuToggle.closest('.vs-nav-item--has-submenu');
+      if (parentItem) {
+        parentItem.classList.toggle('is-expanded');
+      }
+      return;
     }
   });
 
@@ -1609,8 +1801,10 @@ function initCartInteractions() {
       // Update Subtotal & Total in Order Summary
       const subtotalEl = document.getElementById('vs-cart-subtotal');
       const totalEl = document.getElementById('vs-cart-total');
+      const mobileTopTotal = document.querySelector('[data-cart-mobile-total]');
       if (subtotalEl) subtotalEl.textContent = formatMoney(cartData.total_price);
       if (totalEl) totalEl.textContent = formatMoney(cartData.total_price);
+      if (mobileTopTotal) mobileTopTotal.textContent = formatMoney(cartData.total_price);
 
       // Update Header Cart Badge count if present
       const headerCartBadges = document.querySelectorAll('.vs-action-item--cart .vs-badge-count');
@@ -1708,6 +1902,9 @@ function initCartInteractions() {
    Bestsellers Slider (Infinite Loop & Auto-scroll)
    ========================================================================== */
 function initBestsellersSlider(root = document) {
+  // If on tablet/phone (<= 1024px), sections render in grid mode without slider initialization
+  if (window.innerWidth <= 1024) return;
+
   root.querySelectorAll('[data-bestsellers-slider]').forEach((slider) => {
     if (slider.dataset.sliderReady === 'true') return;
 

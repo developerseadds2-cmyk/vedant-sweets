@@ -35,6 +35,22 @@
     <h1 class="vs-cart-main-heading">YOUR CART</h1>
 
     {% if cart.item_count > 0 %}
+      {% # Mobile Sticky/Top Quick Checkout Bar %}
+      <div class="vs-cart-mobile-top-bar">
+        <div class="vs-cart-mobile-top-info">
+          <span class="vs-cart-mobile-top-label">Total:</span>
+          <span class="vs-cart-mobile-top-total" data-cart-mobile-total>{{ cart.total_price | money }}</span>
+        </div>
+        <button
+          type="submit"
+          form="vs-cart-form"
+          name="checkout"
+          class="vs-cart-mobile-top-checkout-btn"
+        >
+          Proceed To Checkout →
+        </button>
+      </div>
+
       <form action="{{ routes.cart_url }}" method="post" id="vs-cart-form" class="vs-cart-layout">
         {% # Left / Main Column %}
         <div class="vs-cart-main-col">

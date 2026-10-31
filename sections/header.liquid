@@ -92,8 +92,8 @@
       </a>
 
       {% # Center Search Bar %}
-      <div class="vs-header-search">
-        <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar">
+      <div class="vs-header-search" data-predictive-search-root>
+        <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar" data-search-form>
           <svg class="vs-search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -106,6 +106,7 @@
             class="vs-search-bar__input"
             aria-label="Search sweets"
             autocomplete="off"
+            data-search-input
           >
           <button type="button" class="vs-search-bar__voice-btn" data-voice-search aria-label="Voice Search" title="Search by Voice">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -121,6 +122,105 @@
             </svg>
           </button>
         </form>
+
+        {% # Predictive / Popular Search Dropdown Panel %}
+        <div class="vs-search-dropdown" data-search-dropdown aria-hidden="true">
+          {% # State A: Popular Searches & Categories (shown on focus when query is empty) %}
+          <div class="vs-search-popular" data-search-popular>
+            <div class="vs-search-dropdown__section">
+              <div class="vs-search-dropdown__header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                </svg>
+                <span>Popular Searches</span>
+              </div>
+              <div class="vs-popular-tags">
+                <button type="button" class="vs-popular-tag" data-search-keyword="Kaju Katli">Kaju Katli</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Khoya Peda">Khoya Peda</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Motichoor Laddoo">Motichoor Laddoo</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Pure Desi Ghee">Pure Desi Ghee</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Assorted Mithai Box">Assorted Mithai Box</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Gulab Jamun">Gulab Jamun</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Dry Fruits">Dry Fruits</button>
+              </div>
+            </div>
+
+            <div class="vs-search-dropdown__section">
+              <div class="vs-search-dropdown__header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="7" height="7" x="3" y="3" rx="1"/>
+                  <rect width="7" height="7" x="14" y="3" rx="1"/>
+                  <rect width="7" height="7" x="14" y="14" rx="1"/>
+                  <rect width="7" height="7" x="3" y="14" rx="1"/>
+                </svg>
+                <span>Browse Categories</span>
+              </div>
+              <div class="vs-search-quick-links">
+                {% assign search_dropdown_colls = collections | where: 'image' %}
+                {% if search_dropdown_colls.size == 0 %}
+                  {% assign search_dropdown_colls = collections %}
+                {% endif %}
+
+                {% assign rendered_search_colls = 0 %}
+                {% for coll in search_dropdown_colls %}
+                  {% if coll.handle == 'frontpage' %}
+                    {% continue %}
+                  {% endif %}
+                  {% assign rendered_search_colls = rendered_search_colls | plus: 1 %}
+                  {% assign coll_img = coll.featured_image | default: coll.image %}
+                  <a href="{{ coll.url }}" class="vs-search-quick-link">
+                    {% if coll_img != blank %}
+                      <img src="{{ coll_img | image_url: width: 80, height: 80, crop: 'center' }}" alt="{{ coll.title | escape }}" class="vs-search-quick-link__img" width="36" height="36" loading="lazy">
+                    {% else %}
+                      <span class="vs-search-quick-link__placeholder">🍬</span>
+                    {% endif %}
+                    <span class="vs-search-quick-link__title">{{ coll.title | escape }}</span>
+                  </a>
+                  {% if rendered_search_colls >= 4 %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+
+                {% # Fallback if store has fewer than 4 custom collections %}
+                {% if rendered_search_colls < 4 %}
+                  {% assign fallback_titles = "Sweets & Mithai,Namkeen & Bhujia,Dry Fruits & Nuts,Gift Boxes" | split: "," %}
+                  {% assign fallback_imgs = "collection-mithai.jpg,collection-kaju.jpg,collection-dry-fruits.jpg,collection-gift-packs.jpg" | split: "," %}
+                  {% assign fallback_urls = "/collections/all,/collections/all,/collections/all,/collections/all" | split: "," %}
+                  {% for f_title in fallback_titles %}
+                    {% if forloop.index > rendered_search_colls and rendered_search_colls < 4 %}
+                      {% assign idx = forloop.index0 %}
+                      <a href="{{ fallback_urls[idx] }}" class="vs-search-quick-link">
+                        <img src="{{ fallback_imgs[idx] | asset_url }}" alt="{{ f_title }}" class="vs-search-quick-link__img" width="36" height="36" loading="lazy">
+                        <span class="vs-search-quick-link__title">{{ f_title }}</span>
+                      </a>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          {% # State B: Live Ajax Search Results (shown on typing) %}
+          <div class="vs-search-results" data-search-results style="display: none;">
+            <div class="vs-search-results__loading" data-search-loading>
+              <div class="vs-search-spinner"></div>
+              <span>Searching delicious sweets...</span>
+            </div>
+            <div class="vs-search-results__list" data-search-list></div>
+            <div class="vs-search-results__empty" data-search-empty style="display: none;">
+              <p>No products found matching "<strong data-search-query-text></strong>"</p>
+            </div>
+            <div class="vs-search-dropdown__footer" data-search-footer style="display: none;">
+              <a href="#" class="vs-search-view-all" data-search-view-all-link>
+                <span>View all results for "<span data-search-query-text-footer></span>"</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
       {% # Right Actions: Delivery Location, Account, Wishlist, Cart %}
@@ -246,12 +346,27 @@
               All Categories
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
+                        <!-- Native Mobile Accordion for All Categories -->
+            <ul class="vs-mobile-megamenu-accordion">
+              {% if valid_colls_count > 0 %}
+                {% for coll in collections %}
+                  {% if coll.handle == "all" or coll.handle == "frontpage" %}{% continue %}{% endif %}
+                  <li><a class="vs-sublink" href="{{ coll.url }}">{{ coll.title | escape }}</a></li>
+                {% endfor %}
+              {% else %}
+                <li><a class="vs-sublink" href="/collections/all">Traditional Desi Ghee Pinni & Sweets</a></li>
+                <li><a class="vs-sublink" href="/collections/all">Fresh Artisanal Mithai</a></li>
+                <li><a class="vs-sublink" href="/collections/all">Crispy Namkeen & Savouries</a></li>
+                <li><a class="vs-sublink" href="/collections/dry-fruits">Handpicked Dry Fruits & Nuts</a></li>
+                <li><a class="vs-sublink" href="/collections/gift-packs">Festive & Celebration Hampers</a></li>
+              {% endif %}
+            </ul>
             {% render 'mega-menu' %}
           </li>
 
           {% # 3. Sweets & Mithai %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/all">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/all" data-mobile-submenu-toggle>
               Sweets & Mithai
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -268,8 +383,8 @@
           </li>
 
           {% # 4. Namkeen & Bhujia %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/all">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/all" data-mobile-submenu-toggle>
               Namkeen & Bhujia
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -285,8 +400,8 @@
           </li>
 
           {% # 5. Snacks & Savouries %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/all">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/all" data-mobile-submenu-toggle>
               Snacks & Savouries
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -302,8 +417,8 @@
           </li>
 
           {% # 6. Dry Fruits & Nuts %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/dry-fruits">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/dry-fruits" data-mobile-submenu-toggle>
               Dry Fruits & Nuts
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -319,8 +434,8 @@
           </li>
 
           {% # 7. Gift Boxes & Hampers %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/gift-packs">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/gift-packs" data-mobile-submenu-toggle>
               Gift Boxes & Hampers
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -335,8 +450,8 @@
           </li>
 
           {% # 8. Bakery & Papad %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/all">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/all" data-mobile-submenu-toggle>
               Bakery & Papad
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -350,8 +465,8 @@
           </li>
 
           {% # 9. Traditional Specials & Pantry %}
-          <li class="vs-nav-item">
-            <a class="vs-nav-anchor" href="/collections/all">
+          <li class="vs-nav-item vs-nav-item--has-submenu">
+            <a class="vs-nav-anchor" href="/collections/all" data-mobile-submenu-toggle>
               Traditional & Pantry
               <svg class="vs-nav-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
@@ -665,41 +780,145 @@
   </div>
 
   {% # Mobile Search Overlay Drawer / Popup %}
-  <div class="vs-modal vs-mobile-search-modal" id="vs-mobile-search-modal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="vs-modal vs-mobile-search-modal" id="vs-mobile-search-modal" aria-hidden="true" inert role="dialog" aria-modal="true" data-predictive-search-root>
     <div class="vs-modal__backdrop" data-close-mobile-search></div>
     <div class="vs-mobile-search-card">
-      <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar vs-search-bar--mobile-modal">
-        <svg class="vs-search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input
-          type="search"
-          name="q"
-          value="{{ search.terms | escape }}"
-          placeholder="Search sweets, mithai, gift boxes..."
-          class="vs-search-bar__input"
-          aria-label="Search sweets"
-          autocomplete="off"
-          id="vs-mobile-search-input"
-        >
-        <button type="button" class="vs-search-bar__voice-btn" data-voice-search aria-label="Voice Search" title="Search by Voice">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="22"></line>
+      <div class="vs-mobile-search-header-row">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar vs-search-bar--mobile-modal" data-search-form>
+          <svg class="vs-search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="Search sweets, mithai, gift boxes..."
+            class="vs-search-bar__input"
+            aria-label="Search sweets"
+            autocomplete="off"
+            id="vs-mobile-search-input"
+            data-search-input
+          >
+          <button type="button" class="vs-search-bar__voice-btn" data-voice-search aria-label="Voice Search" title="Search by Voice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg>
+          </button>
+          <button type="submit" class="vs-search-bar__submit-btn" aria-label="Submit search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="21" y1="21" x2="16" y2="16"></line>
+            </svg>
+          </button>
+        </form>
+        <button type="button" class="vs-mobile-search-close" data-close-mobile-search aria-label="Close search">
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-        <button type="submit" class="vs-search-bar__submit-btn" aria-label="Submit search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="7"></circle>
-            <line x1="21" y1="21" x2="16" y2="16"></line>
-          </svg>
-        </button>
-      </form>
-      <button type="button" class="vs-mobile-search-close" data-close-mobile-search aria-label="Close search">
-        Close
-      </button>
+      </div>
+
+      {% # Mobile Predictive & Popular Content Area %}
+      <div class="vs-mobile-search-body">
+        <div class="vs-search-dropdown vs-search-dropdown--mobile" data-search-dropdown>
+          <div class="vs-search-popular" data-search-popular>
+            <div class="vs-search-dropdown__section">
+              <div class="vs-search-dropdown__header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                </svg>
+                <span>Popular Searches</span>
+              </div>
+              <div class="vs-popular-tags">
+                <button type="button" class="vs-popular-tag" data-search-keyword="Kaju Katli">Kaju Katli</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Khoya Peda">Khoya Peda</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Motichoor Laddoo">Motichoor Laddoo</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Pure Desi Ghee">Pure Desi Ghee</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Assorted Mithai Box">Assorted Mithai Box</button>
+                <button type="button" class="vs-popular-tag" data-search-keyword="Gulab Jamun">Gulab Jamun</button>
+              </div>
+            </div>
+
+            <div class="vs-search-dropdown__section">
+              <div class="vs-search-dropdown__header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="7" height="7" x="3" y="3" rx="1"/>
+                  <rect width="7" height="7" x="14" y="3" rx="1"/>
+                  <rect width="7" height="7" x="14" y="14" rx="1"/>
+                  <rect width="7" height="7" x="3" y="14" rx="1"/>
+                </svg>
+                <span>Browse Categories</span>
+              </div>
+              <div class="vs-search-quick-links">
+                {% assign search_dropdown_colls = collections | where: 'image' %}
+                {% if search_dropdown_colls.size == 0 %}
+                  {% assign search_dropdown_colls = collections %}
+                {% endif %}
+
+                {% assign rendered_search_colls = 0 %}
+                {% for coll in search_dropdown_colls %}
+                  {% if coll.handle == 'frontpage' %}
+                    {% continue %}
+                  {% endif %}
+                  {% assign rendered_search_colls = rendered_search_colls | plus: 1 %}
+                  {% assign coll_img = coll.featured_image | default: coll.image %}
+                  <a href="{{ coll.url }}" class="vs-search-quick-link">
+                    {% if coll_img != blank %}
+                      <img src="{{ coll_img | image_url: width: 80, height: 80, crop: 'center' }}" alt="{{ coll.title | escape }}" class="vs-search-quick-link__img" width="36" height="36" loading="lazy">
+                    {% else %}
+                      <span class="vs-search-quick-link__placeholder">🍬</span>
+                    {% endif %}
+                    <span class="vs-search-quick-link__title">{{ coll.title | escape }}</span>
+                  </a>
+                  {% if rendered_search_colls >= 4 %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+
+                {% # Fallback if store has fewer than 4 custom collections %}
+                {% if rendered_search_colls < 4 %}
+                  {% assign fallback_titles = "Sweets & Mithai,Namkeen & Bhujia,Dry Fruits & Nuts,Gift Boxes" | split: "," %}
+                  {% assign fallback_imgs = "collection-mithai.jpg,collection-kaju.jpg,collection-dry-fruits.jpg,collection-gift-packs.jpg" | split: "," %}
+                  {% assign fallback_urls = "/collections/all,/collections/all,/collections/all,/collections/all" | split: "," %}
+                  {% for f_title in fallback_titles %}
+                    {% if forloop.index > rendered_search_colls and rendered_search_colls < 4 %}
+                      {% assign idx = forloop.index0 %}
+                      <a href="{{ fallback_urls[idx] }}" class="vs-search-quick-link">
+                        <img src="{{ fallback_imgs[idx] | asset_url }}" alt="{{ f_title }}" class="vs-search-quick-link__img" width="36" height="36" loading="lazy">
+                        <span class="vs-search-quick-link__title">{{ f_title }}</span>
+                      </a>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="vs-search-results" data-search-results style="display: none;">
+            <div class="vs-search-results__loading" data-search-loading>
+              <div class="vs-search-spinner"></div>
+              <span>Searching delicious sweets...</span>
+            </div>
+            <div class="vs-search-results__list" data-search-list></div>
+            <div class="vs-search-results__empty" data-search-empty style="display: none;">
+              <p>No products found matching "<strong data-search-query-text></strong>"</p>
+            </div>
+            <div class="vs-search-dropdown__footer" data-search-footer style="display: none;">
+              <a href="#" class="vs-search-view-all" data-search-view-all-link>
+                <span>View all results for "<span data-search-query-text-footer></span>"</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

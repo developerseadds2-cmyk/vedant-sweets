@@ -1,58 +1,296 @@
-{% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
+<section class="vs-search-page full-width" id="vs-search-{{ section.id }}">
+  {% # Search Banner / Breadcrumbs %}
+  <header class="vs-collection-banner vs-search-banner">
+    <div class="vs-collection-banner__overlay"></div>
+    <div class="vs-collection-banner__inner">
+      <nav class="vs-breadcrumbs" aria-label="Breadcrumb">
+        <ol class="vs-breadcrumbs__list">
+          <li class="vs-breadcrumbs__item">
+            <a class="vs-breadcrumbs__link" href="{{ routes.root_url }}">Home</a>
+          </li>
+          <li class="vs-breadcrumbs__separator" aria-hidden="true">›</li>
+          <li class="vs-breadcrumbs__item vs-breadcrumbs__item--current" aria-current="page">
+            <span>Search</span>
+          </li>
+        </ol>
+      </nav>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
-{% endcomment %}
+      <div class="vs-collection-banner__content">
+        <h1 class="vs-collection-banner__title">
+          {% if search.performed and search.terms != blank %}
+            Results for "{{ search.terms | escape }}"
+          {% else %}
+            Search Our Sweets & Delicacies
+          {% endif %}
+        </h1>
+        <p class="vs-search-banner__lead">
+          Find your favorite desi ghee mithai, handcrafted namkeen, and festive gift boxes.
+        </p>
 
-<h1>{{ 'search.title' | t }}</h1>
+        {% # Primary Centered Search Form within Banner %}
+        <div class="vs-search-page-form-wrap">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="vs-search-bar vs-search-bar--page">
+            <svg class="vs-search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="Search sweets, mithai, kaju katli, laddoos..."
+              class="vs-search-bar__input"
+              aria-label="Search store"
+              autocomplete="off"
+              autofocus
+            >
+            <button type="submit" class="vs-search-page-submit-btn">
+              <span>Search</span>
+            </button>
+          </form>
 
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
+          {% # Popular suggestions quick tags below search box %}
+          <div class="vs-search-page-tags">
+            <span class="vs-search-page-tags__label">Trending:</span>
+            <a href="{{ routes.search_url }}?q=kaju+katli" class="vs-search-page-tag">Kaju Katli</a>
+            <a href="{{ routes.search_url }}?q=khoya+peda" class="vs-search-page-tag">Khoya Peda</a>
+            <a href="{{ routes.search_url }}?q=motichoor" class="vs-search-page-tag">Motichoor Laddoo</a>
+            <a href="{{ routes.search_url }}?q=desi+ghee" class="vs-search-page-tag">Desi Ghee</a>
+            <a href="{{ routes.search_url }}?q=gift+box" class="vs-search-page-tag">Gift Boxes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
+  <div class="vs-search-container">
+    {% if search.performed %}
+      {% if search.results_count == 0 %}
+        {% # No Results State %}
+        <div class="vs-search-empty-state">
+          <div class="vs-search-empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </div>
+          <h2 class="vs-search-empty-title">No products found matching "{{ search.terms | escape }}"</h2>
+          <p class="vs-search-empty-desc">
+            We couldn't find any sweets or namkeen matching your search. Try checking your spelling, using more general keywords, or explore our popular categories below.
+          </p>
 
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
+          <div class="vs-search-popular-categories">
+            <h3 class="vs-search-cat-title">Explore Popular Collections</h3>
+            <div class="vs-search-cat-grid">
+              <a href="/collections/sweets-mithai" class="vs-search-cat-card">
+                <span class="vs-search-cat-icon">🍬</span>
+                <span class="vs-search-cat-name">Sweets & Mithai</span>
+              </a>
+              <a href="/collections/namkeen-bhujia" class="vs-search-cat-card">
+                <span class="vs-search-cat-icon">🥨</span>
+                <span class="vs-search-cat-name">Namkeen & Bhujia</span>
+              </a>
+              <a href="/collections/dry-fruits-nuts" class="vs-search-cat-card">
+                <span class="vs-search-cat-icon">🥜</span>
+                <span class="vs-search-cat-name">Dry Fruits & Nuts</span>
+              </a>
+              <a href="/collections/gift-boxes-hampers" class="vs-search-cat-card">
+                <span class="vs-search-cat-icon">🎁</span>
+                <span class="vs-search-cat-name">Gift Boxes & Hampers</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        {% # Search Results Grid with Filter/Sort Toolbar %}
+        <div class="vs-catalog-content vs-search-catalog-content">
+          <div class="vs-collection-toolbar">
+            <div class="vs-toolbar-left">
+              <p class="vs-collection-count">
+                Found <strong>{{ search.results_count }}</strong> results for "<strong>{{ search.terms | escape }}</strong>"
               </p>
             </div>
           </div>
-        {% endfor %}
 
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
-    </div>
-  {% endif %}
-{% endif %}
+          {% paginate search.results by 24 %}
+            <div
+              class="vs-product-grid"
+              style="--vs-grid-columns: 4"
+              role="list"
+            >
+              {% for item in search.results %}
+                {% if item.object_type == 'product' %}
+                  {% assign current_variant = item.selected_or_first_available_variant %}
+                  <article class="vs-bs-card vs-search-card" role="listitem" data-product-handle="{{ item.handle }}">
+                    <div class="vs-bs-card__media-wrap">
+                      <div class="vs-bs-card__badges">
+                        {% if item.compare_at_price > item.price %}
+                          {% assign savings = item.compare_at_price | minus: item.price | times: 100.0 | divided_by: item.compare_at_price | round %}
+                          <span class="vs-bs-badge vs-bs-badge--sale">Save {{ savings }}%</span>
+                        {% elsif item.tags contains 'Bestseller' or item.tags contains 'bestseller' %}
+                          <span class="vs-bs-badge vs-bs-badge--bestseller">Bestseller</span>
+                        {% endif %}
+                      </div>
+
+                      <button
+                        type="button"
+                        class="vs-card-wishlist-btn"
+                        data-wishlist-btn
+                        data-product-id="{{ item.id }}"
+                        data-product-handle="{{ item.handle }}"
+                        data-product-title="{{ item.title | escape }}"
+                        data-product-vendor="{{ item.vendor | escape }}"
+                        data-product-price="{{ current_variant.price | money }}"
+                        data-variant-id="{{ current_variant.id }}"
+                        data-product-img="{{ item.featured_media | image_url: width: 300, height: 300 }}"
+                        aria-label="Add {{ item.title | escape }} to Wishlist"
+                      >
+                        <svg class="vs-wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                        </svg>
+                      </button>
+
+                      <a href="{{ item.url }}" class="vs-bs-card__media-link" aria-label="{{ item.title | escape }}">
+                        {% if item.featured_media != blank %}
+                          <img
+                            src="{{ item.featured_media | image_url: width: 600, height: 600, crop: 'center' }}"
+                            alt="{{ item.featured_media.alt | default: item.title | escape }}"
+                            class="vs-bs-card__img vs-bs-card__img--primary"
+                            width="300"
+                            height="300"
+                            loading="lazy"
+                          >
+                        {% else %}
+                          {{ 'product-1' | placeholder_svg_tag: 'vs-bs-card__placeholder' }}
+                        {% endif %}
+                      </a>
+                    </div>
+
+                    <div class="vs-bs-card__content">
+                      {% if item.vendor != blank %}
+                        <div class="vs-bs-card__vendor">{{ item.vendor }}</div>
+                      {% endif %}
+
+                      <h3 class="vs-bs-card__title">
+                        <a href="{{ item.url }}">{{ item.title }}</a>
+                      </h3>
+
+                      <div class="vs-bs-card__price-row">
+                        <span class="vs-bs-card__price">{{ current_variant.price | money }}</span>
+                        {% if current_variant.compare_at_price > current_variant.price %}
+                          <s class="vs-bs-card__compare-price">{{ current_variant.compare_at_price | money }}</s>
+                        {% endif %}
+                      </div>
+
+                      <div class="vs-bs-card__add-row">
+                        {% form 'product', item, class: 'vs-bs-add-form' %}
+                          <input type="hidden" name="id" value="{{ current_variant.id }}">
+                          <input type="hidden" name="quantity" value="1">
+                          <button
+                            type="submit"
+                            name="add"
+                            class="vs-bs-add-btn"
+                            {% unless current_variant.available %}disabled{% endunless %}
+                            aria-label="Add {{ item.title | escape }} to Cart"
+                          >
+                            <span class="vs-bs-add-btn__text">
+                              {% if current_variant.available %}
+                                Add To Cart
+                              {% else %}
+                                Sold Out
+                              {% endif %}
+                            </span>
+                            <svg class="vs-bs-add-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+                              <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                            </svg>
+                          </button>
+                        {% endform %}
+                      </div>
+                    </div>
+                  </article>
+                {% else %}
+                  {% # Article or Page Search Result %}
+                  <article class="vs-search-article-card" role="listitem">
+                    <div class="vs-search-article-badge">{{ item.object_type | capitalize }}</div>
+                    <h3 class="vs-search-article-title">
+                      <a href="{{ item.url }}">{{ item.title }}</a>
+                    </h3>
+                    <p class="vs-search-article-excerpt">
+                      {{ item.content | strip_html | truncatewords: 24 }}
+                    </p>
+                    <a href="{{ item.url }}" class="vs-search-article-link">Read more →</a>
+                  </article>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            {% if paginate.pages > 1 %}
+              <div class="vs-pagination">
+                {{ paginate | default_pagination }}
+              </div>
+            {% endif %}
+          {% endpaginate %}
+        </div>
+      {% endif %}
+    {% else %}
+      {% # Blank Initial State before any query is made %}
+      <div class="vs-search-initial-state">
+        <div class="vs-search-initial-grid">
+          <div class="vs-search-initial-col">
+            <h3 class="vs-search-initial-heading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+              </svg>
+              <span>Popular Search Terms</span>
+            </h3>
+            <div class="vs-popular-tags">
+              <a href="{{ routes.search_url }}?q=kaju+katli" class="vs-popular-tag">Kaju Katli</a>
+              <a href="{{ routes.search_url }}?q=khoya+peda" class="vs-popular-tag">Khoya Peda</a>
+              <a href="{{ routes.search_url }}?q=motichoor+laddoo" class="vs-popular-tag">Motichoor Laddoo</a>
+              <a href="{{ routes.search_url }}?q=pure+desi+ghee" class="vs-popular-tag">Pure Desi Ghee</a>
+              <a href="{{ routes.search_url }}?q=assorted+mithai" class="vs-popular-tag">Assorted Mithai Box</a>
+              <a href="{{ routes.search_url }}?q=gulab+jamun" class="vs-popular-tag">Gulab Jamun</a>
+              <a href="{{ routes.search_url }}?q=dry+fruits" class="vs-popular-tag">Dry Fruits & Nuts</a>
+              <a href="{{ routes.search_url }}?q=bhujia" class="vs-popular-tag">Bikaneri Bhujia</a>
+            </div>
+          </div>
+
+          <div class="vs-search-initial-col">
+            <h3 class="vs-search-initial-heading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="7" height="7" x="3" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="14" rx="1"/>
+                <rect width="7" height="7" x="3" y="14" rx="1"/>
+              </svg>
+              <span>Explore Top Collections</span>
+            </h3>
+            <div class="vs-search-initial-collections">
+              <a href="/collections/sweets-mithai" class="vs-search-init-coll-card">
+                <span class="vs-search-init-coll-title">Sweets & Mithai</span>
+                <span class="vs-search-init-coll-arrow">→</span>
+              </a>
+              <a href="/collections/namkeen-bhujia" class="vs-search-init-coll-card">
+                <span class="vs-search-init-coll-title">Namkeen & Savouries</span>
+                <span class="vs-search-init-coll-arrow">→</span>
+              </a>
+              <a href="/collections/dry-fruits-nuts" class="vs-search-init-coll-card">
+                <span class="vs-search-init-coll-title">Dry Fruits & Festive Hampers</span>
+                <span class="vs-search-init-coll-arrow">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
 
 {% schema %}
 {
-  "name": "t:general.search",
+  "name": "Search Page",
   "settings": []
 }
 {% endschema %}

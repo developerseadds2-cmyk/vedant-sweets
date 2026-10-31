@@ -122,73 +122,90 @@
             </ul>
           </div>
 
-          {% # Filter Group 2: Availability %}
-          <div class="vs-filter-group">
-            <h4 class="vs-filter-group__title">Availability</h4>
-            <ul class="vs-filter-list">
-              <li class="vs-filter-item">
-                <label class="vs-filter-label">
-                  <input type="checkbox" checked class="vs-filter-input">
-                  <span class="vs-filter-checkbox"></span>
-                  <span class="vs-filter-name">In Stock</span>
-                </label>
-              </li>
-              <li class="vs-filter-item">
-                <label class="vs-filter-label">
-                  <input type="checkbox" class="vs-filter-input">
-                  <span class="vs-filter-checkbox"></span>
-                  <span class="vs-filter-name">Fresh Daily Batch</span>
-                </label>
-              </li>
-            </ul>
-          </div>
-
-          {% # Filter Group 3: Price Range %}
-          <div class="vs-filter-group">
-            <h4 class="vs-filter-group__title">Price Range</h4>
-            <ul class="vs-filter-list">
-              <li class="vs-filter-item">
-                <label class="vs-filter-label">
-                  <input type="radio" name="price_range" checked class="vs-filter-input">
-                  <span class="vs-filter-radio"></span>
-                  <span class="vs-filter-name">All Prices</span>
-                </label>
-              </li>
-              <li class="vs-filter-item">
-                <label class="vs-filter-label">
-                  <input type="radio" name="price_range" class="vs-filter-input">
-                  <span class="vs-filter-radio"></span>
-                  <span class="vs-filter-name">Under ₹350</span>
-                </label>
-              </li>
-              <li class="vs-filter-item">
-                <label class="vs-filter-label">
-                  <input type="radio" name="price_range" class="vs-filter-input">
-                  <span class="vs-filter-radio"></span>
-                  <span class="vs-filter-name">₹350 - ₹500</span>
-                </label>
-              </li>
-              <li class="vs-filter-item">
-                <label class="vs-filter-label">
-                  <input type="radio" name="price_range" class="vs-filter-input">
-                  <span class="vs-filter-radio"></span>
-                  <span class="vs-filter-name">Above ₹500</span>
-                </label>
-              </li>
-            </ul>
-          </div>
-
-          {% # Filter Group 4: Sweet Speciality / Occasion %}
-          <div class="vs-filter-group">
-            <h4 class="vs-filter-group__title">Speciality</h4>
-            <div class="vs-filter-tags">
-              <span class="vs-filter-tag is-active">Pure Cow Ghee</span>
-              <span class="vs-filter-tag">Festive Box</span>
-              <span class="vs-filter-tag">No Added Color</span>
-              <span class="vs-filter-tag">Kesar Flavoured</span>
-              <span class="vs-filter-tag">Dry Fruit Rich</span>
+          {% # Dynamic Shopify Product Filters (Search & Discovery) %}
+          {% if collection.filters.size > 0 %}
+            {% for filter in collection.filters %}
+              {% case filter.type %}
+                {% when 'boolean', 'list' %}
+                  {% if filter.values.size > 0 %}
+                    <div class="vs-filter-group">
+                      <h4 class="vs-filter-group__title">{{ filter.label | escape }}</h4>
+                      <ul class="vs-filter-list">
+                        {% for value in filter.values %}
+                          <li class="vs-filter-item">
+                            <a
+                              href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}"
+                              class="vs-filter-link{% if value.active %} is-active{% endif %}"
+                            >
+                              <span class="vs-filter-checkbox"></span>
+                              <span class="vs-filter-name">{{ value.label | escape }} ({{ value.count }})</span>
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% endif %}
+                {% when 'price_range' %}
+                  <div class="vs-filter-group">
+                    <h4 class="vs-filter-group__title">{{ filter.label | escape }}</h4>
+                    <form class="vs-filter-price-form" method="get" action="{{ collection.url }}">
+                      <div class="vs-filter-price-range">
+                        <div class="vs-filter-price-input-wrap">
+                          <span class="vs-filter-currency">{{ cart.currency.symbol }}</span>
+                          <input
+                            type="number"
+                            name="{{ filter.min_value.param_name }}"
+                            class="vs-filter-price-field"
+                            placeholder="0"
+                            min="0"
+                            max="{{ filter.range_max | divided_by: 100.0 | ceil }}"
+                            {% if filter.min_value.value %}value="{{ filter.min_value.value | divided_by: 100.0 }}"{% endif %}
+                            aria-label="Minimum price"
+                          >
+                        </div>
+                        <span class="vs-filter-price-sep">–</span>
+                        <div class="vs-filter-price-input-wrap">
+                          <span class="vs-filter-currency">{{ cart.currency.symbol }}</span>
+                          <input
+                            type="number"
+                            name="{{ filter.max_value.param_name }}"
+                            class="vs-filter-price-field"
+                            placeholder="{{ filter.range_max | divided_by: 100.0 | ceil }}"
+                            min="0"
+                            max="{{ filter.range_max | divided_by: 100.0 | ceil }}"
+                            {% if filter.max_value.value %}value="{{ filter.max_value.value | divided_by: 100.0 }}"{% endif %}
+                            aria-label="Maximum price"
+                          >
+                        </div>
+                        <button type="submit" class="vs-filter-price-btn" aria-label="Apply price filter">→</button>
+                      </div>
+                    </form>
+                  </div>
+              {% endcase %}
+            {% endfor %}
+          {% elsif collection.all_tags.size > 0 %}
+            {% # Dynamic Product Tags if store uses tags %}
+            <div class="vs-filter-group">
+              <h4 class="vs-filter-group__title">Tags</h4>
+              <ul class="vs-filter-list">
+                {% for tag in collection.all_tags %}
+                  <li class="vs-filter-item">
+                    {% if current_tags contains tag %}
+                      <a href="{{ routes.collections_url }}/{{ collection.handle }}" class="vs-filter-link is-active">
+                        <span class="vs-filter-checkbox"></span>
+                        <span class="vs-filter-name">{{ tag | escape }}</span>
+                      </a>
+                    {% else %}
+                      <a href="{{ routes.collections_url }}/{{ collection.handle }}/{{ tag | handle }}" class="vs-filter-link">
+                        <span class="vs-filter-checkbox"></span>
+                        <span class="vs-filter-name">{{ tag | escape }}</span>
+                      </a>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
             </div>
-          </div>
+          {% endif %}
         </aside>
 
         {% # Main Catalog Content %}
@@ -232,75 +249,131 @@
               style="--vs-grid-columns: {{ section.settings.columns_desktop }}"
               role="list"
             >
-          {% for product in collection.products %}
-            <article class="vs-product-card" role="listitem">
-              <a class="vs-product-card__link" href="{{ product.url }}">
-                <div class="vs-product-card__media">
-                  {% if product.featured_image != blank %}
-                    <img
-                      class="vs-product-card__image"
-                      src="{{ product.featured_image | image_url: width: 600, height: 420, crop: 'center' }}"
-                      alt="{{ product.title | escape }}"
-                      width="280"
-                      height="196"
-                      loading="lazy"
+              {% for product in collection.products %}
+                {% assign current_variant = product.selected_or_first_available_variant %}
+                
+                <article class="vs-bs-card" role="listitem" data-product-handle="{{ product.handle }}">
+                  <div class="vs-bs-card__media-wrap">
+                    {% # Badges %}
+                    <div class="vs-bs-card__badges">
+                      {% if product.compare_at_price > product.price %}
+                        {% assign savings = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round %}
+                        <span class="vs-bs-badge vs-bs-badge--sale">Save {{ savings }}%</span>
+                      {% elsif forloop.index <= 2 or product.tags contains 'Bestseller' or product.tags contains 'bestseller' %}
+                        <span class="vs-bs-badge vs-bs-badge--bestseller">Bestseller</span>
+                      {% endif %}
+                    </div>
+
+                    {% # Floating Action: Wishlist %}
+                    <button
+                      type="button"
+                      class="vs-card-wishlist-btn"
+                      data-wishlist-btn
+                      data-product-id="{{ product.id }}"
+                      data-product-handle="{{ product.handle }}"
+                      data-product-title="{{ product.title | escape }}"
+                      data-product-vendor="{{ product.vendor | escape }}"
+                      data-product-price="{{ current_variant.price | money }}"
+                      data-variant-id="{{ current_variant.id }}"
+                      data-product-img="{{ product.featured_media | image_url: width: 300, height: 300 }}"
+                      aria-label="Add {{ product.title | escape }} to Wishlist"
                     >
-                  {% else %}
-                    {{ 'product-1' | placeholder_svg_tag: 'vs-product-card__placeholder' }}
-                  {% endif %}
-
-                  {% unless product.available %}
-                    <span class="vs-product-badge vs-product-badge--soldout">Sold out</span>
-                  {% else %}
-                    {% if product.compare_at_price > product.price %}
-                      <span class="vs-product-badge vs-product-badge--sale">Sale</span>
-                    {% endif %}
-                  {% endunless %}
-                </div>
-
-                <div class="vs-product-card__body">
-                  <div class="vs-product-card__arch" aria-hidden="true">
-                    <svg viewBox="0 0 240 32" preserveAspectRatio="none">
-                      <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
-                      <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
-                      <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
-                      <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
-                      <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
-                    </svg>
-                  </div>
-
-                  <div class="vs-product-card__icon" aria-hidden="true">
-                    {% render 'category-icon', icon: 'peda' %}
-                  </div>
-
-                  <h3 class="vs-product-card__title">{{ product.title | escape }}</h3>
-
-                  <div class="vs-product-card__price">
-                    <span class="vs-price-regular">{{ product.price | money }}</span>
-                    {% if product.compare_at_price > product.price %}
-                      <span class="vs-price-compare">{{ product.compare_at_price | money }}</span>
-                    {% endif %}
-                  </div>
-                </div>
-              </a>
-
-              <div class="vs-product-card__action">
-                {% if product.available %}
-                  <form method="post" action="/cart/add" class="vs-product-card__form">
-                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                    <button type="submit" class="vs-product-card__btn">
-                      <span>Add to Cart</span>
+                      <svg class="vs-wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                      </svg>
                     </button>
-                  </form>
-                {% else %}
-                  <button type="button" class="vs-product-card__btn vs-product-card__btn--disabled" disabled>
-                    <span>Sold Out</span>
-                  </button>
-                {% endif %}
-              </div>
-            </article>
-          {% endfor %}
-        </div>
+
+                    {% # Product Image Link %}
+                    <a href="{{ product.url }}" class="vs-bs-card__media-link" aria-label="{{ product.title | escape }}">
+                      {% if product.featured_media != blank %}
+                        <img
+                          src="{{ product.featured_media | image_url: width: 600, height: 600, crop: 'center' }}"
+                          alt="{{ product.featured_media.alt | default: product.title | escape }}"
+                          class="vs-bs-card__img vs-bs-card__img--primary"
+                          width="300"
+                          height="300"
+                          loading="lazy"
+                        >
+                        {% if product.media.size > 1 %}
+                          <img
+                            src="{{ product.media[1] | image_url: width: 600, height: 600, crop: 'center' }}"
+                            alt="{{ product.media[1].alt | default: product.title | escape }}"
+                            class="vs-bs-card__img vs-bs-card__img--secondary"
+                            width="300"
+                            height="300"
+                            loading="lazy"
+                          >
+                        {% endif %}
+                      {% else %}
+                        {{ 'product-1' | placeholder_svg_tag: 'vs-bs-card__placeholder' }}
+                      {% endif %}
+                    </a>
+
+                    {% # Quick View Button %}
+                    <div class="vs-bs-card__quick-view-overlay">
+                      <button
+                        type="button"
+                        class="vs-bs-quickview-btn"
+                        data-quickview-btn
+                        data-product-url="{{ product.url }}"
+                        data-product-handle="{{ product.handle }}"
+                        aria-label="Quick view {{ product.title | escape }}"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>Quick View</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {% # Product Meta %}
+                  <div class="vs-bs-card__content">
+                    {% if product.vendor != blank %}
+                      <div class="vs-bs-card__vendor">{{ product.vendor }}</div>
+                    {% endif %}
+
+                    <h3 class="vs-bs-card__title">
+                      <a href="{{ product.url }}">{{ product.title }}</a>
+                    </h3>
+
+                    <div class="vs-bs-card__price-row">
+                      <span class="vs-bs-card__price">{{ current_variant.price | money }}</span>
+                      {% if current_variant.compare_at_price > current_variant.price %}
+                        <s class="vs-bs-card__compare-price">{{ current_variant.compare_at_price | money }}</s>
+                      {% endif %}
+                    </div>
+
+                    <div class="vs-bs-card__add-row">
+                      {% form 'product', product, class: 'vs-bs-add-form' %}
+                        <input type="hidden" name="id" value="{{ current_variant.id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button
+                          type="submit"
+                          name="add"
+                          class="vs-bs-add-btn"
+                          {% unless current_variant.available %}disabled{% endunless %}
+                          aria-label="Add {{ product.title | escape }} to Cart"
+                        >
+                          <span class="vs-bs-add-btn__text">
+                            {% if current_variant.available %}
+                              Add To Cart
+                            {% else %}
+                              Sold Out
+                            {% endif %}
+                          </span>
+                          <svg class="vs-bs-add-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+                            <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                          </svg>
+                        </button>
+                      {% endform %}
+                    </div>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
 
         {% if paginate.pages > 1 %}
           <div class="vs-pagination">
@@ -319,50 +392,58 @@
                   {% assign catalog_prices = "₹360.00,₹420.00,₹480.00,₹320.00,₹590.00,₹750.00" | split: "," %}
                   {% assign catalog_compares = "₹420.00,₹480.00,₹540.00,₹380.00,₹680.00,₹850.00" | split: "," %}
                   {% assign catalog_badges = "Pure Desi Ghee,Best Seller,Silver Varq,Traditional,Premium Dry Fruits,Festive Special" | split: "," %}
-                  {% assign catalog_icons = "peda,peda,kaju,laddoo,dry-fruits,mithai" | split: "," %}
 
                   {% for prod_name in catalog_products %}
                     {% assign idx = forloop.index0 %}
-                    <article class="vs-product-card" role="listitem">
-                      <div class="vs-product-card__media">
-                        <img
-                          class="vs-product-card__image"
-                          src="{{ catalog_imgs[idx] | asset_url }}"
-                          alt="{{ prod_name }}"
-                          width="280"
-                          height="196"
-                          loading="lazy"
+                    <article class="vs-bs-card" role="listitem">
+                      <div class="vs-bs-card__media-wrap">
+                        <div class="vs-bs-card__badges">
+                          <span class="vs-bs-badge vs-bs-badge--bestseller">{{ catalog_badges[idx] }}</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          class="vs-card-wishlist-btn"
+                          data-wishlist-btn
+                          aria-label="Add {{ prod_name }} to Wishlist"
                         >
-                        <span class="vs-product-badge vs-product-badge--fresh">{{ catalog_badges[idx] }}</span>
-                      </div>
-
-                      <div class="vs-product-card__body">
-                        <div class="vs-product-card__arch" aria-hidden="true">
-                          <svg viewBox="0 0 240 32" preserveAspectRatio="none">
-                            <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
-                            <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
-                            <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
-                            <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
-                            <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                          <svg class="vs-wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                           </svg>
-                        </div>
+                        </button>
 
-                        <div class="vs-product-card__icon" aria-hidden="true">
-                          {% render 'category-icon', icon: catalog_icons[idx] %}
-                        </div>
-
-                        <h3 class="vs-product-card__title">{{ prod_name }}</h3>
-
-                        <div class="vs-product-card__price">
-                          <span class="vs-price-regular">{{ catalog_prices[idx] }}</span>
-                          <span class="vs-price-compare">{{ catalog_compares[idx] }}</span>
-                        </div>
+                        <a href="/products/pure-desi-ghee-khoya-peda" class="vs-bs-card__media-link" aria-label="{{ prod_name }}">
+                          <img
+                            class="vs-bs-card__img vs-bs-card__img--primary"
+                            src="{{ catalog_imgs[idx] | asset_url }}"
+                            alt="{{ prod_name }}"
+                            width="300"
+                            height="300"
+                            loading="lazy"
+                          >
+                        </a>
                       </div>
 
-                      <div class="vs-product-card__action">
-                        <button type="button" class="vs-product-card__btn">
-                          <span>Add to Cart</span>
-                        </button>
+                      <div class="vs-bs-card__content">
+                        <div class="vs-bs-card__vendor">VEDANT SWEETS</div>
+                        <h3 class="vs-bs-card__title">
+                          <a href="/products/pure-desi-ghee-khoya-peda">{{ prod_name }}</a>
+                        </h3>
+
+                        <div class="vs-bs-card__price-row">
+                          <span class="vs-bs-card__price">{{ catalog_prices[idx] }}</span>
+                          <s class="vs-bs-card__compare-price">{{ catalog_compares[idx] }}</s>
+                        </div>
+
+                        <div class="vs-bs-card__add-row">
+                          <button type="button" class="vs-bs-add-btn">
+                            <span class="vs-bs-add-btn__text">Add To Cart</span>
+                            <svg class="vs-bs-add-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+                              <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </article>
                   {% endfor %}
@@ -375,46 +456,55 @@
                   
                   {% for prod_name in peda_products %}
                     {% assign idx = forloop.index0 %}
-                    <article class="vs-product-card" role="listitem">
-                      <div class="vs-product-card__media">
-                        <img
-                          class="vs-product-card__image"
-                          src="{{ peda_imgs[idx] | asset_url }}"
-                          alt="{{ prod_name }}"
-                          width="280"
-                          height="196"
-                          loading="lazy"
+                    <article class="vs-bs-card" role="listitem">
+                      <div class="vs-bs-card__media-wrap">
+                        <div class="vs-bs-card__badges">
+                          <span class="vs-bs-badge vs-bs-badge--bestseller">{{ peda_badges[idx] }}</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          class="vs-card-wishlist-btn"
+                          data-wishlist-btn
+                          aria-label="Add {{ prod_name }} to Wishlist"
                         >
-                        <span class="vs-product-badge vs-product-badge--fresh">{{ peda_badges[idx] }}</span>
-                      </div>
-
-                      <div class="vs-product-card__body">
-                        <div class="vs-product-card__arch" aria-hidden="true">
-                          <svg viewBox="0 0 240 32" preserveAspectRatio="none">
-                            <path class="vs-arch-fill" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22 L 240,32 L 0,32 Z" />
-                            <path class="vs-arch-stroke-primary" d="M 0,22 C 16,22 28,24 40,23 C 54,21 66,15 80,15 C 92,15 102,12 110,7 C 115,4 118,1.5 120,0 C 122,1.5 125,4 130,7 C 138,12 148,15 160,15 C 174,15 186,21 200,23 C 212,24 224,22 240,22" />
-                            <path class="vs-arch-stroke-secondary" d="M 4,26 C 18,26 30,28 42,27 C 56,25 67,19 81,19 C 93,19 103,16 111,11 C 116,8 118,5.5 120,4 C 122,5.5 124,8 129,11 C 137,16 147,19 159,19 C 173,19 184,25 198,27 C 210,28 222,26 236,26" />
-                            <circle cx="120" cy="2" r="2.2" class="vs-arch-finial-outer" />
-                            <circle cx="120" cy="2" r="0.9" class="vs-arch-finial-inner" />
+                          <svg class="vs-wishlist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
                           </svg>
-                        </div>
+                        </button>
 
-                        <div class="vs-product-card__icon" aria-hidden="true">
-                          {% render 'category-icon', icon: 'peda' %}
-                        </div>
-
-                        <h3 class="vs-product-card__title">{{ prod_name }}</h3>
-
-                        <div class="vs-product-card__price">
-                          <span class="vs-price-regular">{{ peda_prices[idx] }}</span>
-                          <span class="vs-price-compare">{{ peda_compares[idx] }}</span>
-                        </div>
+                        <a href="/products/pure-desi-ghee-khoya-peda" class="vs-bs-card__media-link" aria-label="{{ prod_name }}">
+                          <img
+                            class="vs-bs-card__img vs-bs-card__img--primary"
+                            src="{{ peda_imgs[idx] | asset_url }}"
+                            alt="{{ prod_name }}"
+                            width="300"
+                            height="300"
+                            loading="lazy"
+                          >
+                        </a>
                       </div>
 
-                      <div class="vs-product-card__action">
-                        <button type="button" class="vs-product-card__btn">
-                          <span>Add to Cart</span>
-                        </button>
+                      <div class="vs-bs-card__content">
+                        <div class="vs-bs-card__vendor">VEDANT SWEETS</div>
+                        <h3 class="vs-bs-card__title">
+                          <a href="/products/pure-desi-ghee-khoya-peda">{{ prod_name }}</a>
+                        </h3>
+
+                        <div class="vs-bs-card__price-row">
+                          <span class="vs-bs-card__price">{{ peda_prices[idx] }}</span>
+                          <s class="vs-bs-card__compare-price">{{ peda_compares[idx] }}</s>
+                        </div>
+
+                        <div class="vs-bs-card__add-row">
+                          <button type="button" class="vs-bs-add-btn">
+                            <span class="vs-bs-add-btn__text">Add To Cart</span>
+                            <svg class="vs-bs-add-btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M4 8h16l-1.2 12H5.2L4 8Z"></path>
+                              <path d="M8 9V6a4 4 0 0 1 8 0v3"></path>
+                            </svg>
+                          </button>
+                        </div>
                       </div>
                     </article>
                   {% endfor %}
